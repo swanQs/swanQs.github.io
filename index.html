@@ -180,7 +180,7 @@
       <header class="post-header">
         <h2 class="post-title" itemprop="name headline">
           
-            <a href="/2021/03/23/hello-world/" class="post-title-link" itemprop="url">Hello World</a>
+            <a href="/2021/03/23/hello-world/" class="post-title-link" itemprop="url">PHP反序列化及CVE-2016-7124复现</a>
         </h2>
 
         <div class="post-meta">
@@ -192,6 +192,13 @@
 
               <time title="创建时间：2021-03-23 15:35:30" itemprop="dateCreated datePublished" datetime="2021-03-23T15:35:30+08:00">2021-03-23</time>
             </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2021-03-24 16:48:09" itemprop="dateModified" datetime="2021-03-24T16:48:09+08:00">2021-03-24</time>
+              </span>
 
           
 
@@ -204,7 +211,12 @@
     <div class="post-body" itemprop="articleBody">
 
       
-          <p>Welcome to <a target="_blank" rel="noopener" href="https://hexo.io/">Hexo</a>! This is your very first post. Check <a target="_blank" rel="noopener" href="https://hexo.io/docs/">documentation</a> for more info. If you get any problems when using Hexo, you can find the answer in <a target="_blank" rel="noopener" href="https://hexo.io/docs/troubleshooting.html">troubleshooting</a> or you can ask me on <a target="_blank" rel="noopener" href="https://github.com/hexojs/hexo/issues">GitHub</a>.</p>
+          <h2 id="0x01-原理解释"><a href="#0x01-原理解释" class="headerlink" title="0x01 原理解释"></a>0x01 原理解释</h2><blockquote>
+<p><strong>PHP的反序列化漏洞</strong>其实是PHP对象的属性篡改漏洞。漏洞的成因在于代码中unserialize的参数不可控。导致服务器能够接收我们反序列化过的字符串、并且未经过滤的把其中的变量直接放进魔术方法里面执行以实现攻击.<br>PHP unserialization vulnerability is actually a PHP object property tamper vulnerability.The cause of the vulnerability is that the parameters of unserialize in the code are not controllable.The server was able to receive the deserialized string and unfiltered its variables directly into the magic method to execute the attack.**PHP deserialization vulnerability ** is actually a PHP object property tamper vulnerability.The cause of the vulnerability is that the parameters of unserialize in the code are not controllable.The server was able to receive the deserialized string and unfiltered its variables directly into the magic method to execute the attack.</p>
+</blockquote>
+<h3 id="1-须知"><a href="#1-须知" class="headerlink" title="1.须知"></a>1.须知</h3><p>php源码同python一样是由c所写<br>可以序列化的对象都可以反序列化<br>序列化面向对象中的属性<br>序列化后格式：<br><img src="./1616574345180.png" alt="Alt text"><br>类为object,类长度为4，名为test,包含3个属性：<br>第一个属性为string,长度为10，名为testflag;值长度为6，名为active；因为<strong>prvate</strong>,故而序列化后，原名test被更改<br>第二个同上; 因为<strong>protected</strong>，故而序列化后,原名前加*<br>第三个同上; 因为<strong>public</strong>，故而序列化后,原名不变</p>
+<h3 id="2-魔术方法"><a href="#2-魔术方法" class="headerlink" title="2.魔术方法"></a>2.魔术方法</h3><p>魔术方法(Magic methods)：以两个下划线__开头的方法，包括：<br>__construct()，类的构造函数<br>__destruct()，类的析构函数<br>__call()，在对象中调用一个不可访问方法时调用<br>__callStatic()，用静态方式中调用一个不可访问方法时调用<br>__get()，获得一个类的成员变量时调用<br>__set()，设置一个类的成员变量时调用<br>__isset()，当对不可访问属性调用isset()或empty()时调用<br>__unset()，当对不可访问属性调用unset()时被调用。<br>__sleep()，执行serialize()时，先会调用这个函数<br>__wakeup()，执行unserialize()时，先会调用这个函数<br>__toString()，类被当成字符串时的回应方法<br>__invoke()，调用函数的方式调用一个对象时的回应方法<br>__set_state()，调用var_export()导出类时，此静态方法会被调用。<br>__clone()，当对象复制完成时调用<br>__autoload()，尝试加载未定义的类<br>__debugInfo()，打印所需调试信息</p>
+<p>Welcome to <a target="_blank" rel="noopener" href="https://hexo.io/">Hexo</a>! This is your very first post. Check <a target="_blank" rel="noopener" href="https://hexo.io/docs/">documentation</a> for more info. If you get any problems when using Hexo, you can find the answer in <a target="_blank" rel="noopener" href="https://hexo.io/docs/troubleshooting.html">troubleshooting</a> or you can ask me on <a target="_blank" rel="noopener" href="https://github.com/hexojs/hexo/issues">GitHub</a>.</p>
 <h2 id="Quick-Start"><a href="#Quick-Start" class="headerlink" title="Quick Start"></a>Quick Start</h2><h3 id="Create-a-new-post"><a href="#Create-a-new-post" class="headerlink" title="Create a new post"></a>Create a new post</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo new <span class="string">&quot;My New Post&quot;</span></span><br></pre></td></tr></table></figure>
 
 <p>More info: <a target="_blank" rel="noopener" href="https://hexo.io/docs/writing.html">Writing</a></p>
