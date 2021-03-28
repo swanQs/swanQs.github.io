@@ -32,7 +32,7 @@
 <meta property="og:image" content="http://swanq.top/2021/03/24/php-unserialize/3.png">
 <meta property="og:image" content="http://swanq.top/2021/03/24/php-unserialize/4.png">
 <meta property="article:published_time" content="2021-03-24T07:48:16.000Z">
-<meta property="article:modified_time" content="2021-03-26T07:04:37.037Z">
+<meta property="article:modified_time" content="2021-03-28T07:34:16.981Z">
 <meta property="article:author" content="swanQ">
 <meta property="article:tag" content="web安全">
 <meta property="article:tag" content="网络安全">
@@ -144,7 +144,7 @@
   </li>
         <li class="menu-item menu-item-archives">
 
-    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档<span class="badge">3</span></a>
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档<span class="badge">4</span></a>
 
   </li>
   </ul>
@@ -207,7 +207,7 @@
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2021-03-26 15:04:37" itemprop="dateModified" datetime="2021-03-26T15:04:37+08:00">2021-03-26</time>
+                <time title="修改时间：2021-03-28 15:34:16" itemprop="dateModified" datetime="2021-03-28T15:34:16+08:00">2021-03-28</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -253,7 +253,7 @@
 <p>(6)反序列化对象在经过php字符串函数，如 strlen()、addslashes()时</p>
 <p>(7)在in_array()方法中，第一个参数是反序列化对象，第二个参数的数组中有toString返回的字符串的时候toString会被调用</p>
 <p>(8)反序列化的对象作为 class_exists() 的参数的时候</p>
-<h3 id="3-序列胡与反序列化"><a href="#3-序列胡与反序列化" class="headerlink" title="3. 序列胡与反序列化"></a>3. 序列胡与反序列化</h3><p>序列化$data并输出到serialize.txt文件中</p>
+<h3 id="3-序列化与反序列化"><a href="#3-序列化与反序列化" class="headerlink" title="3. 序列化与反序列化"></a>3. 序列化与反序列化</h3><p>序列化$data并输出到serialize.txt文件中</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line">&lt;?php</span><br><span class="line">class test &#123;</span><br><span class="line">    private $flag &#x3D; &#39;Inactive&#39;;</span><br><span class="line">    protected $test &#x3D; &#39;test&#39;;</span><br><span class="line">    public $test1 &#x3D; &#39;test1&#39;;</span><br><span class="line"></span><br><span class="line">    public function set_flag($flag)</span><br><span class="line">    &#123;</span><br><span class="line">        $this-&gt;flag &#x3D; $flag;</span><br><span class="line">    &#125;</span><br><span class="line">    public function get_flag($flag)</span><br><span class="line">    &#123;</span><br><span class="line">        return $this-&gt;flag;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line">$object &#x3D; new test();</span><br><span class="line">$object-&gt;set_flag(&#39;active&#39;);</span><br><span class="line">$data &#x3D; serialize($object);</span><br><span class="line">file_put_contents(&quot;serialize.txt&quot;,$data);</span><br><span class="line">echo $data;</span><br></pre></td></tr></table></figure>
 <p>反序列化serialize.txt</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line">&lt;?php</span><br><span class="line">class test</span><br><span class="line">&#123;</span><br><span class="line">    private $flag &#x3D; &#39;Inactive&#39;;</span><br><span class="line">    protected $test &#x3D; &quot;test&quot;;</span><br><span class="line">    public $test1 &#x3D; &quot;test1&quot;;</span><br><span class="line">    public function set_flag($flag)</span><br><span class="line">    &#123;</span><br><span class="line">        $this-&gt;flag &#x3D; $flag;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    public function get_flag()</span><br><span class="line">    &#123;</span><br><span class="line">        return $this-&gt;flag;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line">$data &#x3D; file_get_contents(&quot;serialize.txt&quot;);</span><br><span class="line">$data &#x3D; unserialize($data);</span><br><span class="line">echo $data-&gt;test1.&quot;&lt;br&gt;&quot;;</span><br><span class="line">echo $data-&gt;get_flag(); &#x2F;&#x2F; correspond to serialize.php</span><br></pre></td></tr></table></figure>
@@ -269,7 +269,7 @@
 <li>漏洞影响版本：<br>PHP5 &lt; 5.6.25<br>PHP7 &lt; 7.0.10</li>
 <li>编写测试脚本：<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">&lt;?php</span><br><span class="line">class t&#123;</span><br><span class="line">    public $sex &#x3D; &#39;swanQ&#39;;</span><br><span class="line">    function __wakeup()&#123;</span><br><span class="line">        $this-&gt;sex &#x3D; &#39;Circ1e&#39;;</span><br><span class="line">    &#125;</span><br><span class="line">    function __destruct()&#123;</span><br><span class="line">        echo $this-&gt;sex;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line">echo &quot;&lt;pre&gt;&quot;;</span><br><span class="line">$cla &#x3D; new t();</span><br><span class="line">$res &#x3D; serialize($cla); &#x2F;&#x2F;O:4:&quot;test&quot;:1:&#123;s:3:&quot;sex&quot;;s:3:&quot;Circ1e&quot;;&#125;</span><br><span class="line">echo $res;</span><br></pre></td></tr></table></figure>
 当__wakeup()被调用时，swanQ变成circ1e.<br>构造payload将传入的序列化数据的对象变量个数由1加至2，绕过__wakeup方法执行。<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">O:4:&quot;test&quot;:1:&#123;s:3:&quot;sex&quot;;s:3:&quot;Circ1e&quot;;&#125;</span><br><span class="line">O:4:&quot;test&quot;:2:&#123;s:3:&quot;sex&quot;;s:3:&quot;Circ1e&quot;;&#125;</span><br></pre></td></tr></table></figure>
-具体贴图后续再贴</li>
+具体复现各位看官自己尝试</li>
 </ul>
 <h2 id="0x03-参考"><a href="#0x03-参考" class="headerlink" title="0x03 参考"></a>0x03 参考</h2><p>[1]深入理解PHP反序列化漏洞:<a target="_blank" rel="noopener" href="https://www.k0rz3n.com/2018/11/19/%E4%B8%80%E7%AF%87%E6%96%87%E7%AB%A0%E5%B8%A6%E4%BD%A0%E6%B7%B1%E5%85%A5%E7%90%86%E8%A7%A3PHP%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%E6%BC%8F%E6%B4%9E/">https://www.k0rz3n.com/2018/11/19/%E4%B8%80%E7%AF%87%E6%96%87%E7%AB%A0%E5%B8%A6%E4%BD%A0%E6%B7%B1%E5%85%A5%E7%90%86%E8%A7%A3PHP%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%E6%BC%8F%E6%B4%9E/</a><br>[2]CVE-2016-7124——php绕过__wakeup():<a target="_blank" rel="noopener" href="http://www.cl4y.top/521/">http://www.cl4y.top/521/</a></p>
 
@@ -383,7 +383,7 @@
 
       <!--noindex-->
       <div class="post-toc-wrap sidebar-panel">
-          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#0x01-%E5%8E%9F%E7%90%86%E8%A7%A3%E9%87%8A"><span class="nav-number">1.</span> <span class="nav-text">0x01 原理解释</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#1-%E5%9F%BA%E7%A1%80%E7%9F%A5%E8%AF%86"><span class="nav-number">1.1.</span> <span class="nav-text">1. 基础知识</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-%E9%AD%94%E6%9C%AF%E6%96%B9%E6%B3%95"><span class="nav-number">1.2.</span> <span class="nav-text">2. 魔术方法</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-%E5%BA%8F%E5%88%97%E8%83%A1%E4%B8%8E%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96"><span class="nav-number">1.3.</span> <span class="nav-text">3. 序列胡与反序列化</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#4-%E6%94%BB%E5%87%BB%E7%A4%BA%E4%BE%8B"><span class="nav-number">1.4.</span> <span class="nav-text">4.攻击示例</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#0x02-CVE-2016-7124%EF%BC%9Aphp%E7%BB%95%E8%BF%87-wakeup"><span class="nav-number">2.</span> <span class="nav-text">0x02 CVE-2016-7124：php绕过__wakeup</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#1-%E6%BC%8F%E6%B4%9E%E5%8E%9F%E7%90%86"><span class="nav-number">2.1.</span> <span class="nav-text">1.漏洞原理</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-%E6%BC%8F%E6%B4%9E%E5%A4%8D%E7%8E%B0"><span class="nav-number">2.2.</span> <span class="nav-text">2.漏洞复现</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#0x03-%E5%8F%82%E8%80%83"><span class="nav-number">3.</span> <span class="nav-text">0x03 参考</span></a></li></ol></div>
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#0x01-%E5%8E%9F%E7%90%86%E8%A7%A3%E9%87%8A"><span class="nav-number">1.</span> <span class="nav-text">0x01 原理解释</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#1-%E5%9F%BA%E7%A1%80%E7%9F%A5%E8%AF%86"><span class="nav-number">1.1.</span> <span class="nav-text">1. 基础知识</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-%E9%AD%94%E6%9C%AF%E6%96%B9%E6%B3%95"><span class="nav-number">1.2.</span> <span class="nav-text">2. 魔术方法</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-%E5%BA%8F%E5%88%97%E5%8C%96%E4%B8%8E%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96"><span class="nav-number">1.3.</span> <span class="nav-text">3. 序列化与反序列化</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#4-%E6%94%BB%E5%87%BB%E7%A4%BA%E4%BE%8B"><span class="nav-number">1.4.</span> <span class="nav-text">4.攻击示例</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#0x02-CVE-2016-7124%EF%BC%9Aphp%E7%BB%95%E8%BF%87-wakeup"><span class="nav-number">2.</span> <span class="nav-text">0x02 CVE-2016-7124：php绕过__wakeup</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#1-%E6%BC%8F%E6%B4%9E%E5%8E%9F%E7%90%86"><span class="nav-number">2.1.</span> <span class="nav-text">1.漏洞原理</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-%E6%BC%8F%E6%B4%9E%E5%A4%8D%E7%8E%B0"><span class="nav-number">2.2.</span> <span class="nav-text">2.漏洞复现</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#0x03-%E5%8F%82%E8%80%83"><span class="nav-number">3.</span> <span class="nav-text">0x03 参考</span></a></li></ol></div>
       </div>
       <!--/noindex-->
 
@@ -399,7 +399,7 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">3</span>
+          <span class="site-state-item-count">4</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
