@@ -490,7 +490,7 @@
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2021-03-30 21:30:44" itemprop="dateModified" datetime="2021-03-30T21:30:44+08:00">2021-03-30</time>
+                <time title="修改时间：2021-04-02 11:32:53" itemprop="dateModified" datetime="2021-04-02T11:32:53+08:00">2021-04-02</time>
               </span>
 
           
@@ -504,11 +504,17 @@
     <div class="post-body" itemprop="articleBody">
 
       
-          <h2 id="0x01-前言"><a href="#0x01-前言" class="headerlink" title="0x01 前言"></a>0x01 前言</h2><p>Django作为开放源码的Web应用python框架，作为最有代表性的web光加，构建了多种网站和APP。Django负责处理网站开发中麻烦的部分，因此让开发者专注于应用程序的编写。<br>采用了MVT的软件设计模式，即模型（Model），视图（View）和模板（Template），注重组件的重用性和“可插拔性”。<br><strong>原理</strong><br>通过构造分隔符，传递给聚合函数contrib.postgres.aggregates.StringAgg，从而绕过转义符号（\）来注入恶意SQL语句。</p>
+          <h2 id="0x01-前言"><a href="#0x01-前言" class="headerlink" title="0x01 前言"></a>0x01 前言</h2><p>Django作为开放源码的Web应用python框架，作为最有代表性的web光加，构建了多种网站和APP。Django负责处理网站开发中麻烦的部分，因此让开发者专注于应用程序的编写。<br>采用了MVT的软件设计模式，即模型（Model），视图（View）和模板（Template），注重组件的重用性和“可插拔性”。<br><strong>原理</strong><br>通过构造分隔符，传递给聚合函数contrib.postgres.aggregates.StringAgg，从而绕过转义符号（\）来注入恶意SQL语句。<br>漏洞的核心是StringAgg(delimiter),StringAgg聚合函数的delimiter参数存在SQL注入漏洞。</p>
 <h2 id="0x02-漏洞复现"><a href="#0x02-漏洞复现" class="headerlink" title="0x02 漏洞复现"></a>0x02 漏洞复现</h2><ul>
 <li>影响版本<br>Django 1.11.x &lt; 1.11.28<br>Django 2.2.x &lt; 2.2.10<br>Django 3.0.x &lt; 3.0.3<br>Django 主开发分支<br>其中Django 1.11.28、Django 2.2.10、Django 3.0.3不受影响。</li>
 <li>测试环境<br>kali<br>Django 3.0.2<h2 id="0x03-环境搭建"><a href="#0x03-环境搭建" class="headerlink" title="0x03 环境搭建"></a>0x03 环境搭建</h2>pip install django==3.0.2<br>安装postgres数据库，创建数据库test,并修改数据库密码<br><img src="/2021/03/29/Django-sql/1.png"><h2 id="0x04-漏洞复现"><a href="#0x04-漏洞复现" class="headerlink" title="0x04 漏洞复现"></a>0x04 漏洞复现</h2></li>
 </ul>
+<ol>
+<li>由于刚才更改了数据库密码，于是更改配置文件的数据库名称以及密码<br>进入CVE-2020-7471/sqlvul_projects/settings.py，修改数据库配置，如果之前安装postgres数据库使用的默认配置（包括密码），这里就不需修改任何任何配置.<br>此处只需修改password为刚才设置密码。<br><img src="/2021/03/29/Django-sql/2.png"><br><img src="/2021/03/29/Django-sql/3.png"></li>
+<li>再利用CVE-2020-7471/manage.py初始化测试数据库test数据库中的表<br><img src="/2021/03/29/Django-sql/4.jpg"><br>初始化环境完成。</li>
+<li>进入test数据库查看表<br>进入数据库<br>\c test<br>查看全部表<br>\d<br><img src="/2021/03/29/Django-sql/5.jpg"><br>查看表vul_app_info的信息<br>select * from vul_app_info;<br><img src="/2021/03/29/Django-sql/6.jpg"><br>可以看到此刻表为空</li>
+<li>执行POC向数据库写入数据<br><img src="/2021/03/29/Django-sql/7.jpg"><br>若执行成功POC中将插入三条数据<br>利用CVE-2020-7471/CVE-2020-7471.py写入数据<br><img src="/2021/03/29/Django-sql/8.jpg"><br><img src="/2021/03/29/Django-sql/9.jpg"><br>写入成功。<h2 id="0x05-升级到最新版本"><a href="#0x05-升级到最新版本" class="headerlink" title="0x05 升级到最新版本"></a>0x05 升级到最新版本</h2>升级到Django最新版3.0.3</li>
+</ol>
 
       
     </div>
