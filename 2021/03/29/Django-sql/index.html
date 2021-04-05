@@ -27,9 +27,9 @@
 <meta property="og:site_name" content="SwanQ&#39;s blog">
 <meta property="og:description" content="0x01 前言Django作为开放源码的Web应用python框架，作为最有代表性的web框架，构建了多种网站和APP。Django负责处理网站开发中麻烦的部分，因此让开发者专注于应用程序的编写。其采用了MVT的软件设计模式，即模型（Model），视图（View）和模板（Template），注重组件的重用性和“可插拔性”。原理通过构造分隔符，传递给聚合函数contrib.postgres.aggr">
 <meta property="og:locale" content="zh_CN">
-<meta property="og:image" content="http://swanq.top/2021/03/29/Django-sql/blog/source/_posts/Django-sql/12.jpg">
-<meta property="og:image" content="http://swanq.top/2021/03/29/Django-sql/blog/source/_posts/Django-sql/10.jpg">
-<meta property="og:image" content="http://swanq.top/2021/03/29/Django-sql/blog/source/_posts/Django-sql/11.jpg">
+<meta property="og:image" content="http://swanq.top/2021/03/29/Django-sql/12.jpg">
+<meta property="og:image" content="http://swanq.top/2021/03/29/Django-sql/10.jpg">
+<meta property="og:image" content="http://swanq.top/2021/03/29/Django-sql/11.jpg">
 <meta property="og:image" content="http://swanq.top/2021/03/29/Django-sql/1.png">
 <meta property="og:image" content="http://swanq.top/2021/03/29/Django-sql/2.png">
 <meta property="og:image" content="http://swanq.top/2021/03/29/Django-sql/3.png">
@@ -40,13 +40,13 @@
 <meta property="og:image" content="http://swanq.top/2021/03/29/Django-sql/8.jpg">
 <meta property="og:image" content="http://swanq.top/2021/03/29/Django-sql/9.jpg">
 <meta property="article:published_time" content="2021-03-29T11:53:21.000Z">
-<meta property="article:modified_time" content="2021-04-03T13:42:25.130Z">
+<meta property="article:modified_time" content="2021-04-05T07:39:39.540Z">
 <meta property="article:author" content="swanQ">
 <meta property="article:tag" content="漏洞复现">
 <meta property="article:tag" content="sql注入">
 <meta property="article:tag" content="Django">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:image" content="http://swanq.top/2021/03/29/Django-sql/blog/source/_posts/Django-sql/12.jpg">
+<meta name="twitter:image" content="http://swanq.top/2021/03/29/Django-sql/12.jpg">
 
 <link rel="canonical" href="http://swanq.top/2021/03/29/Django-sql/">
 
@@ -214,7 +214,7 @@
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2021-04-03 21:42:25" itemprop="dateModified" datetime="2021-04-03T21:42:25+08:00">2021-04-03</time>
+                <time title="修改时间：2021-04-05 15:39:39" itemprop="dateModified" datetime="2021-04-05T15:39:39+08:00">2021-04-05</time>
               </span>
 
           
@@ -233,16 +233,13 @@
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Info.objects.all().values(&#39;gender&#39;).annotate(mydefinedname&#x3D;StringAgg(&#39;name&#39;, delimiter&#x3D;&quot;-&quot;))</span><br></pre></td></tr></table></figure>
 
 <p>这个查询操作就是查询 Info 对应的 postgres 数据表的 gender 列，将gender相同的 name 列使用横线连接聚合，输入如下：</p>
-<img src="/2021/03/29/Django-sql/blog\source\_posts\Django-sql\12.jpg" style="zoom:65%;">
-
+<p><img src="/2021/03/29/Django-sql/12.jpg"></p>
 <p>漏洞位于django/django/contrib/postgres/aggregates/general.py</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">from django.contrib.postgres.aggregates import StringAgg</span><br></pre></td></tr></table></figure>
 
 <p>可以看到官方使用Value函数来防止注入，Value函数的内容如下</p>
-<img src="/2021/03/29/Django-sql/blog\source\_posts\Django-sql\10.jpg" style="zoom:85%;">
-
-<img src="/2021/03/29/Django-sql/blog\source\_posts\Django-sql\11.jpg" style="zoom:90%;">
-
+<p><img src="/2021/03/29/Django-sql/10.jpg"></p>
+<p><img src="/2021/03/29/Django-sql/11.jpg"></p>
 <p>Value参数会被添加到sql参数列表，然后被Django内置的过滤机制过滤，来防注。</p>
 <p>编写fuzz测试delimiter 是如何导致SQL 注入：</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">for c in &quot;!@#$%^&amp;*()_+&#x3D;-|\\\&quot;&#39;:;?&#x2F;&gt;.&lt;,&#123;&#125;[]&quot;:</span><br><span class="line">    results &#x3D; Info.objects.all().values(&#39;gender&#39;).annotate(mydefinedname&#x3D;StringAgg(&#39;name&#39;,delimiter&#x3D;c))</span><br><span class="line">    try:</span><br><span class="line">      for e in results:</span><br><span class="line">        pass</span><br></pre></td></tr></table></figure>
