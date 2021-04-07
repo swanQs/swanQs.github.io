@@ -30,6 +30,7 @@
 <meta property="og:image" content="http://swanq.top/2021/03/29/Django-sql/12.jpg">
 <meta property="og:image" content="http://swanq.top/2021/03/29/Django-sql/10.jpg">
 <meta property="og:image" content="http://swanq.top/2021/03/29/Django-sql/11.jpg">
+<meta property="og:image" content="http://swanq.top/2021/03/29/Django-sql/14.jpg">
 <meta property="og:image" content="http://swanq.top/2021/03/29/Django-sql/4.png">
 <meta property="og:image" content="http://swanq.top/2021/03/29/Django-sql/5.png">
 <meta property="og:image" content="http://swanq.top/2021/03/29/Django-sql/5.png">
@@ -43,7 +44,7 @@
 <meta property="og:image" content="http://swanq.top/2021/03/29/Django-sql/8.jpg">
 <meta property="og:image" content="http://swanq.top/2021/03/29/Django-sql/9.jpg">
 <meta property="article:published_time" content="2021-03-29T11:53:21.000Z">
-<meta property="article:modified_time" content="2021-04-06T11:00:41.161Z">
+<meta property="article:modified_time" content="2021-04-07T01:22:51.371Z">
 <meta property="article:author" content="swanQ">
 <meta property="article:tag" content="漏洞复现">
 <meta property="article:tag" content="sql注入">
@@ -217,7 +218,7 @@
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2021-04-06 19:00:41" itemprop="dateModified" datetime="2021-04-06T19:00:41+08:00">2021-04-06</time>
+                <time title="修改时间：2021-04-07 09:22:51" itemprop="dateModified" datetime="2021-04-07T09:22:51+08:00">2021-04-07</time>
               </span>
 
           
@@ -244,9 +245,9 @@
 <p><img src="/2021/03/29/Django-sql/10.jpg"></p>
 <p><img src="/2021/03/29/Django-sql/11.jpg"></p>
 <p>Value参数会被添加到sql参数列表，然后被Django内置的过滤机制过滤，来防注。</p>
-<p>编写fuzz测试delimiter 是如何导致SQL 注入：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">for c in &quot;!@#$%^&amp;*()_+&#x3D;-|\\\&quot;&#39;:;?&#x2F;&gt;.&lt;,&#123;&#125;[]&quot;:</span><br><span class="line">    results &#x3D; Info.objects.all().values(&#39;gender&#39;).annotate(mydefinedname&#x3D;StringAgg(&#39;name&#39;,delimiter&#x3D;c))</span><br><span class="line">    try:</span><br><span class="line">      for e in results:</span><br><span class="line">        pass</span><br></pre></td></tr></table></figure>
-
+<p>如何导致SQL 注入：</p>
+<p><img src="/2021/03/29/Django-sql/14.jpg"></p>
+<p>delimiter没有任何过滤，我们可以通过闭合单引号来利用注入</p>
 <p><img src="/2021/03/29/Django-sql/4.png"></p>
 <p>(此图摘自先知社区)</p>
 <p>测试发现，当delimiter为单引号时，会报错。可以看出单引号未经过任何转义嵌入到了 SQL 语句中，然后需要追踪内部程序找出完整的 SQL 语句上下文。从上面的图中可以看出来，查询语句调用了self.cursor.execute，sql变量还没嵌入时，delimiter 的值如下：</p>
