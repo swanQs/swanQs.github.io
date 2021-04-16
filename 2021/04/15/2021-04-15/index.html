@@ -1,0 +1,658 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.4.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+<link rel="stylesheet" href="https://fonts.cat.net/css?family=Lato:300,300italic,400,400italic,700,700italic|Fira Code:300,300italic,400,400italic,700,700italic&display=swap&subset=latin,latin-ext">
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"swanq.top","root":"/","scheme":"Gemini","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":true,"show_result":true,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+  </script>
+
+  <meta name="description" content="0x01 DHCP协议局域网内分配ip 一、动态主机配置协议DHCP 1.DHCP简介 ​        DHCP(Dynamic Host Configuration Protocol),动态主机配置协议，是一个应用层协议。当我们将客户主机ip地址设置为动态获取方式时，DHCP服务器就会根据DHCP协议给客户端分配IP，使得客户机能够利用这个IP上网。 ​       DHCP的前身是BOOTP">
+<meta property="og:type" content="article">
+<meta property="og:title" content="一篇文章搞懂所有协议">
+<meta property="og:url" content="http://swanq.top/2021/04/15/2021-04-15/index.html">
+<meta property="og:site_name" content="SwanQ&#39;s blog">
+<meta property="og:description" content="0x01 DHCP协议局域网内分配ip 一、动态主机配置协议DHCP 1.DHCP简介 ​        DHCP(Dynamic Host Configuration Protocol),动态主机配置协议，是一个应用层协议。当我们将客户主机ip地址设置为动态获取方式时，DHCP服务器就会根据DHCP协议给客户端分配IP，使得客户机能够利用这个IP上网。 ​       DHCP的前身是BOOTP">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://swanq.top/2021/04/15/2021-04-15/1.png">
+<meta property="og:image" content="http://swanq.top/2021/04/15/2021-04-15/9.png">
+<meta property="og:image" content="http://swanq.top/2021/04/15/2021-04-15/2.png">
+<meta property="og:image" content="http://swanq.top/2021/04/15/2021-04-15/3.jpg">
+<meta property="og:image" content="http://swanq.top/2021/04/15/2021-04-15/10.jpg">
+<meta property="og:image" content="http://swanq.top/2021/04/15/2021-04-15/4.png">
+<meta property="og:image" content="http://swanq.top/2021/04/15/2021-04-15/5.jpg">
+<meta property="og:image" content="http://swanq.top/2021/04/15/2021-04-15/11.png">
+<meta property="og:image" content="http://swanq.top/2021/04/15/2021-04-15/6.png">
+<meta property="og:image" content="http://swanq.top/2021/04/15/2021-04-15/7.png">
+<meta property="og:image" content="http://swanq.top/2021/04/15/2021-04-15/8.png">
+<meta property="og:image" content="http://swanq.top/2021/04/15/2021-04-15/21.png">
+<meta property="og:image" content="http://swanq.top/2021/04/15/2021-04-15/22.png">
+<meta property="og:image" content="http://swanq.top/2021/04/15/2021-04-15/23.png">
+<meta property="og:image" content="http://swanq.top/2021/04/15/2021-04-15/24.png">
+<meta property="og:image" content="http://swanq.top/2021/04/15/2021-04-15/25.png">
+<meta property="og:image" content="http://swanq.top/2021/04/15/2021-04-15/26.png">
+<meta property="og:image" content="http://swanq.top/2021/04/15/2021-04-15/27.png">
+<meta property="og:image" content="http://swanq.top/2021/04/15/2021-04-15/28.png">
+<meta property="og:image" content="http://swanq.top/2021/04/15/2021-04-15/29.png">
+<meta property="og:image" content="http://swanq.top/2021/04/15/2021-04-15/31.png">
+<meta property="og:image" content="http://swanq.top/2021/04/15/2021-04-15/32.png">
+<meta property="og:image" content="http://swanq.top/2021/04/15/2021-04-15/33.png">
+<meta property="og:image" content="http://swanq.top/2021/04/15/2021-04-15/34.png">
+<meta property="og:image" content="http://swanq.top/2021/04/15/2021-04-15/35.png">
+<meta property="og:image" content="http://swanq.top/2021/04/15/2021-04-15/36.png">
+<meta property="article:published_time" content="2021-04-15T07:23:58.000Z">
+<meta property="article:modified_time" content="2021-04-15T07:44:59.912Z">
+<meta property="article:author" content="swanQ">
+<meta property="article:tag" content="web安全">
+<meta property="article:tag" content="网络协议">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://swanq.top/2021/04/15/2021-04-15/1.png">
+
+<link rel="canonical" href="http://swanq.top/2021/04/15/2021-04-15/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>一篇文章搞懂所有协议 | SwanQ's blog</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">SwanQ's blog</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+      <p class="site-subtitle" itemprop="description">有趣的是有道理且新奇，胡思乱想并不有趣。</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签<span class="badge">19</span></a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类<span class="badge">3</span></a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档<span class="badge">10</span></a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+  <a href="https://github.com/swanQs" class="github-corner" title="Follow me on GitHub" aria-label="Follow me on GitHub" rel="noopener" target="_blank"><svg width="80" height="80" viewBox="0 0 250 250" aria-hidden="true"><path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"></path><path d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2" fill="currentColor" style="transform-origin: 130px 106px;" class="octo-arm"></path><path d="M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z" fill="currentColor" class="octo-body"></path></svg></a>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://swanq.top/2021/04/15/2021-04-15/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/author.jpg">
+      <meta itemprop="name" content="swanQ">
+      <meta itemprop="description" content="Try & Enjoy">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="SwanQ's blog">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          一篇文章搞懂所有协议
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+              
+
+              <time title="创建时间：2021-04-15 15:23:58 / 修改时间：15:44:59" itemprop="dateCreated datePublished" datetime="2021-04-15T15:23:58+08:00">2021-04-15</time>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h1 id="0x01-DHCP协议"><a href="#0x01-DHCP协议" class="headerlink" title="0x01 DHCP协议"></a>0x01 DHCP协议</h1><p><strong>局域网内分配ip</strong></p>
+<p><strong>一、动态主机配置协议DHCP</strong></p>
+<p><strong>1.DHCP简介</strong></p>
+<p>​        DHCP(Dynamic Host Configuration Protocol),动态主机配置协议，是一个应用层协议。当我们将客户主机ip地址设置为动态获取方式时，DHCP服务器就会根据DHCP协议给客户端分配IP，使得客户机能够利用这个IP上网。</p>
+<p>​       DHCP的前身是BOOTP协议（Bootstrap Protocol）,BOOTP被创建出来为连接到网络中的设备自动分配地址，后来被DHCP取代了，DHCP比BOOTP更加复杂，功能更强大。后面可以看到，在用Wireshark过滤显示DHCP包，需要输入过滤条件BOOTP，而不是DHCP,但或许是因为我使用的Wireshark版本是比较旧的1.12.9,没有在新版本中尝试过，也许可以输入DHCP让其只显示DHCP包。</p>
+<p><strong>2.工作原理</strong></p>
+<p><img src="/2021/04/15/2021-04-15/1.png" alt="img"></p>
+<p>DHCP的实现分为4步： </p>
+<p>第一步：Client端在局域网内发起一个DHCP　Discover包，目的是想发现能够给它提供IP的DHCP Server。 </p>
+<p>第二步：可用的DHCP Server接收到Discover包之后，通过发送DHCP Offer包给予Client端应答，意在告诉Client端它可以提供IP地址。 </p>
+<p>第三步：Client端接收到Offer包之后，发送DHCP Request包请求分配IP。 </p>
+<p>第四步：DHCP Server发送ACK数据包，确认信息。</p>
+<p><strong>二、利用Wireshark抓取DHCP包</strong></p>
+<p><strong>1.分析</strong></p>
+<p>要想抓取到DHCP包，先要保证有可用的DHCP服务器，然后将主机IP地址获取方式设置为自动获取。如果主机在抓包之前已经联网，需要先断开主机的网络连接，然后再连接网络。</p>
+<p>cmd中可以使用ipconfig /?查看各参数的含义： </p>
+<p><img src="/2021/04/15/2021-04-15/9.png" alt="img"></p>
+<p><strong>(1)ipconfig /release</strong> </p>
+<p>断开当前的网络连接，主机IP变为0.0.0.0，主机与网络断开，不能访问网络。 </p>
+<p><img src="/2021/04/15/2021-04-15/2.png" alt="img"></p>
+<p><strong>(2)ipconfig /renew</strong> </p>
+<p>更新适配器信息，请求连接网络，这条命令结束之后，主机会获得一个可用的IP，再次接入网络。</p>
+<p><strong>2.开始抓包</strong></p>
+<p>实验环境：Win10专业版,Wireshark3.2.7，有线连接 </p>
+<p>DHCP服务器IPv4地址：10.170.72.254</p>
+<p>本机被分配IP：10.170.56.55</p>
+<p><strong>(1)在Wireshark中点击start开始抓包，在过滤栏输入bootp，使其只显示DHCP数据包。</strong> </p>
+<p><strong>(2)在cmd中输入ipconfig  /release 断开网络连接。</strong></p>
+<p><img src="/2021/04/15/2021-04-15/3.jpg" alt="img"></p>
+<p>可以看到此时所有的网卡都已经断开。以太网处于断开状态。 由于开了虚拟机的原因，Wireshark中截获到一个DHCP Release数据包。</p>
+<p><strong>(3)在cmd中输入ipconfig /renew 请求网络连接。</strong></p>
+<p>此时，可以看到在Wireshark中新增了4个DHCP数据包： </p>
+<p><img src="/2021/04/15/2021-04-15/10.jpg" alt="img"></p>
+<p>数据包1：DHCP Discover </p>
+<p>数据包2：DHCP Offer </p>
+<p>数据包3：DHCP Request </p>
+<p>数据包4：DHCP ACK</p>
+<p>注：当直接手动连接wifi时，直接发起request包(另一台pc)</p>
+<p><img src="/2021/04/15/2021-04-15/4.png" alt="img"></p>
+<p>等待这条命令执行完毕之后，在cmd中可以看到主机被分配了IP，主机成功连入网络中。</p>
+<p><img src="/2021/04/15/2021-04-15/5.jpg" alt="img"></p>
+<p><strong>(4)为了后续分析使用，我们再执行一次ipconfig /renew：</strong> </p>
+<p>可以看到Wireshark中新增了3个数据包：DHCP ACK；DHCP Request;DHCP ACk。如果再次使用ipconfig /renew,<strong>每执行一次会新增2个数据包：DHCP Request;DHCP ACK</strong>。</p>
+<p><strong>三、DHCP包分析</strong></p>
+<p>下面着重来分析当执行，ipconfig /renew这条命令产生的4个DHCP数据包，这4个数据包代表了客户机和DHCP服务器的交互过程，也是IP动态分配的过程。 </p>
+<p><strong>1.DHCP Discover数据包</strong> </p>
+<p>(1)Client端使用IP地址0.0.0.0发送了一个广播包，可以看到此时的目的IP为255.255.255.255。Client想通过这个数据包发现可以给它提供服务的DHCP服务器。</p>
+<p>(2)从下图可以看出，DHCP属于应用层协议，它在传输层使用UDP协议，目的端口是67。</p>
+<p><img src="/2021/04/15/2021-04-15/11.png" alt="img"></p>
+<p><strong>2.DHCP Offer包</strong> </p>
+<p>当DHCP服务器收到一条DHCP Discover数据包时，用一个DHCP Offer包给予客户端响应。 </p>
+<p><img src="/2021/04/15/2021-04-15/6.png" alt="img"></p>
+<p> (1)DHCP服务器使用广播地址作为目的地址，因为此时请求分配IP的Client并没有自己ip,而可能有多个Client在使用0.0.0.0这个IP作为源IP向DHCP服务器发出IP分配请求，DHCP也不能使用0.0.0.0这个IP作为目的IP地址，于是依然采用广播的方式，告诉正在请求的Client们，这是一台可以使用的DHCP服务器。</p>
+<p>(2)DHCP服务器<strong>提供了一个可用的IP</strong>,在数据包的Your (client) IP Address字段可以看到DHCP服务器提供的可用IP。</p>
+<p>(3)除此之外，如图中红色矩形框的内容所示，服务器还发送了子网掩码，路由器，DNS，域名，IP地址租用期等信息。</p>
+<p><strong>3.DHCP Request包</strong> </p>
+<p>当Client收到了DHCP Offer包以后（如果有多个可用的DHCP服务器，那么可能会收到多个DHCP Offer包），确认有可以和它交互的DHCP服务器存在，于是Client发送Request数据包，请求分配IP。 </p>
+<p><img src="/2021/04/15/2021-04-15/7.png" alt="img"></p>
+<p>此时的源IP和目的IP依然是0.0.0.0和255.255.255.255。</p>
+<p><strong>4.DHCP ACK包</strong> </p>
+<p>服务器用DHCP ACK包对DHCP请求进行响应。 </p>
+<p><img src="/2021/04/15/2021-04-15/8.png" alt="img"></p>
+<p>在数据包中包含以下信息，表示将这些资源信息分配给Client. </p>
+<p><strong>Your(client) IP address:分配给Client的可用IP</strong></p>
+<p>后面有许多项option信息，前两项是DHCP服务器发送的消息类型（ACK）和服务器的身份标识，后面几项是： </p>
+<p>Subnet Mask:Client端分配到的IP的子网掩码； </p>
+<p>Router:路由器 </p>
+<p>Domain Name Server:DNS,域名服务器 </p>
+<p>Domain Name:域名 </p>
+<p>IP Address Lease Time:IP租用期。</p>
+<p><strong>四、DHCP starvation attack</strong></p>
+<p><strong>1.DHCP starvation attack，DHCP饥饿攻击</strong> </p>
+<p>有许多中攻击DHCP的技术，这里介绍其中一种，有点类似于SYN 洪范攻击。 </p>
+<p><strong>DHCP starvation attack</strong>，中文即DHCP饥饿攻击，就是大量地进食，把可以吃的食物全部吃完，然后让其他人没得吃，最后给其他人提供一些毒药，把人家毒死。</p>
+<p>下面来说这种攻击是如何实现的。一些不法分子，伪造合法的MAC地址，不断地向DHCP服务器发出DHCP Request包，最后<strong>耗尽服务器的可用IP</strong>,于是原有的这台DHCP服务器便不能够给客户端分配IP了，此时不法分子再伪造一台DHCP服务器，给客户端分配IP,将客户端的默认网关和DNS都设置成自己的机器，于是便可以对客户端进行<strong>中间人攻击</strong>。</p>
+<p>参考：<a target="_blank" rel="noopener" href="https://blog.csdn.net/zqixiao_09/article/details/77131239">https://blog.csdn.net/zqixiao_09/article/details/77131239</a></p>
+<h1 id="0x02-ICMP协议"><a href="#0x02-ICMP协议" class="headerlink" title="0x02　ICMP协议"></a>0x02　ICMP协议</h1><p><strong>一、动态主机配置协议ICMP  不可靠</strong></p>
+<p><strong>1.ICMP简介</strong></p>
+<p>​        网络控制消息协议（Internet Control Message Protocol，ICMP）是网路协议族的核心协议之一。它用于TCP/IP网络中发送控制消息，提供可能发生在通信环境中的各种问题反馈，令管理者可以对所发生的问题作出诊断并采取适当的措施。</p>
+<p>​       ICMP 依靠IP来完成它的任务，它是IP的主要部分。它与传输协议，如TCP和UDP显著不同：它一般不用于在两点间传输数据。仅ping和traceroute会用到。 IPv4中的ICMP被称作ICMPv4，IPv6中的ICMP则被称作ICMPv6。</p>
+<p>​        ICMP是在RFC 792中定义的互联网协议族之一。通常用于返回的错误信息或是分析路由。ICMP错误消息总是包括了源数据并返回给发送者。 ICMP错误消息的例子之一是TTL值过期。每个路由器在转发数据报的时候都会把IP包头中的TTL值减一。如果TTL值为0，“TTL在传输中过期”的消息将会回报给源地址。 每个ICMP消息都是直接封装在一个IP数据包中的，因此，和UDP一样，ICMP是不可靠的。</p>
+<p>​        虽然ICMP是包含在IP数据包中的，但是对ICMP消息通常会特殊处理，会和一般IP数据包的处理不同，而不是作为IP的一个子协议来处理。在很多时候，需要去查看ICMP消息的内容，然后发送适当的错误消息到那个原来产生IP数据包的程序，即那个导致ICMP讯息被传送的IP数据包。</p>
+<p>​        很多常用的工具是基于ICMP消息的。</p>
+<ul>
+<li><strong>traceroute是通过发送包含有特殊的TTL的包，然后接收ICMP超时消息和目标不可达消息来实现的。</strong></li>
+<li><strong>ping则是用ICMP的”Echo request”（类别代码：8）和”Echo reply”（类别代码：0）消息来实现的。</strong>ping是一款用于检测一个设备可连接性的工具，用于发送ICMP echo请求数据包。</li>
+</ul>
+<p><strong>二、利用Wireshark抓取DHCP包</strong></p>
+<p><strong>1.ping分析</strong></p>
+<p>ping自己服务器</p>
+<p><img src="/2021/04/15/2021-04-15/21.png" alt="img"></p>
+<p><strong>(1)echo ping请求包request</strong></p>
+<p><img src="/2021/04/15/2021-04-15/22.png" alt="img"></p>
+<p> ICMP头部的Type以及Code的内容:</p>
+<ol>
+<li>Type表示ICMP消息基于RFC规范的类型或分类。</li>
+<li>Code表示ICMP消息基于RFC规范的子类型。</li>
+<li>ICMP头部中的Type的值是8，Code值是0，说明是一个echo请求数据包，所包含的数据很少。除了指定的类型、代码以及校验和，这里还有序列号用于匹配请求和响应，并且在可变域中包含有一串随机字符串。</li>
+</ol>
+<p><strong>(2)echo ping reply响应包</strong></p>
+<p><img src="/2021/04/15/2021-04-15/23.png" alt="img"></p>
+<ol>
+<li>ICMP头部中，类型和代码的值都是0，表示这是一个echo响应。</li>
+<li>第二个数据包的序列号和第一个数据包匹配，确定对应关系</li>
+<li>Data的部分，这个数据包和第一个数据包字符相同。说明数据包被成功接收，ping成功。</li>
+</ol>
+<p><strong>2.安全问题</strong></p>
+<p>​        ICMP协议本身的特点就决定了它易于攻击网络上的路由器和主机。</p>
+<ol>
+<li>DDoS：用户可以利用操作系统规定的ICMP数据包的最大尺寸不超过64K这个规定，向网络上的主机发起Ping of Death攻击。因为当ICMP数据包的大小超过64K的时候，目标主机就有可能出现内存分配的错误的情况，导致TCP/IP堆栈崩溃，使得主机死机。</li>
+<li>ICMP风暴：向目标主机长时间、连续、大量地发送ICMP数据包，也会最终使系统瘫痪。大量的ICMP数据包会形成“ICMP风暴”，耗费目标主机大量的CPU资源。</li>
+<li>ICMP的echo请求使用的字符串可被利用，攻击者可使用这段内容来推测设备所使用的操作系统。或放置一些数据位用作反向连接。</li>
+</ol>
+<p><strong>2.路由跟踪</strong></p>
+<p><img src="/2021/04/15/2021-04-15/24.png" alt="img"></p>
+<p>​       路由跟踪识别一个设备到另一个设备的路径。对于溯源来说，确定数据包从一个地方到另一个地方所走的路径是异常重要的。</p>
+<p>​       tracert：利用了ICMP协议，通过其跟踪结果，我们就可以画出数据包所走的路径。总共经过9个跃点到达目标IP </p>
+<p>(1)第一个数据包：192.168.137.44 –&gt; 192.168.137.1</p>
+<p><img src="/2021/04/15/2021-04-15/25.png" alt="img"></p>
+<p>​        类比于此前分析的echo请求。这个数据包是从IP地址为192.168.137.44到47.95.28.98的简单的echo的请求，并且ICMP数据包头部的每一部分都与echo请求数据包相同。数据包的<strong>IP头中的TTL的值为1：****这个数据包会在它所遇到的第一个路由器的地方被丢弃</strong>。由于目标地址47.95.28.98是外网地址，肯定至少存在一个路由器，因此这个数据包不会到达目的地。</p>
+<p>(2)第二个数据包： 192.168.137.1 –&gt;192.168.137.44</p>
+<p><img src="/2021/04/15/2021-04-15/26.png" alt="img"></p>
+<p>​       此数据包是在前往目的地的路径上，第一个路由器发回的reply响应。由于第一个数据包到达192.168.137.1后，TTL的值变成了0，因此就不能够继续传输，此时路由器就回复了一个ICMP响应。这个数据包的类型是11，代码是0，告诉我们这个数据包的TTL在传输中超时，所以目标地址不可达。</p>
+<p>​    <strong>ICMP双头包：</strong>在ICMP的结尾部分包含了原echo请求的IP头和ICMP数据的拷贝。因此这个数据包也被叫做ICMP双头包，表示包含有两个ICMP的包头信息。双包头信息在网络故障检修的时候会非常有用。</p>
+<p>(3)第三个数据包：找192.168.137.44</p>
+<p><img src="/2021/04/15/2021-04-15/27.png" alt="img"></p>
+<p>​        TTL为2，保证此数据包到达第二跳的路由。但是即便TTL的值变成了2，从下面的数据包来看，它也是无法到达目的地，直至TTL的值增长到9，这个数据包才到达了目的地。</p>
+<p>(4)响应： 192.168.137.1 –&gt;10.170.72.254</p>
+<p><img src="/2021/04/15/2021-04-15/28.png" alt="img"></p>
+<p>为何在此之前由两个数据包TTL为3呢？说明第二跳已经找到，开始物色第三跳，只不过回应时间稍长而已。</p>
+<p>(5)找第三跳</p>
+<p>(6)第三跳响应：172.16.255.242–&gt;192.168.137.44</p>
+<p><img src="/2021/04/15/2021-04-15/29.png" alt="img"></p>
+<p>(6)第四跳响应：113.140.11.97–&gt;192.168.137.44</p>
+<p>之后如上</p>
+<h1 id="0x03-地址解析协议ARP"><a href="#0x03-地址解析协议ARP" class="headerlink" title="0x03　地址解析协议ARP**"></a>0x03　地址解析协议ARP**</h1><p><strong>1.ARP简介</strong></p>
+<p>​          ARP：<strong>IP地址解析为物理地址</strong>（MAC地址）。这里之所以需要使用MAC地址，是因为网络中用于连接各个设备的交换机使用了内容可寻址存储器（CAM，Coment Addressable Memory）。该存储器维护的ARP表列出了它在每一个端口的所有连接设备的MAC地址。</p>
+<p>​         当<strong>交换机</strong>收到了一个指向特定MAC地址的网络流量，它就会使用这个表，来确定应该使用哪一个端口发送流量。如果目标MAC地址是未知的，那么这个传输设备会首先在它的缓存中查找这个地址，如果没有找到，那么这个地址就需要通过在网络上额外的通信中解析了。或者我们可以结合下图来说明这个问题：</p>
+<p><img src="/2021/04/15/2021-04-15/31.png" alt="img"></p>
+<p>​             OSI模型将网络分为了七层，而IP地址位于第三层，也就是网络层，MAC地址位于数据链路层，也就是第二层。那么在通过以太网发送IP数据包的时候，需要首先封装第三层和第二层的报头。但由于发送数据包时只知道目标IP地址，不知道其MAC地址，而又不能直接跨越第二、三层，所以需要地址解析协议。而在使用了ARP协议后，计算机可以按照网络层IP数据包的头部信息，将硬件地址信息（MAC地址）对应起来，以保证通信的顺利进行。ARP协议的基本功能就是将一个已知的IP地址解析成MAC地址，以便主机之间可以正常地通信。</p>
+<p>​            ARP协议是在RFC826中定义的。<strong>RFC（Request for Comments）是定义各种协议实现标准的官方文档</strong>。可在RFC Editor的首页搜索RFC文档。</p>
+<p><strong>2.工作原理</strong></p>
+<p>通过查看RFC826可以知道，其实ARP协议的解析过程只使用了两种数据包：一个ARP请求和一个ARP响应，如下图所示：</p>
+<p><img src="/2021/04/15/2021-04-15/32.png" alt="img"></p>
+<p>其详细工作原理为：</p>
+<p>（1）当主机A想要给主机B发送数据时，主机A会首先在自己的<strong>本地ARP缓存表</strong>中检查与主机B相匹配的MAC地址。</p>
+<p>（2）如果主机A在自己的缓存表中没找到主机B的相关条目，那么它就要想办法获取主机B的MAC地址。这就需要将<strong>ARP的请求帧广播</strong>到本地网络上的所有主机中。这个请求<strong>帧包含有主机A的IP地址和MAC地址，以及主机B的IP地址</strong>。网络中凡是收到请求帧的主机都会检查自己的IP地址是否与请求地址一致，如果不一致，则会丢弃该请求帧。对于上图来说，主机C和主机D会丢弃主机A发出的请求帧。</p>
+<p>（3）主机B确定ARP请求中的IP地址和自己的IP地址一致，那么就会<strong>将主机A的IP地址和MAC地址添加到本地的缓存列表中</strong>。</p>
+<p>（4）主机B将包含有自己<strong>MAC地址的ARP响应消息直接回复给主机A（单播）</strong>。</p>
+<p>（5）主机A收到从主机B发来的ARP响应消息后，会<strong>将主机B的IP地址和MAC地址添加到自己的ARP缓存表中</strong>。接下来，主机A就可以向主机B发送消息了。</p>
+<p><strong>二、利用Wireshark抓取ARP包</strong></p>
+<p>查找局域网内IP：for /L %i IN (1,1,254) DO ping -w 2 -n 1 192.168.9.%i</p>
+<p>​                                 arp -a</p>
+<p><strong>1.ARP分析</strong></p>
+<p>ARP缓存表如下：</p>
+<p>本机所在局域网的ARP缓存表为192.168.9.20,每行表示一个ARP条目。缓存表有效期为１２０秒</p>
+<p><strong>主机启动时会主动发送ARP应答 刷新邻居的ARP缓存</strong></p>
+<p><img src="/2021/04/15/2021-04-15/33.png" alt="img"></p>
+<p><strong>(1)ARP请求包request</strong></p>
+<p><img src="/2021/04/15/2021-04-15/34.png" alt="img"></p>
+<p>１.Ethernet：数据包目的地址是ff:ff:ff:ff:ff:ff，广播地址，说明当前数据包会被广播到当前网段中的所有设备上。</p>
+<p>２.ARP请求的头部信息：硬件类型、协议类型、硬件地址长度、协议长度、</p>
+<p>３.操作码（该值为1，表示这是一个ARP请求包）、发送方的MAC和IP地址，以及接收方的IP地址。</p>
+<p>４.目标MAC地址还是未知的，因此就以全0的形式显示。</p>
+<p><strong>(2)ARP reply响应包</strong></p>
+<p><img src="/2021/04/15/2021-04-15/35.png" alt="img"></p>
+<p>１.目标MAC地址已更新</p>
+<p>２.操作码（Opcode）现在是2，表明这是一个用于响应的数据</p>
+<p><strong>（３）免费的ARP</strong></p>
+<p><img src="/2021/04/15/2021-04-15/36.png" alt="img"></p>
+<ol>
+<li>以广播的形式发出，网络上的所有主机都能收到它。</li>
+<li>发送方的IP地址和接收方的IP地址是一致的。网络中的其它主机收到这个数据包之后，它会让这些主机使用新的IP和MAC地址映射关系来更新它们的ARP表。</li>
+<li>由于这个ARP数据包是源主机未经请求主动发出的，并导致了目标主机更新了ARP缓存，所以称之为免费的ARP。</li>
+</ol>
+<p><strong>2.安全问题</strong></p>
+<p>​       ARP协议本身广播不验证的特点就决定了它易于攻击</p>
+<ol>
+<li>DDoS：用户可以利用操作系统规定的ICMP数据包的最大尺寸不超过64K这个规定，向网络上的主机发起Ping of Death攻击。因为当ICMP数据包的大小超过64K的时候，目标主机就有可能出现内存分配的错误的情况，导致TCP/IP堆栈崩溃，使得主机死机。</li>
+<li>ARP欺骗：向目标主机连续、大量地发送假的ARP数据包。</li>
+</ol>
+
+    </div>
+
+    
+    
+    
+        
+
+<div>
+<ul class="post-copyright">
+  <li class="post-copyright-author">
+    <strong>本文作者： </strong>swanQ
+  </li>
+  <li class="post-copyright-link">
+    <strong>本文链接：</strong>
+    <a href="http://swanq.top/2021/04/15/2021-04-15/" title="一篇文章搞懂所有协议">http://swanq.top/2021/04/15/2021-04-15/</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>版权声明： </strong>本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" rel="noopener" target="_blank"><i class="fab fa-fw fa-creative-commons"></i>BY-NC-SA</a> 许可协议。转载请注明出处！
+  </li>
+</ul>
+</div>
+
+	  <div>
+      
+       <div>
+    
+        <div style="text-align:center;color: #ccc;font-size:14px;">你想在文章末尾对读者说的话</div>
+    
+</div>
+      
+      </div>
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/web%E5%AE%89%E5%85%A8/" rel="tag"># web安全</a>
+              <a href="/tags/%E7%BD%91%E7%BB%9C%E5%8D%8F%E8%AE%AE/" rel="tag"># 网络协议</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2021/04/13/2021-04-13/" rel="prev" title="一篇文章带你读懂sql注入">
+      <i class="fa fa-chevron-left"></i> 一篇文章带你读懂sql注入
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2021/04/15/MYSQL%E6%8F%90%E6%9D%83%E6%80%BB%E7%BB%93/" rel="next" title="MYSQL提权总结">
+      MYSQL提权总结 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#0x01-DHCP%E5%8D%8F%E8%AE%AE"><span class="nav-number">1.</span> <span class="nav-text">0x01 DHCP协议</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#0x02-ICMP%E5%8D%8F%E8%AE%AE"><span class="nav-number">2.</span> <span class="nav-text">0x02　ICMP协议</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#0x03-%E5%9C%B0%E5%9D%80%E8%A7%A3%E6%9E%90%E5%8D%8F%E8%AE%AEARP"><span class="nav-number">3.</span> <span class="nav-text">0x03　地址解析协议ARP**</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="swanQ"
+      src="/images/author.jpg">
+  <p class="site-author-name" itemprop="name">swanQ</p>
+  <div class="site-description" itemprop="description">Try & Enjoy</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">10</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+        <span class="site-state-item-count">3</span>
+        <span class="site-state-item-name">分类</span>
+      </div>
+      <div class="site-state-item site-state-tags">
+        <span class="site-state-item-count">19</span>
+        <span class="site-state-item-name">标签</span>
+      </div>
+  </nav>
+</div>
+  <div class="sidebar-button motion-element"><i class="fa fa-comment"></i>
+    聊天
+  </a>
+  </div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/swanQs" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;swanQs" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:zhuoma.swanq@foxmail.com" title="E-Mail → mailto:zhuoma.swanq@foxmail.com" rel="noopener" target="_blank"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+  </div>
+  <div class="cc-license motion-element" itemprop="license">
+    <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" class="cc-opacity" rel="noopener" target="_blank"><img src="/images/cc-by-nc-sa.svg" alt="Creative Commons"></a>
+  </div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">swanQ</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Gemini</a> 强力驱动
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script size="300" alpha="0.6" zIndex="-1" src="/lib/canvas-ribbon/canvas-ribbon.js"></script>
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+<script src="/live2dw/lib/L2Dwidget.min.js?094cbace49a39548bed64abff5988b05"></script><script>L2Dwidget.init({"log":false,"pluginJsPath":"lib/","pluginModelPath":"assets/","pluginRootPath":"live2dw/","tagMode":false});</script></body>
+<script type="text/javascript" src="/js/src/clicklove.js"></script>
+</html>

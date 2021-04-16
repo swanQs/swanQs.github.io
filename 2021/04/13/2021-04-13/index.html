@@ -20,18 +20,16 @@
     var CONFIG = {"hostname":"swanq.top","root":"/","scheme":"Gemini","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":true,"show_result":true,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
   </script>
 
-  <meta name="description" content="0x01 前言在本篇随笔当中将会介绍什么是SQL注入，如何查找和利用SQL注入及如何防止SQL注入  0x02 SQL注入原理：客户端提交的表单数据被拼接到数据库的查询语句当中,被当作SQL语句的一部分执行。 SQL injection is a web security vulnerability that allows an attacker to  interfere with querie">
+  <meta name="description" content="0x01 前言在本篇随笔当中将会介绍什么是SQL注入，如何查找和利用SQL注入及如何防止SQL注入  0x02 SQL注入1. 原理：客户端提交的表单数据被拼接到数据库的查询语句当中,被当作SQL语句的一部分执行。 SQL injection is a web security vulnerability that allows an attacker to  interfere with que">
 <meta property="og:type" content="article">
 <meta property="og:title" content="一篇文章带你读懂sql注入">
 <meta property="og:url" content="http://swanq.top/2021/04/13/2021-04-13/index.html">
 <meta property="og:site_name" content="SwanQ&#39;s blog">
-<meta property="og:description" content="0x01 前言在本篇随笔当中将会介绍什么是SQL注入，如何查找和利用SQL注入及如何防止SQL注入  0x02 SQL注入原理：客户端提交的表单数据被拼接到数据库的查询语句当中,被当作SQL语句的一部分执行。 SQL injection is a web security vulnerability that allows an attacker to  interfere with querie">
+<meta property="og:description" content="0x01 前言在本篇随笔当中将会介绍什么是SQL注入，如何查找和利用SQL注入及如何防止SQL注入  0x02 SQL注入1. 原理：客户端提交的表单数据被拼接到数据库的查询语句当中,被当作SQL语句的一部分执行。 SQL injection is a web security vulnerability that allows an attacker to  interfere with que">
 <meta property="og:locale" content="zh_CN">
 <meta property="og:image" content="http://swanq.top/2021/04/13/2021-04-13/1.jpg">
-<meta property="og:image" content="http://swanq.top/2021/04/13/2021-04-13/2.jpg">
-<meta property="og:image" content="http://swanq.top/2021/04/13/2021-04-13/5.jpg">
 <meta property="article:published_time" content="2021-04-13T12:00:01.000Z">
-<meta property="article:modified_time" content="2021-04-15T01:12:25.904Z">
+<meta property="article:modified_time" content="2021-04-15T13:57:08.239Z">
 <meta property="article:author" content="swanQ">
 <meta property="article:tag" content="web安全">
 <meta property="article:tag" content="网络安全">
@@ -133,7 +131,7 @@
   </li>
         <li class="menu-item menu-item-tags">
 
-    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签<span class="badge">16</span></a>
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签<span class="badge">19</span></a>
 
   </li>
         <li class="menu-item menu-item-categories">
@@ -143,7 +141,7 @@
   </li>
         <li class="menu-item menu-item-archives">
 
-    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档<span class="badge">8</span></a>
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档<span class="badge">10</span></a>
 
   </li>
   </ul>
@@ -206,7 +204,7 @@
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2021-04-15 09:12:25" itemprop="dateModified" datetime="2021-04-15T09:12:25+08:00">2021-04-15</time>
+                <time title="修改时间：2021-04-15 21:57:08" itemprop="dateModified" datetime="2021-04-15T21:57:08+08:00">2021-04-15</time>
               </span>
 
           
@@ -222,177 +220,134 @@
       
         <h1 id="0x01-前言"><a href="#0x01-前言" class="headerlink" title="0x01 前言"></a>0x01 前言</h1><p>在本篇随笔当中将会介绍什么是SQL注入，如何查找和利用SQL注入及如何防止SQL注入</p>
 <p><img src="/2021/04/13/2021-04-13/1.jpg"></p>
-<h1 id="0x02-SQL注入"><a href="#0x02-SQL注入" class="headerlink" title="0x02 SQL注入"></a>0x02 SQL注入</h1><h4 id="原理："><a href="#原理：" class="headerlink" title="原理："></a><strong>原理</strong>：</h4><p>客户端提交的表单数据被拼接到数据库的查询语句当中,被当作SQL语句的一部分执行。</p>
+<h1 id="0x02-SQL注入"><a href="#0x02-SQL注入" class="headerlink" title="0x02 SQL注入"></a>0x02 SQL注入</h1><h2 id="1-原理："><a href="#1-原理：" class="headerlink" title="1. 原理："></a>1. 原理：</h2><p>客户端提交的表单数据被拼接到数据库的查询语句当中,被当作SQL语句的一部分执行。</p>
 <p>SQL injection is a web security vulnerability that allows an attacker to  interfere with queries that an application  makes to its databases.It generally allows an attacker to view  data that not normally able to retrive.</p>
-<h4 id="危害："><a href="#危害：" class="headerlink" title="危害："></a><strong>危害</strong>：</h4><p>数据库信息泄漏、网页篡改、服务器被远程控制，被安装后门、网站被挂马，传播恶意软件(修改数据库一些字段的值，嵌入网马链接，进行挂马攻击)、数据库被恶意操作(数据库服务器被攻击，数据库的系统管理员帐户被窜改)、破坏硬盘数据，瘫痪全系统。</p>
-<h4 id="基本流程："><a href="#基本流程：" class="headerlink" title="基本流程："></a>基本流程：</h4><ol>
-<li>判断是否有注入点</li>
-<li>获取数据库基本信息</li>
-<li>获取数据库库名</li>
-<li>获取数据库表名</li>
-<li>获取数据库列名</li>
-<li>获取用户信息</li>
-<li>破解数据</li>
-<li>提升权限</li>
-<li>内网渗透</li>
-</ol>
-<p>数据库分关系型数据库和非关系型数据库。</p>
-<p><strong>关系型数据库</strong>：</p>
-<p>主要代表：Mysql、SQL Server、Oracle、PostgreSQL。</p>
-<p><strong>1.概念</strong></p>
-<p>关系型数据库是指采用了二维表格模型这种关系模型来组织数据的数据库。支持联表查询、使用正则表达式查询、嵌套查询，还可写独立的SQL脚本</p>
-<p><strong>2.优点</strong></p>
-<p>（1）容易理解，二维表的结构非常贴近现实世界，二维表格，容易理解。</p>
-<p>（2）使用方便，通用的sql语句使得操作关系型数据库非常方便。</p>
-<p>（3）易于维护，数据库的ACID属性，大大降低了数据冗余和数据不一致的概率。</p>
-<p><strong>3.瓶颈</strong></p>
-<p>(1 )海量数据的硬盘I/O读写效率。</p>
-<p>(2) 高扩展性和可用性。难以横向拓展的，数据库没有办法像web Server那样简单的通过添加更多的硬件和服务节点来拓展性能和负载能力。</p>
-<p><strong>非关系型数据库</strong></p>
-<p><strong>1.概念</strong></p>
-<p>主要代表MongoDB，Redis、CouchDB。</p>
-<p>NoSQL非关系型数据库，主要指那些非关系型的、分布式的，且一般不保证ACID的数据存储系统。NoSQL以键值来存储，且结构不稳定，每个元组字段不同，不局限于固定结构，可以减少时间和空间开销。获取用户的不同信息时，仅需要根据key来取出对应的value值即可。</p>
-<p><strong>2.分类</strong></p>
-<p>非关系数据库大部分是开源的，实现比较简单，大都是针对一些特性的应用需求出现的。根据结构化方法和应用场景的不同，分为以下几类。</p>
-<p>（1）面向高性能并发读写的key-value数据库</p>
-<p>主要特点是具有极高的并发读写性能，例如Redis、Tokyo Cabint等。</p>
-<p>（2）面向海量数据访问的面向文档数据库</p>
-<p>特点是，可以在海量的数据库快速的查询数据。例如MongoDB以及CouchDB.</p>
-<p>（3）面向可拓展的分布式数据库</p>
-<p>解决的主要问题是传统数据库的扩展性上的缺陷。</p>
-<p><strong>3.缺点</strong></p>
-<p>不能像sql提供where字段的查询。适合存储较为简单的数据。有一些不能持久化数据，需要和关系型数据库结合。</p>
-<p>本文主要面对mysql，众所周知,mysql针对不同的存储需求，会去选择最优的存储引擎。存储引擎就是存储数据、建立索引、更新查询数据等的实现方式。好像扯多了。来看看与sqli相关的系统函数</p>
-<h2 id="1-常见函数："><a href="#1-常见函数：" class="headerlink" title="1. 常见函数："></a>1. 常见函数：</h2><ol>
-<li><p>version() MySQL 版本 select version()</p>
+<h2 id="2-危害："><a href="#2-危害：" class="headerlink" title="2. 危害："></a>2. 危害：</h2><p>数据库信息泄漏、网页篡改、服务器被远程控制，被安装后门、网站被挂马，传播恶意软件(修改数据库一些字段的值，嵌入网马链接，进行挂马攻击)、数据库被恶意操作(数据库服务器被攻击，数据库的系统管理员帐户被窜改)、破坏硬盘数据，瘫痪全系统。</p>
+<h2 id="3-相关-可跳过"><a href="#3-相关-可跳过" class="headerlink" title="3.相关(可跳过)"></a>3.相关(可跳过)</h2><h3 id="a-数据库分类："><a href="#a-数据库分类：" class="headerlink" title="a.数据库分类："></a>a.数据库分类：</h3><p>数据库分关系型数据库和非关系型数据库。</p>
+<p><strong>关系型数据库</strong>：主要代表：Mysql、SQL Server、Oracle、PostgreSQL。关系型数据库是指采用了二维表格模型这种关系模型来组织数据的数据库。支持联表查询、使用正则表达式查询、嵌套查询，还可写独立的SQL脚本</p>
+<p><strong>非关系型数据库</strong>：主要代表MongoDB，Redis、CouchDB。NoSQL非关系型数据库，主要指那些非关系型的、分布式的，且一般不保证ACID的数据存储系统。NoSQL以键值来存储，且结构不稳定，每个元组字段不同，不局限于固定结构，可以减少时间和空间开销。获取用户的不同信息时，仅需要根据key来取出对应的value值即可。</p>
+<p>其中，</p>
+<ul>
+<li><p>PHP搭建的Web应用后端为MySQL</p>
 </li>
-<li><p>user() 数据库用户名</p>
+<li><p>JSP搭建的Web应用后端为Oracle</p>
 </li>
-<li><p>database() 数据库名 select databases;</p>
+<li><p>ASP搭建的Web应用后端为MSSQL</p>
 </li>
-<li><p>@@datadir 返回数据库的存储目录 select @@datadir;</p>
-</li>
-<li><p>@@version_compile_os 操作系统版本 select @@version_compile_os;</p>
-</li>
-<li><p>SQL 注释语句 (“–”与”/<em>…</em>/“)</p>
-<p>(1)–表示单行注释</p>
-<p>(2)/*…*/用于多行(块)注释</p>
-</li>
-<li><p>concat(str1,str2,…) 没有分隔符地连接字符串，如有任何一个参数为NULL ，则返回值为 NULL</p>
-</li>
-<li><p>concat_ws(separator,str1,str2,…) 含有分隔符地连接字符串</p>
-</li>
-<li><p>group_concat(str1,str2,…) 连接一个组的所有字符串，并以逗号分隔每条数据</p>
-</li>
-<li><p>mid();  substr(); substring()-从一个字符串中截取指定数量的字符</p>
-</li>
-<li><p>limit()  从某个值开始，取出之后的N条数据的语法 (返回结果中的前几条数据或者中间的数据) select * from 表名 limit M,N;m是:指从m位开始(第一位为0)         n是:指取n条</p>
-</li>
-<li><p>order by 默认按照升序对记录进行排序， ORDER BY Company (DESC)</p>
-</li>
-<li><p>group by 结合合计函数，根据一个或多个列对结果集进行分组</p>
-</li>
-<li><p>sleep() select sleep(N)可以让此语句运行N秒钟</p>
-</li>
-<li><p>if() 语法：IF(expr1,expr2,expr3) 其中，expr1是判断条件，expr2和expr3是符合expr1的自定义的返回结果。</p>
-</li>
-<li><p>left() LEFT(str,len) 返回最左边的n个字符的字符串str，或NULL如果任何参数是NULL</p>
-</li>
-<li><p>count() COUNT(column_name) 语法 COUNT(column_name) 函数返回指定列的值的数目(NULL 不计入)</p>
-</li>
-<li><p>round()  四舍五入一个正数或者负数，结果为一定长度的值</p>
-</li>
-<li><p>hex() 16进制编码 select hex(‘dvwa’)  //编码         select unhex(‘64767761’)  //解码         </p>
-<p>select 0x64767761  //16进制解码</p>
-</li>
-<li><p>ascii(arg)/ord（arg） ：返回目标字符对应的ASCII码，注意：arg为单个字符。     语句：select ascii(‘a’)  </p>
-</li>
-<li><p>char(arg)：返回ASCII码只对应的字符     语句：select char（97）</p>
-</li>
-<li><p>hex()：将目标字符串装换成16进制格式的数据     语句： select hex(“dvwa”)</p>
-</li>
-<li><p>unhex()：将16进制格式的数据装换成原字符串</p>
-<pre><code>语句：unhex(64767761) 
+</ul>
+<h3 id="b-常见函数："><a href="#b-常见函数：" class="headerlink" title="b.  常见函数："></a>b.  常见函数：</h3><ol>
+<li><pre><code>1. version() MySQL 版本 select version()
+
+2. user() 数据库用户名
+
+3. database() 数据库名 select databases;
+
+4. @@datadir 返回数据库的存储目录 select @@datadir;
+
+5. @@version_compile_os 操作系统版本 select @@version_compile_os;
+
+6. SQL 注释语句 (&quot;--&quot;与&quot;/*...*/&quot;)
+
+   (1)#
+   (2)--       表示单行注释
+   (3) /*comment*/    用于多行(块)注释 
+   (4)/*! MYSQL Special SQL */
+    
+
+7. concat(str1,str2,...) 没有分隔符地连接字符串，如有任何一个参数为NULL ，则返回值为 NULL
+
+8. concat_ws(separator,str1,str2,...) 含有分隔符地连接字符串
+
+9. group_concat(str1,str2,...) 连接一个组的所有字符串，并以逗号分隔每条数据
+
+10. mid();  substr(); substring()-从一个字符串中截取指定数量的字符
+
+11. limit()  从某个值开始，取出之后的N条数据的语法 (返回结果中的前几条数据或者中间的数据) select * from 表名 limit M,N;m是:指从m位开始(第一位为0)         n是:指取n条
+
+12. order by 默认按照升序对记录进行排序， ORDER BY Company (DESC)
+
+13. group by 结合合计函数，根据一个或多个列对结果集进行分组
+
+14. sleep() select sleep(N)可以让此语句运行N秒钟
+
+15. if() 语法：IF(expr1,expr2,expr3) 其中，expr1是判断条件，expr2和expr3是符合expr1的自定义的返回结果。
+
+16. left() LEFT(str,len) 返回最左边的n个字符的字符串str，或NULL如果任何参数是NULL
+
+17. count() COUNT(column_name) 语法 COUNT(column_name) 函数返回指定列的值的数目(NULL 不计入)
+
+18. round()  四舍五入一个正数或者负数，结果为一定长度的值
+
+19. hex() 16进制编码 select hex(&#39;dvwa&#39;)  //编码         select unhex(&#39;64767761&#39;)  //解码         
+
+    select 0x64767761  //16进制解码
+
+20. ascii(arg)/ord（arg） ：返回目标字符对应的ASCII码，注意：arg为单个字符。     语句：select ascii(‘a’)  
+
+21. char(arg)：返回ASCII码只对应的字符     语句：select char（97）
+
+22. hex()：将目标字符串装换成16进制格式的数据     语句： select hex(“dvwa”)
+
+23. unhex()：将16进制格式的数据装换成原字符串
+        语句：unhex(64767761) 
+
+24. load_file()读取文件
+
+25. floor()返回小于或等于X的最大整数
+
+26. strcmp() 比较两个字符串ascii值的大小（大小写不敏感）
+
+27. exp()返回e的X次方
+28.  Mysql可以使用的空白字符：
+    %09
+    %0a
+    %0b
+    %0c
+    %0d
+    %20
+    %a0
+    /**/
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line">### c. 常用语句：</span><br><span class="line"></span><br><span class="line">- 查库</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+select schema_name from imformation_schema.schemata;
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line">- 查表</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+select schema_table from information_schema.tables where schema_name=&#39;security&#39;;
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line">- 查字段</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+select colunm_name from information_schema.colunms where table_name=users and table_schema=&#39;security&#39;;
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line">- 查数据</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+select * from security.users;
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"></span><br><span class="line">## 4. 基本流程：</span><br><span class="line"></span><br><span class="line">1. 判断是否有注入点</span><br><span class="line">2. 获取数据库基本信息</span><br><span class="line">3. 获取数据库库名</span><br><span class="line">4. 获取数据库表名</span><br><span class="line">5. 获取数据库列名</span><br><span class="line">6. 获取用户信息</span><br><span class="line">7. 破解数据</span><br><span class="line">8. 提升权限</span><br><span class="line">9. 内网渗透</span><br><span class="line"></span><br><span class="line">## 5. 注入分类</span><br><span class="line"></span><br><span class="line">数字型注入:注入的参数为整数</span><br><span class="line"></span><br><span class="line">字符型注入：注入的参数为字符&#x2F;串</span><br><span class="line"></span><br><span class="line">POST注入：注入字段在POST数据中</span><br><span class="line"></span><br><span class="line">Cookie注入：注入字段在Cookie数据中</span><br><span class="line"></span><br><span class="line">延迟注入：使用数据库延迟特性进行注入</span><br><span class="line"></span><br><span class="line">搜索注入：在搜索栏中利用恶意代码进行注入</span><br><span class="line"></span><br><span class="line">base64注入：注入字符串经过base64加密</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"></span><br><span class="line">## 3. 注入分类：</span><br><span class="line"></span><br><span class="line">联合查询（union）注入、布尔盲注(base on boolian)、时间盲注(base on time)、报错信息注入、宽字节注入、偏移注入等。</span><br><span class="line"></span><br><span class="line">### 1.Retrieving hidden data</span><br><span class="line"></span><br><span class="line">[where子句的SQLi允许查询隐藏数据](https:&#x2F;&#x2F;ac991fcc1e603304800c031d001b00e5.web-security-academy.net&#x2F;filter?category&#x3D;Gifts)</span><br><span class="line"></span><br><span class="line">* 测试是否存在注入：&#39;   &#39;&#39;，内部服务器错误，存在sql注入。</span><br><span class="line"></span><br><span class="line">![](2.jpg)</span><br><span class="line"></span><br><span class="line">* 数据库正常查询语句：</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+SELECT * FROM products WHERE category = &#39;pets&#39; AND release = 1
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line">* 加单&#x2F;双引号测试注入:内部服务器报错</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+SELECT * FROM products WHERE category = &#39;&#39;&#39; AND release = 1
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line">* 加双连接符注释掉后面内容：无category为空的内容</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+SELECT * FROM products WHERE category = &#39;&#39;--&#39; AND release = 1
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line">* 加入真命题，返回全部内容，包含发布与未发布的。release&#x3D;1代表已发布的。</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+SELECT * FROM products WHERE category = &#39;&#39; or 1=1 --&#39; AND release = 1
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line">### 2.Subverting application logic</span><br><span class="line"></span><br><span class="line">[登陆绕过](https:&#x2F;&#x2F;portswigger.net&#x2F;web-security&#x2F;sql-injection&#x2F;lab-login-bypass)</span><br><span class="line"></span><br><span class="line">![](5.jpg)</span><br><span class="line"></span><br><span class="line">与上面相同，这里不再过多赘述</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+正常查询语句：
+SELECT firstname FROM users WHERE  username = &#39;administrator&#39; AND password = &#39;admin&#39;
+测试：
+SELECT firstname FROM users WHERE  username = &#39;&#39;&#39; AND password = &#39;admin&#39;
+注释后成功注入：
+SELECT firstname FROM users WHERE  username = &#39;administrator&#39;-- AND password = &#39;admin&#39;
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"></span><br><span class="line"></span><br><span class="line">### 3.UNION attacks, where you can retrieve data from different database tables.</span><br><span class="line"></span><br><span class="line">从数据库表中检索数据：</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+正常查询：
+SELECT name,description FROM products WHERE category = &#39;GIFTS&#39;
+查询其他数据：
+SELECT name,description FROM products WHERE category = &#39;&#39;UNION SELECT username, password FROM users--
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line">union对原始查询结果追加多个额外的&#96;SELECT&#96;查询。必须满足：</span><br><span class="line"></span><br><span class="line">* 各个查询列数量相同。</span><br><span class="line">* 每个列中的数据类型相同。</span><br><span class="line"></span><br><span class="line">要进行union注入的前提是，知道原始查询返回的列数、原始查询中返回的哪些列的数据类型比较适合保存注入的结果。</span><br><span class="line"></span><br><span class="line">首先需要确定列数：</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+&#39; ORDER BY 1--
+&#39; ORDER BY 2--
+&#39; ORDER BY 3--
+etc.
+//NULL可以转换为每种常用的数据类型
+&#39; UNION SELECT NULL--
+&#39; UNION SELECT NULL,NULL--
+&#39; UNION SELECT NULL,NULL,NULL--
+etc.
 </code></pre>
 </li>
-<li><p>load_file()读取文件</p>
-</li>
-<li><p>floor()返回小于或等于X的最大整数</p>
-</li>
-<li><p>strcmp() 比较两个字符串ascii值的大小（大小写不敏感）</p>
-</li>
-<li><p>exp()返回e的X次方</p>
-</li>
 </ol>
-<h2 id="2-常用语句："><a href="#2-常用语句：" class="headerlink" title="2. 常用语句："></a>2. 常用语句：</h2><ul>
-<li>查库</li>
-</ul>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">select schema_name from imformation_schema.schemata;</span><br></pre></td></tr></table></figure>
-
-<ul>
-<li>查表</li>
-</ul>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">select schema_table from information_schema.tables where schema_name&#x3D;&#39;security&#39;;</span><br></pre></td></tr></table></figure>
-
-<ul>
-<li>查字段</li>
-</ul>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">select colunm_name from information_schema.colunms where table_name&#x3D;users and table_schema&#x3D;&#39;security&#39;;</span><br></pre></td></tr></table></figure>
-
-<ul>
-<li>查数据</li>
-</ul>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">select * from security.users;</span><br></pre></td></tr></table></figure>
-
-
-
-<h2 id="3-注入分类："><a href="#3-注入分类：" class="headerlink" title="3. 注入分类："></a>3. 注入分类：</h2><p>联合查询（union）注入、布尔盲注(base on boolian)、时间盲注(base on time)、报错信息注入、宽字节注入、偏移注入等。</p>
-<h3 id="1-Retrieving-hidden-data"><a href="#1-Retrieving-hidden-data" class="headerlink" title="1.Retrieving hidden data"></a>1.Retrieving hidden data</h3><p><a target="_blank" rel="noopener" href="https://ac991fcc1e603304800c031d001b00e5.web-security-academy.net/filter?category=Gifts">where子句的SQLi允许查询隐藏数据</a></p>
-<ul>
-<li>测试是否存在注入：’   ‘’，内部服务器错误，存在sql注入。</li>
-</ul>
-<p><img src="/2021/04/13/2021-04-13/2.jpg"></p>
-<ul>
-<li>数据库正常查询语句：</li>
-</ul>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">SELECT * FROM products WHERE category &#x3D; &#39;pets&#39; AND release &#x3D; 1</span><br></pre></td></tr></table></figure>
-
-<ul>
-<li>加单/双引号测试注入:内部服务器报错</li>
-</ul>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">SELECT * FROM products WHERE category &#x3D; &#39;&#39;&#39; AND release &#x3D; 1</span><br></pre></td></tr></table></figure>
-
-<ul>
-<li>加双连接符注释掉后面内容：无category为空的内容</li>
-</ul>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">SELECT * FROM products WHERE category &#x3D; &#39;&#39;--&#39; AND release &#x3D; 1</span><br></pre></td></tr></table></figure>
-
-<ul>
-<li>加入真命题，返回全部内容，包含发布与未发布的。release=1代表已发布的。</li>
-</ul>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">SELECT * FROM products WHERE category &#x3D; &#39;&#39; or 1&#x3D;1 --&#39; AND release &#x3D; 1</span><br></pre></td></tr></table></figure>
-
-<h3 id="2-Subverting-application-logic"><a href="#2-Subverting-application-logic" class="headerlink" title="2.Subverting application logic"></a>2.Subverting application logic</h3><p><a target="_blank" rel="noopener" href="https://portswigger.net/web-security/sql-injection/lab-login-bypass">登陆绕过</a></p>
-<p><img src="/2021/04/13/2021-04-13/5.jpg"></p>
-<p>与上面相同，这里不再过多赘述</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">正常查询语句：</span><br><span class="line">SELECT firstname FROM users WHERE  username &#x3D; &#39;administrator&#39; AND password &#x3D; &#39;admin&#39;</span><br><span class="line">测试：</span><br><span class="line">SELECT firstname FROM users WHERE  username &#x3D; &#39;&#39;&#39; AND password &#x3D; &#39;admin&#39;</span><br><span class="line">注释后成功注入：</span><br><span class="line">SELECT firstname FROM users WHERE  username &#x3D; &#39;administrator&#39;-- AND password &#x3D; &#39;admin&#39;</span><br></pre></td></tr></table></figure>
-
-
-
-<h3 id="3-UNION-attacks-where-you-can-retrieve-data-from-different-database-tables"><a href="#3-UNION-attacks-where-you-can-retrieve-data-from-different-database-tables" class="headerlink" title="3.UNION attacks, where you can retrieve data from different database tables."></a>3.UNION attacks, where you can retrieve data from different database tables.</h3><p>从数据库表中检索数据：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">正常查询：</span><br><span class="line">SELECT name,description FROM products WHERE category &#x3D; &#39;GIFTS&#39;</span><br><span class="line">查询其他数据：</span><br><span class="line">SELECT name,description FROM products WHERE category &#x3D; &#39;&#39;UNION SELECT username, password FROM users--</span><br></pre></td></tr></table></figure>
-
-<p>union对原始查询结果追加多个额外的<code>SELECT</code>查询。必须满足：</p>
-<ul>
-<li>各个查询列数量相同。</li>
-<li>每个列中的数据类型相同。</li>
-</ul>
-<p>要进行union注入的前提是，知道原始查询返回的列数、原始查询中返回的哪些列的数据类型比较适合保存注入的结果。</p>
-<p>首先需要确定列数：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">&#39; ORDER BY 1--</span><br><span class="line">&#39; ORDER BY 2--</span><br><span class="line">&#39; ORDER BY 3--</span><br><span class="line">etc.</span><br><span class="line">&#x2F;&#x2F;NULL可以转换为每种常用的数据类型</span><br><span class="line">&#39; UNION SELECT NULL--</span><br><span class="line">&#39; UNION SELECT NULL,NULL--</span><br><span class="line">&#39; UNION SELECT NULL,NULL,NULL--</span><br><span class="line">etc.</span><br></pre></td></tr></table></figure>
-
-
-
 <h3 id="4-Examining-the-database-where-you-can-extract-information-about-the-version-and-structure-of-the-database"><a href="#4-Examining-the-database-where-you-can-extract-information-about-the-version-and-structure-of-the-database" class="headerlink" title="4.Examining the database, where you can extract information about the version and structure of the database."></a>4.Examining the database, where you can extract information about the version and structure of the database.</h3><h3 id="5-Blind-SQL-injection"><a href="#5-Blind-SQL-injection" class="headerlink" title="5.Blind SQL injection"></a>5.Blind SQL injection</h3><h1 id="0x03-SQLMAP源码分析"><a href="#0x03-SQLMAP源码分析" class="headerlink" title="0x03 SQLMAP源码分析"></a>0x03 SQLMAP源码分析</h1>
     </div>
 
@@ -442,7 +397,10 @@
     <a href="/2021/04/01/msf/" rel="prev" title="metasploit(MSF)初始化及常用命令">
       <i class="fa fa-chevron-left"></i> metasploit(MSF)初始化及常用命令
     </a></div>
-      <div class="post-nav-item"></div>
+      <div class="post-nav-item">
+    <a href="/2021/04/15/2021-04-15/" rel="next" title="一篇文章搞懂所有协议">
+      一篇文章搞懂所有协议 <i class="fa fa-chevron-right"></i>
+    </a></div>
     </div>
       </footer>
     
@@ -501,7 +459,7 @@
 
       <!--noindex-->
       <div class="post-toc-wrap sidebar-panel">
-          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#0x01-%E5%89%8D%E8%A8%80"><span class="nav-number">1.</span> <span class="nav-text">0x01 前言</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#0x02-SQL%E6%B3%A8%E5%85%A5"><span class="nav-number">2.</span> <span class="nav-text">0x02 SQL注入</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%8E%9F%E7%90%86%EF%BC%9A"><span class="nav-number">2.0.0.1.</span> <span class="nav-text">原理：</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%8D%B1%E5%AE%B3%EF%BC%9A"><span class="nav-number">2.0.0.2.</span> <span class="nav-text">危害：</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%9F%BA%E6%9C%AC%E6%B5%81%E7%A8%8B%EF%BC%9A"><span class="nav-number">2.0.0.3.</span> <span class="nav-text">基本流程：</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#1-%E5%B8%B8%E8%A7%81%E5%87%BD%E6%95%B0%EF%BC%9A"><span class="nav-number">2.1.</span> <span class="nav-text">1. 常见函数：</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2-%E5%B8%B8%E7%94%A8%E8%AF%AD%E5%8F%A5%EF%BC%9A"><span class="nav-number">2.2.</span> <span class="nav-text">2. 常用语句：</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#3-%E6%B3%A8%E5%85%A5%E5%88%86%E7%B1%BB%EF%BC%9A"><span class="nav-number">2.3.</span> <span class="nav-text">3. 注入分类：</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#1-Retrieving-hidden-data"><span class="nav-number">2.3.1.</span> <span class="nav-text">1.Retrieving hidden data</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-Subverting-application-logic"><span class="nav-number">2.3.2.</span> <span class="nav-text">2.Subverting application logic</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-UNION-attacks-where-you-can-retrieve-data-from-different-database-tables"><span class="nav-number">2.3.3.</span> <span class="nav-text">3.UNION attacks, where you can retrieve data from different database tables.</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#4-Examining-the-database-where-you-can-extract-information-about-the-version-and-structure-of-the-database"><span class="nav-number">2.3.4.</span> <span class="nav-text">4.Examining the database, where you can extract information about the version and structure of the database.</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#5-Blind-SQL-injection"><span class="nav-number">2.3.5.</span> <span class="nav-text">5.Blind SQL injection</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#0x03-SQLMAP%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90"><span class="nav-number">3.</span> <span class="nav-text">0x03 SQLMAP源码分析</span></a></li></ol></div>
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#0x01-%E5%89%8D%E8%A8%80"><span class="nav-number">1.</span> <span class="nav-text">0x01 前言</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#0x02-SQL%E6%B3%A8%E5%85%A5"><span class="nav-number">2.</span> <span class="nav-text">0x02 SQL注入</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#1-%E5%8E%9F%E7%90%86%EF%BC%9A"><span class="nav-number">2.1.</span> <span class="nav-text">1. 原理：</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2-%E5%8D%B1%E5%AE%B3%EF%BC%9A"><span class="nav-number">2.2.</span> <span class="nav-text">2. 危害：</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#3-%E7%9B%B8%E5%85%B3-%E5%8F%AF%E8%B7%B3%E8%BF%87"><span class="nav-number">2.3.</span> <span class="nav-text">3.相关(可跳过)</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#a-%E6%95%B0%E6%8D%AE%E5%BA%93%E5%88%86%E7%B1%BB%EF%BC%9A"><span class="nav-number">2.3.1.</span> <span class="nav-text">a.数据库分类：</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#b-%E5%B8%B8%E8%A7%81%E5%87%BD%E6%95%B0%EF%BC%9A"><span class="nav-number">2.3.2.</span> <span class="nav-text">b.  常见函数：</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#4-Examining-the-database-where-you-can-extract-information-about-the-version-and-structure-of-the-database"><span class="nav-number">2.3.3.</span> <span class="nav-text">4.Examining the database, where you can extract information about the version and structure of the database.</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#5-Blind-SQL-injection"><span class="nav-number">2.3.4.</span> <span class="nav-text">5.Blind SQL injection</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#0x03-SQLMAP%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90"><span class="nav-number">3.</span> <span class="nav-text">0x03 SQLMAP源码分析</span></a></li></ol></div>
       </div>
       <!--/noindex-->
 
@@ -517,7 +475,7 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">8</span>
+          <span class="site-state-item-count">10</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
@@ -526,7 +484,7 @@
         <span class="site-state-item-name">分类</span>
       </div>
       <div class="site-state-item site-state-tags">
-        <span class="site-state-item-count">16</span>
+        <span class="site-state-item-count">19</span>
         <span class="site-state-item-name">标签</span>
       </div>
   </nav>

