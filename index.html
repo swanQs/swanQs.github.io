@@ -197,7 +197,7 @@
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2021-04-16 17:15:43" itemprop="dateModified" datetime="2021-04-16T17:15:43+08:00">2021-04-16</time>
+                <time title="修改时间：2021-04-16 21:55:03" itemprop="dateModified" datetime="2021-04-16T21:55:03+08:00">2021-04-16</time>
               </span>
 
           
@@ -211,9 +211,9 @@
     <div class="post-body" itemprop="articleBody">
 
       
-          <h1 id="MYSQL漏洞案例："><a href="#MYSQL漏洞案例：" class="headerlink" title="MYSQL漏洞案例："></a>MYSQL漏洞案例：</h1><p>先通过MYSQL身份认证绕过漏洞 CVE-2012-2122开始看起。</p>
+          <h1 id="0x01-MYSQL漏洞案例："><a href="#0x01-MYSQL漏洞案例：" class="headerlink" title="0x01 MYSQL漏洞案例："></a>0x01 MYSQL漏洞案例：</h1><p>先通过MYSQL身份认证绕过漏洞 CVE-2012-2122开始看起。</p>
 <h2 id="1-漏洞原理："><a href="#1-漏洞原理：" class="headerlink" title="1. 漏洞原理："></a>1. 漏洞原理：</h2><p>该漏洞是身份认证绕过漏洞，当连接MariaDB/MySQL时，输入的密码会与期望的正确密码比较，由于处理不正确，会导致memcmp()返回一个非零值，也会使MySQL认为两个密码是相同的。即只要知道用户名，不断尝试就能够直接登入SQL数据库。</p>
-<h2 id="2-影响版本："><a href="#2-影响版本：" class="headerlink" title="2. 影响版本："></a>2. 影响版本：</h2><p>Mariadb、Mysql：5.1.61，5.0.11，5.3.5，5.5.22</p>
+<h2 id="2-影响版本："><a href="#2-影响版本：" class="headerlink" title="2. 影响版本："></a>2. 影响版本：</h2><p>Mariadb、Mysql：几乎影响5.1至5.5的所有版本，包括5.1.61，5.0.11，5.3.5，5.5.22，5.5.23</p>
 <h2 id="3-漏洞复现："><a href="#3-漏洞复现：" class="headerlink" title="3. 漏洞复现："></a>3. 漏洞复现：</h2><p>靶机：Ubuntu 192.168.127.131</p>
 <p>攻击机：kali 192.168.127.130</p>
 <p>环境：docker  vulhub</p>
@@ -251,13 +251,21 @@
 <h3 id="方法三、Python脚本："><a href="#方法三、Python脚本：" class="headerlink" title="方法三、Python脚本："></a>方法三、Python脚本：</h3><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">#！/usr/bin/python</span></span><br><span class="line"><span class="keyword">import</span> subprocess</span><br><span class="line"><span class="keyword">while</span> <span class="literal">True</span>:</span><br><span class="line">subprocess.Popen(<span class="string">&quot;mysql -u root -P 3306 -h 192.168.127.131 --password=aaaaa&quot;</span>, shell=<span class="literal">True</span>).wait()</span><br></pre></td></tr></table></figure>
 
 <p><img src="/2021/04/15/MYSQL%E6%8F%90%E6%9D%83%E6%80%BB%E7%BB%93/9.jpg" alt="img"></p>
-<h1 id="UDF-提权"><a href="#UDF-提权" class="headerlink" title="UDF 提权"></a>UDF 提权</h1><p>UDF（user defined function）用户自定义函数。用户通过自定义函数可以实现在 MySQL 中无法方便实现的功能，其添加的新函数都可以在SQL语句中调用，就像调用本机函数 version()那样方便。 由于是用户自定义的函数，所以我们可以利用UDF创建一个执行命令的函数。</p>
-<h2 id="手工复现"><a href="#手工复现" class="headerlink" title="手工复现"></a>手工复现</h2><p>漏洞修复：<br>MySQL数据库更新到最新版本<br>禁止除白名单外其他ip远程登录MySQL数据库<br>修改数据库用户名</p>
+<h1 id="0x02-UDF-提权"><a href="#0x02-UDF-提权" class="headerlink" title="0x02 UDF 提权"></a>0x02 UDF 提权</h1><p>UDF（user defined function）用户自定义函数。用户通过自定义函数可以实现在 MySQL 中无法方便实现的功能，其添加的新函数都可以在SQL语句中调用，就像调用本机函数version()那般方便。 由于是用户自定义的函数，所以我们可以利用UDF创建一个执行命令的函数。</p>
+<h2 id="相关知识点"><a href="#相关知识点" class="headerlink" title="相关知识点"></a>相关知识点</h2><h3 id="1-Secure-file-priv参数"><a href="#1-Secure-file-priv参数" class="headerlink" title="1. Secure_file_priv参数"></a>1. Secure_file_priv参数</h3><p>secure-file-priv参数是用来限制LOAD DATA,SELEC,OUTFILE, LOAD_FILE()传递的指定目录</p>
+<ul>
+<li>值为null ：限制mysql不允许导入导出</li>
+<li>值为/tmp/ ：限制mysql的导入导出只能发生在/tmp/目录</li>
+<li>没有具体值：对mysql的导入导出不做限制</li>
+</ul>
+<p>通过执行<code>SHOW VARIABLES LIKE &quot;secure_file_priv&quot;;</code>查看secure-file-priv的状态。</p>
+<p>漏洞修复：<br>MySQL数据库更新到最新版本<br>禁止除白名单外其他ip远程登录MySQL数据库<br>修改数据库用户名</p>
 <p>参考：</p>
 <p><a target="_blank" rel="noopener" href="https://my.oschina.net/bylibrary/blog/4967585">https://my.oschina.net/bylibrary/blog/4967585</a></p>
 <p><a target="_blank" rel="noopener" href="https://yeasy.gitbook.io/docker_practice/container">https://yeasy.gitbook.io/docker_practice/container</a></p>
 <p><a target="_blank" rel="noopener" href="https://www.jianshu.com/p/a4f25b2d74e6">https://www.jianshu.com/p/a4f25b2d74e6</a> </p>
 <p><a target="_blank" rel="noopener" href="https://github.com/vulhub/vulhub">https://github.com/vulhub/vulhub</a> </p>
+<p><a target="_blank" rel="noopener" href="https://blog.csdn.net/yatere/article/details/7654057">https://blog.csdn.net/yatere/article/details/7654057</a></p>
 
       
     </div>
