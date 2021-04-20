@@ -546,7 +546,7 @@
       <header class="post-header">
         <h2 class="post-title" itemprop="name headline">
           
-            <a href="/2021/04/13/2021-04-13/" class="post-title-link" itemprop="url">一篇文章带你读懂sql注入</a>
+            <a href="/2021/04/13/2021-04-13/" class="post-title-link" itemprop="url">sql注入总结</a>
         </h2>
 
         <div class="post-meta">
@@ -563,7 +563,7 @@
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2021-04-20 20:46:42" itemprop="dateModified" datetime="2021-04-20T20:46:42+08:00">2021-04-20</time>
+                <time title="修改时间：2021-04-20 20:49:35" itemprop="dateModified" datetime="2021-04-20T20:49:35+08:00">2021-04-20</time>
               </span>
 
           
@@ -844,6 +844,7 @@
 <li><p><strong>缓冲区溢出绕过</strong> (id=1 and (select 1)=(Select 0xAAAAAAAAAAAAAAAAAAAAA)+UnIoN+SeLeCT+1,2,version(),4,5,database(),user(),8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26 ,27,28,29,30,31,32,33,34,35,36–+ 其中0xAAAAAAAAAAAAAAAAAAAAA这里A越多越好。。一般会存在临界值，其实这种方法还对后缀名的绕过也有用)</p>
 </li>
 </ul>
+<p>到这儿大概可以拿下数据库的基本用户权限，若需提权需参考mysql MOF和UDF提权。</p>
 <h2 id="4-练习："><a href="#4-练习：" class="headerlink" title="4. 练习："></a>4. 练习：</h2><p>以下为自己练习内容(可忽略)</p>
 <h3 id="1-Retrieving-hidden-data"><a href="#1-Retrieving-hidden-data" class="headerlink" title="1.Retrieving hidden data"></a>1.Retrieving hidden data</h3><p><a target="_blank" rel="noopener" href="https://ac991fcc1e603304800c031d001b00e5.web-security-academy.net/filter?category=Gifts">where子句的SQLi允许查询隐藏数据</a></p>
 <ul>
