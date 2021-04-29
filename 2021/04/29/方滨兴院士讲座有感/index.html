@@ -1,0 +1,485 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.4.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+<link rel="stylesheet" href="https://fonts.cat.net/css?family=Lato:300,300italic,400,400italic,700,700italic|Fira Code:300,300italic,400,400italic,700,700italic&display=swap&subset=latin,latin-ext">
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"swanq.top","root":"/","scheme":"Gemini","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":true,"show_result":true,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+  </script>
+
+  <meta name="description" content="于自己:  每天激情状态 靶场–&gt;对应的CTF赛题–&gt;实战、SRC 哪块弱补哪块。 每天一篇：电子取证领域的论文 靶场：vulhub  pikachu  raven  sqli-lab 技能：知识(西电)+方法(方班) 知识：事实 常识 规则 方法：思辨 质疑 创新 迅速适应企业的要求，迅速补上知识，(我就不相信你还能问到我，我都知道了) 方法： 自信的提升就是方法的提升。我觉得这么干">
+<meta property="og:type" content="article">
+<meta property="og:title" content="方滨兴院士讲座有感">
+<meta property="og:url" content="http://swanq.top/2021/04/29/%E6%96%B9%E6%BB%A8%E5%85%B4%E9%99%A2%E5%A3%AB%E8%AE%B2%E5%BA%A7%E6%9C%89%E6%84%9F/index.html">
+<meta property="og:site_name" content="SwanQ&#39;s blog">
+<meta property="og:description" content="于自己:  每天激情状态 靶场–&gt;对应的CTF赛题–&gt;实战、SRC 哪块弱补哪块。 每天一篇：电子取证领域的论文 靶场：vulhub  pikachu  raven  sqli-lab 技能：知识(西电)+方法(方班) 知识：事实 常识 规则 方法：思辨 质疑 创新 迅速适应企业的要求，迅速补上知识，(我就不相信你还能问到我，我都知道了) 方法： 自信的提升就是方法的提升。我觉得这么干">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2021-04-29T01:54:26.000Z">
+<meta property="article:modified_time" content="2021-04-29T07:23:23.551Z">
+<meta property="article:author" content="swanQ">
+<meta property="article:tag" content="讲座">
+<meta property="article:tag" content="从六论视觉谈网络安全人才的培养">
+<meta property="article:tag" content="方滨兴">
+<meta name="twitter:card" content="summary">
+
+<link rel="canonical" href="http://swanq.top/2021/04/29/%E6%96%B9%E6%BB%A8%E5%85%B4%E9%99%A2%E5%A3%AB%E8%AE%B2%E5%BA%A7%E6%9C%89%E6%84%9F/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>方滨兴院士讲座有感 | SwanQ's blog</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">SwanQ's blog</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+      <p class="site-subtitle" itemprop="description">强到不会输给任何不讲理的<恶></p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签<span class="badge">32</span></a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类<span class="badge">3</span></a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档<span class="badge">13</span></a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://swanq.top/2021/04/29/%E6%96%B9%E6%BB%A8%E5%85%B4%E9%99%A2%E5%A3%AB%E8%AE%B2%E5%BA%A7%E6%9C%89%E6%84%9F/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/author.jpg">
+      <meta itemprop="name" content="swanQ">
+      <meta itemprop="description" content="Try & Enjoy">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="SwanQ's blog">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          方滨兴院士讲座有感
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+              
+
+              <time title="创建时间：2021-04-29 09:54:26 / 修改时间：15:23:23" itemprop="dateCreated datePublished" datetime="2021-04-29T09:54:26+08:00">2021-04-29</time>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <p>于自己:  每天激情状态</p>
+<p>靶场–&gt;对应的CTF赛题–&gt;实战、SRC</p>
+<p>哪块弱补哪块。</p>
+<p>每天一篇：电子取证领域的论文</p>
+<p>靶场：vulhub  pikachu  raven  sqli-lab</p>
+<p>技能：知识(西电)+方法(方班)</p>
+<p>知识：事实 常识 规则</p>
+<p>方法：思辨 质疑 创新</p>
+<p>迅速适应企业的要求，迅速补上知识，(我就不相信你还能问到我，我都知道了)</p>
+<p>方法：</p>
+<p>自信的提升就是方法的提升。我觉得这么干是对的就是对的。美国一直行走在无人区。也要抬头看看是否真的无人，不怕走无人区，睁大眼睛可能有人做得比我好。</p>
+<p>思辨，如小萁所言，把查到得信息变为知识为思辨的过程。需要训练。思辨才是看难文章的敲门砖。你最会什么?你最懂的知道什么？把一件事思辨的搞明白。</p>
+<p>会思辨之后，再看顶会(挑战难度)。</p>
+<p>听完之后，迅速提炼自己的问题。保证心里有预期答案。为什么没按，。不应该有答案，也是提高。特别坚信他是错的。</p>
+<p>每次讲完做总结。</p>
+<p>安全是认识论：<br>超过5000就构成犯罪。所以会用到靶场(类比少林弟子)。</p>
+<p>鹏城靶场</p>
+<p><strong>对于自己：各种靶场训练，然后实操。</strong></p>
+<p>内打内属于靶场(CTF)；内打外属于护网；外打外属于系统测试(方班演武堂)；外打内设备测试(大量人众测)。</p>
+<p>军队搞CTF赛很奇葩，每年参加CTF没什么意义(相当于奥赛其实，对于初学者)，为了比赛而比赛不可取，应该参与真正的实战。</p>
+<p>没有xss等。看的是逻辑漏洞，整个认证是在前端，认证应该在后端。改了应用程序，只看底层造成的。</p>
+<p>不要培养专职的CTF选手。仅限在学校</p>
+<p><strong>redis–&gt;渗透测试 搞清楚，一步一步来</strong></p>
+<p>其实去拿到各种SRC的证书。</p>
+<p>慕课，学生需要限制</p>
+<p>为什么应试教育不行？</p>
+<p>需要空闲期去考虑自己下一步要做什么，单目标函数还是双目标函数。</p>
+<p>喜欢理论支持博士，喜欢实践鼓励创业</p>
+<p>产品：天眼情报、零封安全</p>
+<p>先去公司就业，积累资源、人脉，然后去创业。</p>
+<p>水平：</p>
+<p>知识积累，突变（量变转质变）web后期一定会是二进制.–横向贯彻(各个方向都要)</p>
+<p>未接触领域,善于找标签:岗位体系–&gt;需要什么知识体系–&gt;将自己的标签和他对应上</p>
+<p>考试是采样,高分低能就是这样.采样是点,然而交流或者应用是连续.采样题是无聊的,宽泛的,面试其实也是,都是连续交流,其实开卷反而更难.</p>
+<p>标签需要很详细到某方面,类似于安全设备配置这样,而不是安全配置.</p>
+<p>有一个做的特别深,便会知道怎么做.</p>
+<p>认证业务平台:<a target="_blank" rel="noopener" href="http://cstc.cncstea.cn/">http://cstc.cncstea.cn</a></p>
+<p><a target="_blank" rel="noopener" href="http://examanage.cncstea.cn/">http://examanage.cncstea.cn</a></p>
+<p>强弱是相对论,知识是认识论(敢闯无人区),失败是实践论,决策是矛盾论(多目标,化解矛盾才是最重要的),发展是进化论,管理是方法论(球不能停在自己脚下)</p>
+<p>能力是相对论,安全是认识论,攻防是实践论,选择是矛盾论,水平是进化论,鉴别是进化论.</p>
+<p>最牛的要真的牛.</p>
+<p>​    </p>
+
+    </div>
+
+    
+    
+    
+        
+
+<div>
+<ul class="post-copyright">
+  <li class="post-copyright-author">
+    <strong>本文作者： </strong>swanQ
+  </li>
+  <li class="post-copyright-link">
+    <strong>本文链接：</strong>
+    <a href="http://swanq.top/2021/04/29/%E6%96%B9%E6%BB%A8%E5%85%B4%E9%99%A2%E5%A3%AB%E8%AE%B2%E5%BA%A7%E6%9C%89%E6%84%9F/" title="方滨兴院士讲座有感">http://swanq.top/2021/04/29/方滨兴院士讲座有感/</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>版权声明： </strong>本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" rel="noopener" target="_blank"><i class="fab fa-fw fa-creative-commons"></i>BY-NC-SA</a> 许可协议。转载请注明出处！
+  </li>
+</ul>
+</div>
+
+	  <div>
+      
+       <div>
+    
+        <div style="text-align:center;color: #ccc;font-size:14px;">你想在文章末尾对读者说的话</div>
+    
+</div>
+      
+      </div>
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/%E8%AE%B2%E5%BA%A7/" rel="tag"># 讲座</a>
+              <a href="/tags/%E4%BB%8E%E5%85%AD%E8%AE%BA%E8%A7%86%E8%A7%89%E8%B0%88%E7%BD%91%E7%BB%9C%E5%AE%89%E5%85%A8%E4%BA%BA%E6%89%8D%E7%9A%84%E5%9F%B9%E5%85%BB/" rel="tag"># 从六论视觉谈网络安全人才的培养</a>
+              <a href="/tags/%E6%96%B9%E6%BB%A8%E5%85%B4/" rel="tag"># 方滨兴</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2021/04/28/pikachu/" rel="prev" title="pikachu靶场通关指南">
+      <i class="fa fa-chevron-left"></i> pikachu靶场通关指南
+    </a></div>
+      <div class="post-nav-item"></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="swanQ"
+      src="/images/author.jpg">
+  <p class="site-author-name" itemprop="name">swanQ</p>
+  <div class="site-description" itemprop="description">Try & Enjoy</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">13</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+        <span class="site-state-item-count">3</span>
+        <span class="site-state-item-name">分类</span>
+      </div>
+      <div class="site-state-item site-state-tags">
+        <span class="site-state-item-count">32</span>
+        <span class="site-state-item-name">标签</span>
+      </div>
+  </nav>
+</div>
+  <div class="sidebar-button motion-element"><i class="fa fa-comment"></i>
+    聊天
+  </a>
+  </div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="mailto:zhuoma.swanq@foxmail.com" title="E-Mail → mailto:zhuoma.swanq@foxmail.com" rel="noopener" target="_blank"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+  </div>
+  <div class="cc-license motion-element" itemprop="license">
+    <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" class="cc-opacity" rel="noopener" target="_blank"><img src="/images/cc-by-nc-sa.svg" alt="Creative Commons"></a>
+  </div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">swanQ</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Gemini</a> 强力驱动
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script size="300" alpha="0.6" zIndex="-1" src="/lib/canvas-ribbon/canvas-ribbon.js"></script>
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+<script src="/live2dw/lib/L2Dwidget.min.js?094cbace49a39548bed64abff5988b05"></script><script>L2Dwidget.init({"log":false,"pluginJsPath":"lib/","pluginModelPath":"assets/","pluginRootPath":"live2dw/","tagMode":false});</script></body>
+<script type="text/javascript" src="/js/src/clicklove.js"></script>
+</html>

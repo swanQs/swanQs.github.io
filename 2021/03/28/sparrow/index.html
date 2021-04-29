@@ -30,8 +30,9 @@
 <meta property="og:image" content="http://swanq.top/2021/03/28/sparrow/3.jpg">
 <meta property="og:image" content="http://swanq.top/2021/03/28/sparrow/1.jpg">
 <meta property="og:image" content="http://swanq.top/2021/03/28/sparrow/2.jpg">
+<meta property="og:image" content="http://swanq.top/2021/03/28/sparrow/4.jpg">
 <meta property="article:published_time" content="2021-03-28T07:26:51.000Z">
-<meta property="article:modified_time" content="2021-04-03T08:25:48.169Z">
+<meta property="article:modified_time" content="2021-04-28T02:31:52.267Z">
 <meta property="article:author" content="swanQ">
 <meta property="article:tag" content="penetration, forensics, web, cyber security">
 <meta name="twitter:card" content="summary">
@@ -104,7 +105,7 @@
       <h1 class="site-title">SwanQ's blog</h1>
       <span class="logo-line-after"><i></i></span>
     </a>
-      <p class="site-subtitle" itemprop="description">Deep Love for Cyber Security。</p>
+      <p class="site-subtitle" itemprop="description">强到不会输给任何不讲理的<恶></p>
   </div>
 
   <div class="site-nav-right">
@@ -130,7 +131,7 @@
   </li>
         <li class="menu-item menu-item-tags">
 
-    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签<span class="badge">19</span></a>
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签<span class="badge">32</span></a>
 
   </li>
         <li class="menu-item menu-item-categories">
@@ -140,7 +141,7 @@
   </li>
         <li class="menu-item menu-item-archives">
 
-    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档<span class="badge">11</span></a>
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档<span class="badge">13</span></a>
 
   </li>
   </ul>
@@ -201,7 +202,7 @@
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2021-04-03 16:25:48" itemprop="dateModified" datetime="2021-04-03T16:25:48+08:00">2021-04-03</time>
+                <time title="修改时间：2021-04-28 10:31:52" itemprop="dateModified" datetime="2021-04-28T10:31:52+08:00">2021-04-28</time>
               </span>
 
           
@@ -255,7 +256,9 @@
 <p><strong>第三次挥手：</strong> Server发送一个FIN，用来关闭Server到Client的数据传送，Server进入LAST_ACK状态。</p>
 <p><strong>第四次挥手：</strong> Client收到FIN后，Client进入TIME_WAIT状态，接着发送一个ACK给Server，确认序号为收到序号+1，Server进入CLOSED状态，完成四次挥手。<br>四次挥手，在server收到对方的FIN时，表示client不再发送数据，但是还可以接收server的数据。所以将ACK和FIN分开发送。<br><img src="/2021/03/28/sparrow/2.jpg"></p>
 <h3 id="3-命令"><a href="#3-命令" class="headerlink" title="3.命令"></a>3.命令</h3><p>tar xzvf<br>sudo ufw disable</p>
-<h3 id="4"><a href="#4" class="headerlink" title="4."></a>4.</h3>
+<h3 id="4"><a href="#4" class="headerlink" title="4."></a>4.</h3><p>对于命令注入不过滤参数的：&amp;</p>
+<p><img src="/2021/03/28/sparrow/4.jpg"></p>
+
     </div>
 
     
@@ -376,7 +379,7 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">11</span>
+          <span class="site-state-item-count">13</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
@@ -385,7 +388,7 @@
         <span class="site-state-item-name">分类</span>
       </div>
       <div class="site-state-item site-state-tags">
-        <span class="site-state-item-count">19</span>
+        <span class="site-state-item-count">32</span>
         <span class="site-state-item-name">标签</span>
       </div>
   </nav>
