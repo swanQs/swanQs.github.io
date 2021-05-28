@@ -20,22 +20,22 @@
     var CONFIG = {"hostname":"swanq.top","root":"/","scheme":"Muse","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
   </script>
 
-  <meta name="description" content="0x01 前言0x02 初始化Metasploit使用PostgreSQL作为数据库，所以先启动postgresql.并初始化数据库然后以root用户打开MSF 0x03 常用命令metasploit命令 help打开meterpreter使用帮助。 run scriptname运行meterpreter脚本，在scripts&#x2F;meterpreter目录下可查看到所有脚本名。 sysinfo列出受">
+  <meta name="description" content="msf深入起来包罗万象，那我们先慢慢来认识它吧。跟着某师傅的教程熟悉一遍，并记录自己所认为最重要的东西。 0x01 MSF基础认知1.体系框架 2.文件系统首先要知道msf的目录位于 &#x2F;usr&#x2F;share&#x2F;metasploit-framework 先熟悉一下msf的重要文件系统： 12345678910111213141516data：			Metasploit使用的可编辑文件,常用是其wordl">
 <meta property="og:type" content="article">
-<meta property="og:title" content="metasploit(MSF)初始化及常用命令">
+<meta property="og:title" content="后渗透-metasploit(MSF) meterpreter">
 <meta property="og:url" content="http://swanq.top/2021/04/01/msf/index.html">
 <meta property="og:site_name" content="SwanQ&#39;s blog">
-<meta property="og:description" content="0x01 前言0x02 初始化Metasploit使用PostgreSQL作为数据库，所以先启动postgresql.并初始化数据库然后以root用户打开MSF 0x03 常用命令metasploit命令 help打开meterpreter使用帮助。 run scriptname运行meterpreter脚本，在scripts&#x2F;meterpreter目录下可查看到所有脚本名。 sysinfo列出受">
+<meta property="og:description" content="msf深入起来包罗万象，那我们先慢慢来认识它吧。跟着某师傅的教程熟悉一遍，并记录自己所认为最重要的东西。 0x01 MSF基础认知1.体系框架 2.文件系统首先要知道msf的目录位于 &#x2F;usr&#x2F;share&#x2F;metasploit-framework 先熟悉一下msf的重要文件系统： 12345678910111213141516data：			Metasploit使用的可编辑文件,常用是其wordl">
 <meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://swanq.top/2021/04/01/msf/2.png">
 <meta property="og:image" content="http://swanq.top/2021/04/01/msf/1.jpg">
 <meta property="article:published_time" content="2021-04-01T13:50:29.000Z">
-<meta property="article:modified_time" content="2021-04-01T14:07:36.919Z">
+<meta property="article:modified_time" content="2021-05-28T13:15:08.798Z">
 <meta property="article:author" content="swanQ">
 <meta property="article:tag" content="web安全">
 <meta property="article:tag" content="渗透测试">
-<meta property="article:tag" content="攻击工具">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:image" content="http://swanq.top/2021/04/01/msf/1.jpg">
+<meta name="twitter:image" content="http://swanq.top/2021/04/01/msf/2.png">
 
 <link rel="canonical" href="http://swanq.top/2021/04/01/msf/">
 
@@ -50,7 +50,7 @@
   };
 </script>
 
-  <title>metasploit(MSF)初始化及常用命令 | SwanQ's blog</title>
+  <title>后渗透-metasploit(MSF) meterpreter | SwanQ's blog</title>
   
 
 
@@ -104,7 +104,7 @@
       <h1 class="site-title">SwanQ's blog</h1>
       <span class="logo-line-after"><i></i></span>
     </a>
-      <p class="site-subtitle" itemprop="description">你认为什么是安全？</p>
+      <p class="site-subtitle" itemprop="description">To live is to Risk it All</p>
   </div>
 
   <div class="site-nav-right">
@@ -169,7 +169,7 @@
     </span>
       <header class="post-header">
         <h1 class="post-title" itemprop="name headline">
-          metasploit(MSF)初始化及常用命令
+          后渗透-metasploit(MSF) meterpreter
         </h1>
 
         <div class="post-meta">
@@ -178,10 +178,16 @@
                 <i class="far fa-calendar"></i>
               </span>
               <span class="post-meta-item-text">发表于</span>
-              
 
-              <time title="创建时间：2021-04-01 21:50:29 / 修改时间：22:07:36" itemprop="dateCreated datePublished" datetime="2021-04-01T21:50:29+08:00">2021-04-01</time>
+              <time title="创建时间：2021-04-01 21:50:29" itemprop="dateCreated datePublished" datetime="2021-04-01T21:50:29+08:00">2021-04-01</time>
             </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2021-05-28 21:15:08" itemprop="dateModified" datetime="2021-05-28T21:15:08+08:00">2021-05-28</time>
+              </span>
 
           <br>
             <span class="post-meta-item" title="本文字数">
@@ -189,14 +195,14 @@
                 <i class="far fa-file-word"></i>
               </span>
                 <span class="post-meta-item-text">本文字数：</span>
-              <span></span>
+              <span>5k</span>
             </span>
             <span class="post-meta-item" title="阅读时长">
               <span class="post-meta-item-icon">
                 <i class="far fa-clock"></i>
               </span>
                 <span class="post-meta-item-text">阅读时长 &asymp;</span>
-              <span>NaN:aN</span>
+              <span>5 分钟</span>
             </span>
 
         </div>
@@ -208,8 +214,18 @@
     <div class="post-body" itemprop="articleBody">
 
       
-        <h1 id="0x01-前言"><a href="#0x01-前言" class="headerlink" title="0x01 前言"></a>0x01 前言</h1><h1 id="0x02-初始化"><a href="#0x02-初始化" class="headerlink" title="0x02 初始化"></a>0x02 初始化</h1><p>Metasploit使用PostgreSQL作为数据库，所以先启动postgresql.<br>并初始化数据库<br>然后以root用户打开MSF<br><img src="/2021/04/01/msf/1.jpg"></p>
-<h1 id="0x03-常用命令"><a href="#0x03-常用命令" class="headerlink" title="0x03 常用命令"></a>0x03 常用命令</h1><h2 id="metasploit命令"><a href="#metasploit命令" class="headerlink" title="metasploit命令"></a>metasploit命令</h2><ul>
+        <p>msf深入起来包罗万象，那我们先慢慢来认识它吧。跟着某师傅的教程熟悉一遍，并记录自己所认为最重要的东西。</p>
+<h1 id="0x01-MSF基础认知"><a href="#0x01-MSF基础认知" class="headerlink" title="0x01 MSF基础认知"></a>0x01 MSF基础认知</h1><h2 id="1-体系框架"><a href="#1-体系框架" class="headerlink" title="1.体系框架"></a>1.体系框架</h2><p><img src="/2021/04/01/msf/2.png"></p>
+<h2 id="2-文件系统"><a href="#2-文件系统" class="headerlink" title="2.文件系统"></a>2.文件系统</h2><p>首先要知道msf的目录位于 <strong>/usr/share/metasploit-framework</strong></p>
+<p>先熟悉一下msf的重要文件系统：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">data：			Metasploit使用的可编辑文件,常用是其wordlists中的字典文件</span><br><span class="line">modules：		实际的MSF模块</span><br><span class="line">plugins：		可以在运行时加载的插件</span><br><span class="line">scripts：		Meterpreter和其他脚本</span><br><span class="line">tools：			各种有用的命令行工具</span><br><span class="line">documentation：	为框架提供文档</span><br><span class="line">external：		源代码和第三方库</span><br><span class="line">lib：			框架代码库的&#39;肉&#39;</span><br><span class="line"></span><br><span class="line">modules包括:</span><br><span class="line">    auxiliary	#漏洞辅助模块一般是没有攻击载荷的漏洞攻击</span><br><span class="line">    encoders 	#编码器模块</span><br><span class="line">    evasion	  	#简单的反杀模块</span><br><span class="line">    exploits	#渗透攻击模块</span><br><span class="line">    nops		#空指令模块</span><br><span class="line">    payloads	#漏洞负载模块</span><br></pre></td></tr></table></figure>
+
+<h1 id="0x02-初始化"><a href="#0x02-初始化" class="headerlink" title="0x02 初始化"></a>0x02 初始化</h1><p>Metasploit使用PostgreSQL作为数据库，所以先启动postgresql.<br>并初始化数据库<br>然后以root用户打开MSF<br><img src="/2021/04/01/msf/1.jpg"></p>
+<h1 id="0x03-后渗透必备命令"><a href="#0x03-后渗透必备命令" class="headerlink" title="0x03 后渗透必备命令"></a>0x03 后渗透必备命令</h1><h2 id="1）基本系统命令"><a href="#1）基本系统命令" class="headerlink" title="1）基本系统命令"></a>1）基本系统命令</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line">sessions -l  #列出会话id值   </span><br><span class="line">sessions -i &lt;ID值&gt;	#进入会话   </span><br><span class="line">sessions -k  #杀死会话</span><br><span class="line"></span><br><span class="line">reboot       #重启&#x2F;</span><br><span class="line">shutdown     #重启&#x2F;关机</span><br><span class="line"></span><br><span class="line">ps 			 #查看当前活跃进程    </span><br><span class="line">kill &lt;PID值&gt;  #杀死进程</span><br><span class="line"></span><br><span class="line">background 	#将当前会话放置后台</span><br><span class="line">run  		#执行已有的模块，输入run后按两下tab，列出已有的脚本</span><br><span class="line">info 		#查看已有模块信息</span><br><span class="line">getuid 		#查看权限 </span><br><span class="line">getpid 		#获取当前进程的pid</span><br><span class="line">sysinfo 	#查看目标机系统信息</span><br><span class="line">idletime 	#查看目标机闲置时间</span><br><span class="line">shell 		#进入目标机cmd shell</span><br></pre></td></tr></table></figure>
+
+
+
+<h1 id="0x04-常用命令"><a href="#0x04-常用命令" class="headerlink" title="0x04 常用命令"></a>0x04 常用命令</h1><h2 id="metasploit命令"><a href="#metasploit命令" class="headerlink" title="metasploit命令"></a>metasploit命令</h2><ul>
 <li>help<br>打开meterpreter使用帮助。</li>
 <li>run scriptname<br>运行meterpreter脚本，在scripts/meterpreter目录下可查看到所有脚本名。</li>
 <li>sysinfo<br>列出受控主机的系统信息。</li>
@@ -307,6 +323,7 @@
 <li>db_autopwn -p -r -e<br>对所有发现的开放端口执行db_autopwn，攻击所有系统，并使用一个反弹式shell。<br>db_destroy<br>删除当前数据库。</li>
 <li>db_destroy user：passwd@host：port/database<br>使用高级选项来删除数据库。</li>
 </ul>
+<h1 id="参考："><a href="#参考：" class="headerlink" title="参考："></a>参考：</h1><p><a target="_blank" rel="noopener" href="https://blog.csdn.net/qq_34801745/article/details/110790957">https://blog.csdn.net/qq_34801745/article/details/110790957</a></p>
 
     </div>
 
@@ -318,7 +335,6 @@
           <div class="post-tags">
               <a href="/tags/web%E5%AE%89%E5%85%A8/" rel="tag"># web安全</a>
               <a href="/tags/%E6%B8%97%E9%80%8F%E6%B5%8B%E8%AF%95/" rel="tag"># 渗透测试</a>
-              <a href="/tags/%E6%94%BB%E5%87%BB%E5%B7%A5%E5%85%B7/" rel="tag"># 攻击工具</a>
           </div>
 
         
@@ -392,7 +408,7 @@
 
       <!--noindex-->
       <div class="post-toc-wrap sidebar-panel">
-          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#0x01-%E5%89%8D%E8%A8%80"><span class="nav-number">1.</span> <span class="nav-text">0x01 前言</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#0x02-%E5%88%9D%E5%A7%8B%E5%8C%96"><span class="nav-number">2.</span> <span class="nav-text">0x02 初始化</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#0x03-%E5%B8%B8%E7%94%A8%E5%91%BD%E4%BB%A4"><span class="nav-number">3.</span> <span class="nav-text">0x03 常用命令</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#metasploit%E5%91%BD%E4%BB%A4"><span class="nav-number">3.1.</span> <span class="nav-text">metasploit命令</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#msfpayload%E5%91%BD%E4%BB%A4"><span class="nav-number">3.2.</span> <span class="nav-text">msfpayload命令</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#msfencode%E5%91%BD%E4%BB%A4"><span class="nav-number">3.3.</span> <span class="nav-text">msfencode命令</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#MSFcli%E5%91%BD%E4%BB%A4"><span class="nav-number">3.4.</span> <span class="nav-text">MSFcli命令</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%85%B6%E4%BB%96%E5%91%BD%E4%BB%A4"><span class="nav-number">3.5.</span> <span class="nav-text">其他命令</span></a></li></ol></li></ol></div>
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#0x01-MSF%E5%9F%BA%E7%A1%80%E8%AE%A4%E7%9F%A5"><span class="nav-number">1.</span> <span class="nav-text">0x01 MSF基础认知</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#1-%E4%BD%93%E7%B3%BB%E6%A1%86%E6%9E%B6"><span class="nav-number">1.1.</span> <span class="nav-text">1.体系框架</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2-%E6%96%87%E4%BB%B6%E7%B3%BB%E7%BB%9F"><span class="nav-number">1.2.</span> <span class="nav-text">2.文件系统</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#0x02-%E5%88%9D%E5%A7%8B%E5%8C%96"><span class="nav-number">2.</span> <span class="nav-text">0x02 初始化</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#0x03-%E5%90%8E%E6%B8%97%E9%80%8F%E5%BF%85%E5%A4%87%E5%91%BD%E4%BB%A4"><span class="nav-number">3.</span> <span class="nav-text">0x03 后渗透必备命令</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#1%EF%BC%89%E5%9F%BA%E6%9C%AC%E7%B3%BB%E7%BB%9F%E5%91%BD%E4%BB%A4"><span class="nav-number">3.1.</span> <span class="nav-text">1）基本系统命令</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#0x04-%E5%B8%B8%E7%94%A8%E5%91%BD%E4%BB%A4"><span class="nav-number">4.</span> <span class="nav-text">0x04 常用命令</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#metasploit%E5%91%BD%E4%BB%A4"><span class="nav-number">4.1.</span> <span class="nav-text">metasploit命令</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#msfpayload%E5%91%BD%E4%BB%A4"><span class="nav-number">4.2.</span> <span class="nav-text">msfpayload命令</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#msfencode%E5%91%BD%E4%BB%A4"><span class="nav-number">4.3.</span> <span class="nav-text">msfencode命令</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#MSFcli%E5%91%BD%E4%BB%A4"><span class="nav-number">4.4.</span> <span class="nav-text">MSFcli命令</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%85%B6%E4%BB%96%E5%91%BD%E4%BB%A4"><span class="nav-number">4.5.</span> <span class="nav-text">其他命令</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%8F%82%E8%80%83%EF%BC%9A"><span class="nav-number">5.</span> <span class="nav-text">参考：</span></a></li></ol></div>
       </div>
       <!--/noindex-->
 
@@ -406,7 +422,7 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">17</span>
+          <span class="site-state-item-count">18</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
@@ -415,7 +431,7 @@
         <span class="site-state-item-name">分类</span>
       </div>
       <div class="site-state-item site-state-tags">
-        <span class="site-state-item-count">45</span>
+        <span class="site-state-item-count">44</span>
         <span class="site-state-item-name">标签</span>
       </div>
   </nav>
