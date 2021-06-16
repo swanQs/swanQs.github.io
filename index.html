@@ -180,7 +180,7 @@
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2021-06-16 22:02:37" itemprop="dateModified" datetime="2021-06-16T22:02:37+08:00">2021-06-16</time>
+                <time title="修改时间：2021-06-17 00:15:44" itemprop="dateModified" datetime="2021-06-17T00:15:44+08:00">2021-06-17</time>
               </span>
 
           <br>
@@ -189,7 +189,7 @@
                 <i class="far fa-file-word"></i>
               </span>
                 <span class="post-meta-item-text">本文字数：</span>
-              <span>2k</span>
+              <span>2.2k</span>
             </span>
             <span class="post-meta-item" title="阅读时长">
               <span class="post-meta-item-icon">
@@ -253,6 +253,16 @@
 <p><img src="/2021/06/04/redis%E6%9C%AA%E6%8E%88%E6%9D%83%E6%80%BB%E7%BB%93/4.png"></p>
 <blockquote>
 <p>-x：read last argument from STDIN</p>
+<p>cat key.txt | redis -h 192.168.140.129 -x set crack：</p>
+<ul>
+<li><p>cat key.txt 输出 作为后面的输入</p>
+</li>
+<li><p>-x 读取标准输入</p>
+</li>
+<li><p>set crack 是将读取的输入作为crack此参数内容</p>
+<p>相当于把参数crack参数和-x读的数据组了个命令执行</p>
+</li>
+</ul>
 </blockquote>
 <p>找到靶机redis备份路径：</p>
 <p><img src="/2021/06/04/redis%E6%9C%AA%E6%8E%88%E6%9D%83%E6%80%BB%E7%BB%93/8.png"></p>
@@ -264,7 +274,8 @@
 </blockquote>
 <p>SSH远程登陆成功</p>
 <p><img src="/2021/06/04/redis%E6%9C%AA%E6%8E%88%E6%9D%83%E6%80%BB%E7%BB%93/6.png"></p>
-<h2 id="3-写crntab"><a href="#3-写crntab" class="headerlink" title="3. 写crntab"></a>3. 写crntab</h2><h1 id="0x02-如何防护"><a href="#0x02-如何防护" class="headerlink" title="0x02 如何防护"></a>0x02 如何防护</h1><h4 id="1-禁止远程使用一些高危命令"><a href="#1-禁止远程使用一些高危命令" class="headerlink" title="1.禁止远程使用一些高危命令"></a>1.禁止远程使用一些高危命令</h4><p>我们可以通过修改redis.conf文件来禁用远程修改DB文件地址</p>
+<h2 id="3-写crntab"><a href="#3-写crntab" class="headerlink" title="3. 写crntab"></a>3. 写crntab</h2><h3 id="条件：-2"><a href="#条件：-2" class="headerlink" title="条件："></a>条件：</h3><p>有可写计划任务的权限</p>
+<h3 id="流程：-2"><a href="#流程：-2" class="headerlink" title="流程："></a>流程：</h3><h1 id="0x02-如何防护"><a href="#0x02-如何防护" class="headerlink" title="0x02 如何防护"></a>0x02 如何防护</h1><h4 id="1-禁止远程使用一些高危命令"><a href="#1-禁止远程使用一些高危命令" class="headerlink" title="1.禁止远程使用一些高危命令"></a>1.禁止远程使用一些高危命令</h4><p>我们可以通过修改redis.conf文件来禁用远程修改DB文件地址</p>
 <figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">rename-command FLUSHALL &quot;&quot;</span><br><span class="line">rename-command CONFIG   &quot;&quot;</span><br><span class="line">rename-command EVAL     &quot;&quot;</span><br></pre></td></tr></table></figure>
 
 <h4 id="2-低权限运行Redis服务"><a href="#2-低权限运行Redis服务" class="headerlink" title="2.低权限运行Redis服务"></a>2.低权限运行Redis服务</h4><p>为Redis服务创建单独的<code>user</code>和<code>home</code>目录，并且配置禁止登陆</p>
@@ -278,6 +289,8 @@
 
 <h1 id="参考："><a href="#参考：" class="headerlink" title="参考："></a>参考：</h1><ol>
 <li>下载链接：<a target="_blank" rel="noopener" href="http://download.redis.io/releases/redis-6.0.1.tar.gz">http://download.redis.io/releases/redis-6.0.1.tar.gz</a></li>
+<li><a target="_blank" rel="noopener" href="https://hejueyun.github.io/posts/2218125b/">https://hejueyun.github.io/posts/2218125b/</a></li>
+<li><a target="_blank" rel="noopener" href="https://www.freebuf.com/vuls/223432.html">https://www.freebuf.com/vuls/223432.html</a></li>
 </ol>
 
       
