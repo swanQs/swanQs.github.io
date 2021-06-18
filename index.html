@@ -172,10 +172,16 @@
                 <i class="far fa-calendar"></i>
               </span>
               <span class="post-meta-item-text">发表于</span>
-              
 
-              <time title="创建时间：2021-06-17 19:49:00 / 修改时间：22:05:34" itemprop="dateCreated datePublished" datetime="2021-06-17T19:49:00+08:00">2021-06-17</time>
+              <time title="创建时间：2021-06-17 19:49:00" itemprop="dateCreated datePublished" datetime="2021-06-17T19:49:00+08:00">2021-06-17</time>
             </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2021-06-18 21:46:52" itemprop="dateModified" datetime="2021-06-18T21:46:52+08:00">2021-06-18</time>
+              </span>
 
           <br>
             <span class="post-meta-item" title="本文字数">
@@ -183,7 +189,7 @@
                 <i class="far fa-file-word"></i>
               </span>
                 <span class="post-meta-item-text">本文字数：</span>
-              <span>1.8k</span>
+              <span>2k</span>
             </span>
             <span class="post-meta-item" title="阅读时长">
               <span class="post-meta-item-icon">
@@ -254,11 +260,23 @@
 <li>centos会忽略乱码去执行格式正确的任务计划</li>
 <li>ubuntu并不会忽略这些乱码，所以导致命令执行失败，作为正常用户向/etc/cron.d目录下写任务计划文件时，命令可以正常执行。利用redis未授权访问写的任务计划文件里都有乱码，这些代码来自redis的缓存数据</li>
 </ul>
-<h1 id="0x03-总结"><a href="#0x03-总结" class="headerlink" title="0x03 总结"></a>0x03 总结</h1><p>ubuntu确实设计比centos安全，建议遇到ubuntu还是用其他两种方式。具体利用方式参考上一篇文章。</p>
+<h1 id="0x03-复现"><a href="#0x03-复现" class="headerlink" title="0x03 复现"></a>0x03 复现</h1><p>具体环境搭建不再赘述</p>
+<p>靶机：CentOS 192.168.140.132</p>
+<p>攻击机：Kali  192.168.140.130</p>
+<p>CentOS启动redis服务：</p>
+<p><img src="/2021/06/17/redis%E5%86%99%E5%AE%9A%E6%97%B6%E4%BB%BB%E5%8A%A1%E5%87%BA%E9%94%99/15.png"></p>
+<p>kali监听本机9999端口的返回任务</p>
+<p><img src="/2021/06/17/redis%E5%86%99%E5%AE%9A%E6%97%B6%E4%BB%BB%E5%8A%A1%E5%87%BA%E9%94%99/17.png"></p>
+<p>kali写入定时任务</p>
+<p><img src="/2021/06/17/redis%E5%86%99%E5%AE%9A%E6%97%B6%E4%BB%BB%E5%8A%A1%E5%87%BA%E9%94%99/16.png"></p>
+<p>写入成功，直接拿到root下的bash</p>
+<p><img src="/2021/06/17/redis%E5%86%99%E5%AE%9A%E6%97%B6%E4%BB%BB%E5%8A%A1%E5%87%BA%E9%94%99/18.png"></p>
+<h1 id="0x04-总结"><a href="#0x04-总结" class="headerlink" title="0x04 总结"></a>0x04 总结</h1><p>ubuntu确实设计比centos安全，建议遇到ubuntu还是用其他两种方式。具体利用方式参考上一篇文章。</p>
 <h1 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h1><ol>
 <li><a target="_blank" rel="noopener" href="https://cloud.tencent.com/developer/news/301606">https://cloud.tencent.com/developer/news/301606</a></li>
 <li><a target="_blank" rel="noopener" href="https://www.dazhuanlan.com/2019/11/18/5dd20bda178db/">https://www.dazhuanlan.com/2019/11/18/5dd20bda178db/</a></li>
 <li><a target="_blank" rel="noopener" href="https://www.anquanke.com/post/id/241146">https://www.anquanke.com/post/id/241146</a></li>
+<li>Linux日志排查：<a target="_blank" rel="noopener" href="https://baijiahao.baidu.com/s?id=1613381635234443098&amp;wfr=spider&amp;for=pc">https://baijiahao.baidu.com/s?id=1613381635234443098&amp;wfr=spider&amp;for=pc</a></li>
 </ol>
 
       
