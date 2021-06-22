@@ -785,7 +785,7 @@
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2021-06-19 10:43:39" itemprop="dateModified" datetime="2021-06-19T10:43:39+08:00">2021-06-19</time>
+                <time title="修改时间：2021-06-22 22:35:50" itemprop="dateModified" datetime="2021-06-22T22:35:50+08:00">2021-06-22</time>
               </span>
 
           <br>
@@ -794,7 +794,7 @@
                 <i class="far fa-file-word"></i>
               </span>
                 <span class="post-meta-item-text">本文字数：</span>
-              <span>104</span>
+              <span>549</span>
             </span>
             <span class="post-meta-item" title="阅读时长">
               <span class="post-meta-item-icon">
@@ -814,7 +814,27 @@
 
       
           <h1 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h1><p>定个小目标，把50台vulhub整个玩一遍，探探其中奥秘。当然最终目标是获取root权限</p>
-<h1 id="0x01"><a href="#0x01" class="headerlink" title="0x01"></a>0x01</h1><h1 id="参考："><a href="#参考：" class="headerlink" title="参考："></a>参考：</h1><ol>
+<h1 id="0x01-环境搭建"><a href="#0x01-环境搭建" class="headerlink" title="0x01 环境搭建"></a>0x01 环境搭建</h1><p>靶机：GoldenEye 192.168.140.133</p>
+<p>攻击机：kali 192.168.140.128</p>
+<h1 id="0x02-信息收集"><a href="#0x02-信息收集" class="headerlink" title="0x02 信息收集"></a>0x02 信息收集</h1><p>首先需要找到攻击目标,nmap -sP 192.168.140.0/24</p>
+<p><img src="/2021/05/28/VulnHub-GoldenEye/1.png"></p>
+<p>找到IP地址之后去探测目标机子上开了哪些服务和端口</p>
+<p><img src="/2021/05/28/VulnHub-GoldenEye/2.png"></p>
+<p>可以看到共开放了4个端口，熟悉的80端口web服务，先打开试试看，发现不可以访问。这可是第一次遇到这种问题。nmap既然可以扫描到靶机，说明攻击机和靶机之间可以ping通，再试试宿主机ping虚拟机，发现不可以，查询ip之后，发现宿主机和虚拟机并不在同一个网段上，那就改了来</p>
+<p><img src="/2021/05/28/VulnHub-GoldenEye/3.png"></p>
+<p><img src="/2021/05/28/VulnHub-GoldenEye/4.png"></p>
+<p>如此就可以ping通了，成功访问web服务，同时也解决掉了之前MobaXterm的疑惑</p>
+<p><img src="/2021/05/28/VulnHub-GoldenEye/5.png"></p>
+<p>看到此图的提示，进入/sev-home/目录中，发现登陆框，一定是要找相关用户名和密码。回到刚才的首页，F12看到下面引用terminal.js。</p>
+<p><img src="/2021/05/28/VulnHub-GoldenEye/6.png"></p>
+<p>访问terminal.js看到以下信息</p>
+<p><img src="/2021/05/28/VulnHub-GoldenEye/7.png"></p>
+<p>用burp的decoder模块解密密码，登陆成功，此处用户名一定是小写。</p>
+<p><img src="/2021/05/28/VulnHub-GoldenEye/7.png"></p>
+<blockquote>
+<p>以&amp;#开头的加密方式是？</p>
+</blockquote>
+<h1 id="参考："><a href="#参考：" class="headerlink" title="参考："></a>参考：</h1><ol>
 <li>靶机地址：<a target="_blank" rel="noopener" href="https://www.vulnhub.com/entry/goldeneye-1,240/">https://www.vulnhub.com/entry/goldeneye-1,240/</a></li>
 </ol>
 
