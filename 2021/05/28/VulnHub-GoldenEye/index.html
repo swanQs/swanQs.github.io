@@ -20,12 +20,12 @@
     var CONFIG = {"hostname":"swanq.top","root":"/","scheme":"Muse","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
   </script>
 
-  <meta name="description" content="前言定个小目标，把50台vulhub整个玩一遍，探探其中奥秘。当然最终目标是获取root权限 0x01 环境搭建靶机：GoldenEye 192.168.140.133 攻击机：kali 192.168.140.128 0x02 信息收集首先需要找到攻击目标,nmap -sP 192.168.140.0&#x2F;24  找到IP地址之后去探测目标机子上开了哪些服务和端口  可以看到共开放了4个端口，熟悉的">
+  <meta name="description" content="前言定个小目标，把50台vulhub整个玩一遍，探探其中奥秘。当然最终目标是获取root权限 0x01 环境搭建靶机：GoldenEye 192.168.140.133 攻击机：kali 192.168.140.128 0x02 信息收集首先需要找到攻击目标,nmap -sP 192.168.140.0&#x2F;24  找到IP地址之后去探测目标机子上开了哪些服务和端口 nmap -sV -vv -p 1">
 <meta property="og:type" content="article">
 <meta property="og:title" content="VulnHub-GoldenEye:1 玩耍记录">
 <meta property="og:url" content="http://swanq.top/2021/05/28/VulnHub-GoldenEye/index.html">
 <meta property="og:site_name" content="SwanQ&#39;s Blue SKY">
-<meta property="og:description" content="前言定个小目标，把50台vulhub整个玩一遍，探探其中奥秘。当然最终目标是获取root权限 0x01 环境搭建靶机：GoldenEye 192.168.140.133 攻击机：kali 192.168.140.128 0x02 信息收集首先需要找到攻击目标,nmap -sP 192.168.140.0&#x2F;24  找到IP地址之后去探测目标机子上开了哪些服务和端口  可以看到共开放了4个端口，熟悉的">
+<meta property="og:description" content="前言定个小目标，把50台vulhub整个玩一遍，探探其中奥秘。当然最终目标是获取root权限 0x01 环境搭建靶机：GoldenEye 192.168.140.133 攻击机：kali 192.168.140.128 0x02 信息收集首先需要找到攻击目标,nmap -sP 192.168.140.0&#x2F;24  找到IP地址之后去探测目标机子上开了哪些服务和端口 nmap -sV -vv -p 1">
 <meta property="og:locale" content="zh_CN">
 <meta property="og:image" content="http://swanq.top/2021/05/28/VulnHub-GoldenEye/1.png">
 <meta property="og:image" content="http://swanq.top/2021/05/28/VulnHub-GoldenEye/2.png">
@@ -34,9 +34,24 @@
 <meta property="og:image" content="http://swanq.top/2021/05/28/VulnHub-GoldenEye/5.png">
 <meta property="og:image" content="http://swanq.top/2021/05/28/VulnHub-GoldenEye/6.png">
 <meta property="og:image" content="http://swanq.top/2021/05/28/VulnHub-GoldenEye/7.png">
-<meta property="og:image" content="http://swanq.top/2021/05/28/VulnHub-GoldenEye/7.png">
+<meta property="og:image" content="http://swanq.top/2021/05/28/VulnHub-GoldenEye/8.png">
+<meta property="og:image" content="http://swanq.top/2021/05/28/VulnHub-GoldenEye/9.png">
+<meta property="og:image" content="http://swanq.top/2021/05/28/VulnHub-GoldenEye/10.png">
+<meta property="og:image" content="http://swanq.top/2021/05/28/VulnHub-GoldenEye/19.png">
+<meta property="og:image" content="http://swanq.top/2021/05/28/VulnHub-GoldenEye/11.png">
+<meta property="og:image" content="http://swanq.top/2021/05/28/VulnHub-GoldenEye/12.png">
+<meta property="og:image" content="http://swanq.top/2021/05/28/VulnHub-GoldenEye/13.png">
+<meta property="og:image" content="http://swanq.top/2021/05/28/VulnHub-GoldenEye/14.png">
+<meta property="og:image" content="http://swanq.top/2021/05/28/VulnHub-GoldenEye/15.png">
+<meta property="og:image" content="http://swanq.top/2021/05/28/VulnHub-GoldenEye/16.png">
+<meta property="og:image" content="http://swanq.top/2021/05/28/VulnHub-GoldenEye/17.png">
+<meta property="og:image" content="http://swanq.top/2021/05/28/VulnHub-GoldenEye/18.png">
+<meta property="og:image" content="http://swanq.top/2021/05/28/VulnHub-GoldenEye/20.png">
+<meta property="og:image" content="http://swanq.top/2021/05/28/VulnHub-GoldenEye/21.png">
+<meta property="og:image" content="http://swanq.top/2021/05/28/VulnHub-GoldenEye/22.png">
+<meta property="og:image" content="http://swanq.top/2021/05/28/VulnHub-GoldenEye/23.png">
 <meta property="article:published_time" content="2021-05-28T08:50:10.000Z">
-<meta property="article:modified_time" content="2021-06-22T14:35:50.773Z">
+<meta property="article:modified_time" content="2021-06-25T04:59:38.807Z">
 <meta property="article:author" content="swanQ">
 <meta property="article:tag" content="渗透测试">
 <meta property="article:tag" content="漏洞复现">
@@ -194,7 +209,7 @@
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2021-06-22 22:35:50" itemprop="dateModified" datetime="2021-06-22T22:35:50+08:00">2021-06-22</time>
+                <time title="修改时间：2021-06-25 12:59:38" itemprop="dateModified" datetime="2021-06-25T12:59:38+08:00">2021-06-25</time>
               </span>
 
           <br>
@@ -203,7 +218,7 @@
                 <i class="far fa-file-word"></i>
               </span>
                 <span class="post-meta-item-text">本文字数：</span>
-              <span>549</span>
+              <span>1.5k</span>
             </span>
             <span class="post-meta-item" title="阅读时长">
               <span class="post-meta-item-icon">
@@ -227,7 +242,7 @@
 <p>攻击机：kali 192.168.140.128</p>
 <h1 id="0x02-信息收集"><a href="#0x02-信息收集" class="headerlink" title="0x02 信息收集"></a>0x02 信息收集</h1><p>首先需要找到攻击目标,nmap -sP 192.168.140.0/24</p>
 <p><img src="/2021/05/28/VulnHub-GoldenEye/1.png"></p>
-<p>找到IP地址之后去探测目标机子上开了哪些服务和端口</p>
+<p>找到IP地址之后去探测目标机子上开了哪些服务和端口 nmap -sV -vv -p 1-65535 192.168.140.133</p>
 <p><img src="/2021/05/28/VulnHub-GoldenEye/2.png"></p>
 <p>可以看到共开放了4个端口，熟悉的80端口web服务，先打开试试看，发现不可以访问。这可是第一次遇到这种问题。nmap既然可以扫描到靶机，说明攻击机和靶机之间可以ping通，再试试宿主机ping虚拟机，发现不可以，查询ip之后，发现宿主机和虚拟机并不在同一个网段上，那就改了来</p>
 <p><img src="/2021/05/28/VulnHub-GoldenEye/3.png"></p>
@@ -239,12 +254,52 @@
 <p>访问terminal.js看到以下信息</p>
 <p><img src="/2021/05/28/VulnHub-GoldenEye/7.png"></p>
 <p>用burp的decoder模块解密密码，登陆成功，此处用户名一定是小写。</p>
-<p><img src="/2021/05/28/VulnHub-GoldenEye/7.png"></p>
+<p><img src="/2021/05/28/VulnHub-GoldenEye/8.png"></p>
 <blockquote>
-<p>以&amp;#开头的加密方式是？</p>
+<p>加密格式总结：</p>
+<ul>
+<li>Unicode：\u开头</li>
+<li>UTF8/URL：%开头</li>
+<li>UTF16：\x开头</li>
+<li>&amp;#73;：　73为ASCII码，对应I</li>
+</ul>
 </blockquote>
+<p>登录之后，发现靶机开了pop3服务，且开在某个较高端口上。已知pop3服务为55007，既然知道pop3，也就是说可以从邮件服务器上读取邮件，接下来就是找用户名和密码。</p>
+<p><img src="/2021/05/28/VulnHub-GoldenEye/9.png"></p>
+<p><img src="/2021/05/28/VulnHub-GoldenEye/10.png"></p>
+<p><img src="/2021/05/28/VulnHub-GoldenEye/19.png"></p>
+<p>在terminal.js文件中，有注释写道，make sure you update your default password(建议改成make sure to update your passwd),也就是说目前是默认密码。用户名为boris,此处密码暴力破解即可，一般默认密码都比较简单。</p>
+<p>hydra -L 1.txt -P /usr/share/wordlists/fasttrack.txt  192.168.140.133 -s 55007 pop3</p>
+<p><img src="/2021/05/28/VulnHub-GoldenEye/11.png"></p>
+<p><img src="/2021/05/28/VulnHub-GoldenEye/12.png"></p>
+<p>密码为 secret1!</p>
+<p>通过nc实现telnet连接pop3，登陆并查看boris的邮件信息</p>
+<p><img src="/2021/05/28/VulnHub-GoldenEye/13.png"></p>
+<p>其中三封邮件内容如下，</p>
+<p><img src="/2021/05/28/VulnHub-GoldenEye/14.png"></p>
+<p>root发给boris的邮件，表明admin并不会扫描boris用户所发的任何邮件</p>
+<p><img src="/2021/05/28/VulnHub-GoldenEye/15.png"></p>
+<p>natalya发给boris的邮件，说自己破了boris的密码</p>
+<p><img src="/2021/05/28/VulnHub-GoldenEye/16.png"></p>
+<p>alec发给boris的邮件，注明此附件是goldeneye的部分最终访问代码，让boris把附件放到root文件夹下的隐藏目录。最终执行需要所有的访问代码。执行计划的最后一步是Xenia获取网站的权限并熟悉Goldeneye终端代码.</p>
+<p>再查看natalya的邮件有什么信息。</p>
+<p><img src="/2021/05/28/VulnHub-GoldenEye/17.png"></p>
+<p>root让natalya不要再破坏boris的代码</p>
+<p><img src="/2021/05/28/VulnHub-GoldenEye/18.png"></p>
+<p>得到用户名密码，此服务器域名和网址，且在/etc/hosts可添加信息</p>
+<p>username: xenia<br>password: RCP90rulez!</p>
+<p>Domain: severnaya-station.com/gnocertdir</p>
+<p>point this servers IP to severnaya-station.com in /etc/hosts.</p>
+<p>打开本机/etc/hosts。添加域信息</p>
+<p><img src="/2021/05/28/VulnHub-GoldenEye/20.png"></p>
+<p>登陆网站看到登陆框，用刚才的用户名和密码登陆即可</p>
+<p><img src="/2021/05/28/VulnHub-GoldenEye/21.png"></p>
+<p><img src="/2021/05/28/VulnHub-GoldenEye/22.png"></p>
+<p>找到一封相关的邮件，邮件中标注doak的用户名：</p>
+<p><img src="/2021/05/28/VulnHub-GoldenEye/23.png"></p>
 <h1 id="参考："><a href="#参考：" class="headerlink" title="参考："></a>参考：</h1><ol>
 <li>靶机地址：<a target="_blank" rel="noopener" href="https://www.vulnhub.com/entry/goldeneye-1,240/">https://www.vulnhub.com/entry/goldeneye-1,240/</a></li>
+<li>nc实现telnet连接pop3：<a target="_blank" rel="noopener" href="https://blog.csdn.net/LL458524906/article/details/74635272">https://blog.csdn.net/LL458524906/article/details/74635272</a></li>
 </ol>
 
     </div>
