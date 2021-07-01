@@ -149,6 +149,84 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://swanq.top/2021/07/01/base-64/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="swanQ">
+      <meta itemprop="description" content="Try & Enjoy">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="SwanQ's Blue SKY">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2021/07/01/base-64/" class="post-title-link" itemprop="url">base64解决terminal之间编码不同的问题</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+              
+
+              <time title="创建时间：2021-07-01 18:03:11 / 修改时间：22:32:47" itemprop="dateCreated datePublished" datetime="2021-07-01T18:03:11+08:00">2021-07-01</time>
+            </span>
+
+          <br>
+            <span class="post-meta-item" title="本文字数">
+              <span class="post-meta-item-icon">
+                <i class="far fa-file-word"></i>
+              </span>
+                <span class="post-meta-item-text">本文字数：</span>
+              <span>455</span>
+            </span>
+            <span class="post-meta-item" title="阅读时长">
+              <span class="post-meta-item-icon">
+                <i class="far fa-clock"></i>
+              </span>
+                <span class="post-meta-item-text">阅读时长 &asymp;</span>
+              <span>1 分钟</span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h1 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h1><p>有些特殊字符没法以可打印字符的形式打印出来复制时，先编码一下，与url编码的原理相同</p>
+<p>简单使用：</p>
+<p><img src="/2021/07/01/base-64/1.png"></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">root@192: echo swanq &gt; 1</span><br><span class="line">root@192: echo circle &gt; 2</span><br><span class="line"></span><br><span class="line">root@192: diff -u 1 2 | base64 &gt; patch</span><br><span class="line"></span><br><span class="line">root@192: cat patch</span><br><span class="line">LS0tIDEJMjAyMS0wNy0wMSAyMjoyNDoxNy4wNzc3Mjc0MTAgKzA4MDAKKysrIDIJMjAyMS0wNy0wMSAyMjoyNDoyMy43OTc3Mjc2NzQgKzA4MDAKQEAgLTEgKzEgQEAKLXN3YW5xCitjaXJjbGUK</span><br><span class="line"></span><br><span class="line">root@192:&#x2F;home&#x2F;file# cat patch| base64 -d</span><br><span class="line">--- 1   2021-07-01 22:24:17.077727410 +0800</span><br><span class="line">+++ 2   2021-07-01 22:24:23.797727674 +0800</span><br><span class="line">@@ -1 +1 @@</span><br><span class="line">-swanq</span><br><span class="line">+circle</span><br></pre></td></tr></table></figure>
+
+<p><img src="/2021/07/01/base-64/2.png"></p>
+<h1 id><a href="#" class="headerlink" title></a></h1>
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
     <link itemprop="mainEntityOfPage" href="http://swanq.top/2021/06/17/redis%E5%86%99%E5%AE%9A%E6%97%B6%E4%BB%BB%E5%8A%A1%E5%87%BA%E9%94%99/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -509,7 +587,7 @@
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2021-06-30 20:39:26" itemprop="dateModified" datetime="2021-06-30T20:39:26+08:00">2021-06-30</time>
+                <time title="修改时间：2021-07-01 11:31:54" itemprop="dateModified" datetime="2021-07-01T11:31:54+08:00">2021-07-01</time>
               </span>
 
           <br>
@@ -518,14 +596,14 @@
                 <i class="far fa-file-word"></i>
               </span>
                 <span class="post-meta-item-text">本文字数：</span>
-              <span>1.9k</span>
+              <span>2.8k</span>
             </span>
             <span class="post-meta-item" title="阅读时长">
               <span class="post-meta-item-icon">
                 <i class="far fa-clock"></i>
               </span>
                 <span class="post-meta-item-text">阅读时长 &asymp;</span>
-              <span>2 分钟</span>
+              <span>3 分钟</span>
             </span>
 
         </div>
@@ -537,7 +615,7 @@
     <div class="post-body" itemprop="articleBody">
 
       
-          <h1 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h1><p>定个小目标，把50台vulhub整个玩一遍，探探其中奥秘。当然最终目标是获取root权限</p>
+          <h1 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h1><p>定个小目标，把50台vulhub玩一遍，探探其中奥秘。当然最终目标是获取root权限或者admin账号密码。本靶场目标是获取root目录下flag.txt文件。</p>
 <h1 id="0x01-环境搭建"><a href="#0x01-环境搭建" class="headerlink" title="0x01 环境搭建"></a>0x01 环境搭建</h1><p>靶机：GoldenEye 192.168.140.133</p>
 <p>攻击机：kali 192.168.140.128</p>
 <h1 id="0x02-信息收集"><a href="#0x02-信息收集" class="headerlink" title="0x02 信息收集"></a>0x02 信息收集</h1><p>首先需要找到攻击目标,nmap -sP 192.168.140.0/24</p>
@@ -549,7 +627,7 @@
 <p><img src="/2021/05/28/VulnHub-GoldenEye/4.png"></p>
 <p>如此就可以ping通了，成功访问web服务，同时也解决掉了之前MobaXterm的疑惑</p>
 <p><img src="/2021/05/28/VulnHub-GoldenEye/5.png"></p>
-<p>看到此图的提示，进入/sev-home/目录中，发现登陆框，一定是要找相关用户名和密码。回到刚才的首页，F12看到下面引用terminal.js。</p>
+<p>看到此图的提示，进入/sev-home/目录中，发现登陆框，一定是要找相关用户名和密码。回到刚才的首页，F12看到下面引用terminal.js。通过报错信息也可看到中间件为apache</p>
 <p><img src="/2021/05/28/VulnHub-GoldenEye/6.png"></p>
 <p>访问terminal.js看到以下信息</p>
 <p><img src="/2021/05/28/VulnHub-GoldenEye/7.png"></p>
@@ -608,15 +686,28 @@
 <p><img src="/2021/05/28/VulnHub-GoldenEye/26.png"></p>
 <p>找到一个jpg文件位于以下位置：</p>
 <p><img src="/2021/05/28/VulnHub-GoldenEye/27.png"></p>
-<p>使用wget下载到本地，并exiftool检查图片内容，发现Image Description字段为可疑base64</p>
+<p>使用wget下载到本地，并用strings或exiftool检查图片内容，发现Image Description字段为可疑base64</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">python -c &#39;import base64;s&#x3D;base64.&#39;</span><br></pre></td></tr></table></figure>
+
 <p><img src="/2021/05/28/VulnHub-GoldenEye/28.png"></p>
 <p>解码后为xWinter1995x!。到此得到管理员的账号密码，所有人信息一览无余</p>
 <p>账号：admin</p>
 <p>密码：xWinter1995x!</p>
 <p><img src="/2021/05/28/VulnHub-GoldenEye/29.png"></p>
-<h1 id="参考："><a href="#参考：" class="headerlink" title="参考："></a>参考：</h1><ol>
+<h1 id="0x03-漏洞探测及利用"><a href="#0x03-漏洞探测及利用" class="headerlink" title="0x03 漏洞探测及利用"></a>0x03 漏洞探测及利用</h1><p>从上面内容已知Moodle版本为2.2.3。存在远程命令执行漏洞CVE-2013-3630，msf中存在此payload，不过打不通。</p>
+<p><img src="/2021/05/28/VulnHub-GoldenEye/30.png"></p>
+<p>可以发现此课程管理系统存在可上传文件和上传系统路径的地方，发现可以插入shell命令的地方。</p>
+<p>path to aspell并无出现在moodle的选项里，moodle的选项只包括google 和pspell，所以可能无法利用</p>
+<p><img src="/2021/05/28/VulnHub-GoldenEye/32.png"></p>
+<blockquote>
+<p>du:Path to du. Probably something like /usr/bin/du. If you enter this, pages that display directory contents will run much faster for directories with a lot of files.</p>
+<p>aspell:拼写检查器。To use spell-checking within the editor, you MUST have aspell 0.50 or later installed on your server, and you must specify the correct path to access the aspell binary. On Unix/Linux systems, this path is usually /usr/bin/aspell, but it might be something else.</p>
+<p>dot:Path to dot. Probably something like /usr/bin/dot. To be able to generate graphics from DOT files, you must have installed the dot executable and point to it here. Note that, for now, this only used by the profiling features (Development-&gt;Profiling) built into Moodle.</p>
+</blockquote>
+<h1 id="0x04-复盘"><a href="#0x04-复盘" class="headerlink" title="0x04 复盘"></a>0x04 复盘</h1><h1 id="参考："><a href="#参考：" class="headerlink" title="参考："></a>参考：</h1><ol>
 <li>靶机地址：<a target="_blank" rel="noopener" href="https://www.vulnhub.com/entry/goldeneye-1,240/">https://www.vulnhub.com/entry/goldeneye-1,240/</a></li>
 <li>nc实现telnet连接pop3：<a target="_blank" rel="noopener" href="https://blog.csdn.net/LL458524906/article/details/74635272">https://blog.csdn.net/LL458524906/article/details/74635272</a></li>
+<li>aspell参考：<a target="_blank" rel="noopener" href="https://cloud.tencent.com/developer/article/1764068">https://cloud.tencent.com/developer/article/1764068</a></li>
 </ol>
 
       
@@ -1745,119 +1836,10 @@
   
   
 
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="http://swanq.top/2021/04/22/Broken-Access-Contro/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.gif">
-      <meta itemprop="name" content="swanQ">
-      <meta itemprop="description" content="Try & Enjoy">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="SwanQ's Blue SKY">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2021/04/22/Broken-Access-Contro/" class="post-title-link" itemprop="url">越权访问BAC-Broken Access Contro</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">发表于</span>
-
-              <time title="创建时间：2021-04-22 11:18:58" itemprop="dateCreated datePublished" datetime="2021-04-22T11:18:58+08:00">2021-04-22</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="far fa-calendar-check"></i>
-                </span>
-                <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2021-04-29 16:46:21" itemprop="dateModified" datetime="2021-04-29T16:46:21+08:00">2021-04-29</time>
-              </span>
-
-          <br>
-            <span class="post-meta-item" title="本文字数">
-              <span class="post-meta-item-icon">
-                <i class="far fa-file-word"></i>
-              </span>
-                <span class="post-meta-item-text">本文字数：</span>
-              <span></span>
-            </span>
-            <span class="post-meta-item" title="阅读时长">
-              <span class="post-meta-item-icon">
-                <i class="far fa-clock"></i>
-              </span>
-                <span class="post-meta-item-text">阅读时长 &asymp;</span>
-              <span>NaN:aN</span>
-            </span>
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <h1 id="0x01-前言"><a href="#0x01-前言" class="headerlink" title="0x01 前言"></a>0x01 前言</h1><p>本文将谈谈越权那些事儿。靶场也是本博客的传统–pikachu。</p>
-<h1 id="0x02-谈谈越权"><a href="#0x02-谈谈越权" class="headerlink" title="0x02 谈谈越权"></a>0x02 谈谈越权</h1><p>如果使用A用户的权限去操作B用户的数据，A的权限小于B的权限，如果能够成功操作，则称之为越权操作。</p>
-<p>攻击者在获得低权限用户账户后，利用一些方式绕过权限检查，访问或者操作其他用户或者更高权限。越权漏洞的成因主要是因为开发人员在对数据进行增、删、改、查询时对客户端请求的数据过分相信而遗漏了权限的判定，一旦权限验证不充分，就易致越权漏洞。</p>
-<h2 id="原理："><a href="#原理：" class="headerlink" title="原理："></a>原理：</h2><p>Web 程序功能流程是登录 - 提交请求 - 验证权限 - 数据库查询 - 返回结果。如果<strong>验证权限不足</strong>，便会导致越权</p>
-<p>一般越权漏洞容易出现在权限页面（需要登录的页面）增、删、改、查的地方，当用户对权限页面内的信息进行这些操作时，后台需要对当前用户的权限进行校验，看其是否具备操作的权限，从而给出响应，而如果校验的规则过于简单则容易出现越权漏洞。</p>
-<h2 id="分类"><a href="#分类" class="headerlink" title="分类:"></a>分类:</h2><p>主要分为水平越权和垂直越权</p>
-<p><img src="/2021/04/22/Broken-Access-Contro/6.jpg"></p>
-<h3 id="case1-隐藏-URL"><a href="#case1-隐藏-URL" class="headerlink" title="case1: 隐藏 URL"></a>case1: 隐藏 URL</h3><p>有些程序的管理员的管理页面只有管理员才显示，普通用户看不到，利用 URL 实现访问控制，但 URL 泄露或被恶意攻击者猜到后，这会导致越权攻击。</p>
-<p>解决:验证用户身份，验证用户是否具备操作数据的权限</p>
-<h3 id="case2-直接对象引用"><a href="#case2-直接对象引用" class="headerlink" title="case2: 直接对象引用"></a>case2: 直接对象引用</h3><p>通过修改一下参数就可以产生水平越权，例如查看用户信息页面 URL 后加上自己的 id 便可查看，当修改为他人的 ID 号时会返回他人的信息，便产生了水平越权。</p>
-<p>解决:直接对象引用的加密资源ID，防止攻击者枚举ID，敏感数据特殊化处理</p>
-<h3 id="case3-多阶段功能"><a href="#case3-多阶段功能" class="headerlink" title="case3: 多阶段功能"></a>case3: 多阶段功能</h3><p>多阶段功能是一个功能有多个阶段的实现。例如修改密码，可能第一步是验证用户身份信息，号码验证码类的。当验证成功后，跳到第二步，输入新密码，很多程序会在这一步不再验证用户身份，导致恶意攻击者抓包直接修改参数值，导致可修改任意用户密码。</p>
-<p>解决:执行关键操作前必须验证用户身份，验证用户是否具备操作数据的权限,特别敏感操作可以让用户再次输入密码或其他的验证信息。</p>
-<h3 id="case4-静态文件"><a href="#case4-静态文件" class="headerlink" title="case4: 静态文件"></a>case4: 静态文件</h3><p>网站的下载功能，一些被下载的静态文件，例如 pdf、word、xls 等，可能只有付费用户或会员可下载，但当这些文件的 URL 地址泄露后，导致任何人可下载，如果知道 URL 命名规则，则会便利服务器的收费文档进行批量下载。</p>
-<p>解决:加密静态文件命名规则，防止攻击者枚举;敏感数据特殊化处理</p>
-<h3 id="case5-平台配置错误"><a href="#case5-平台配置错误" class="headerlink" title="case5: 平台配置错误"></a>case5: 平台配置错误</h3><p>程序会通过控件来限制用户的访问，例如后台地址，普通用户不属于管理员组，则不能访问。但当配置平台或配置控件错误时，就会出现越权访问。</p>
-<p>解决:配置控件上点心儿吧</p>
-<h2 id="如何防止："><a href="#如何防止：" class="headerlink" title="如何防止："></a>如何防止：</h2><p>在权限管理中应该遵守：<br>1.使用最小权限原则对用户进行赋权;<br>2.使用合理（严格）的权限校验规则;<br>3.使用后台登录态作为条件进行权限判断,别动不动就瞎用前端传进来的条件;</p>
-<h2 id="靶场练习："><a href="#靶场练习：" class="headerlink" title="靶场练习："></a>靶场练习：</h2><p>当我们以lucy身份登陆进系统时，可以看到username参数可控，当我们改成其他用户时，可以看到其他用户的个人信息。这属于水平越权。</p>
-<p><img src="/2021/04/22/Broken-Access-Contro/1.jpg"></p>
-<p><img src="/2021/04/22/Broken-Access-Contro/2.jpg"></p>
-<p>接下来看看垂直越权,由于后台处理数据的逻辑存在漏洞,对于发送的数据包并没有判断当前数据包的用户权限,所以存在越权漏洞,具体看代码:</p>
-<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"><span class="variable">$link</span>=connect();</span><br><span class="line"><span class="comment">// 判断是否登录，没有登录不能访问</span></span><br><span class="line"><span class="comment">//这里只是验证了登录状态，并没有验证级别，所以存在越权问题。</span></span><br><span class="line"><span class="keyword">if</span>(!check_op2_login(<span class="variable">$link</span>))&#123;</span><br><span class="line">    header(<span class="string">&quot;location:op2_login.php&quot;</span>);</span><br><span class="line">    <span class="keyword">exit</span>();</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">if</span>(<span class="keyword">isset</span>(<span class="variable">$_POST</span>[<span class="string">&#x27;submit&#x27;</span>]))&#123;</span><br><span class="line">    <span class="keyword">if</span>(<span class="variable">$_POST</span>[<span class="string">&#x27;username&#x27;</span>]!=<span class="literal">null</span> &amp;&amp; <span class="variable">$_POST</span>[<span class="string">&#x27;password&#x27;</span>]!=<span class="literal">null</span>)&#123;<span class="comment">//用户名密码必填</span></span><br><span class="line">        <span class="variable">$getdata</span>=escape(<span class="variable">$link</span>, <span class="variable">$_POST</span>);<span class="comment">//转义</span></span><br><span class="line">        <span class="variable">$query</span>=<span class="string">&quot;insert into member(username,pw,sex,phonenum,email,address) values(&#x27;<span class="subst">&#123;$getdata[&#x27;username&#x27;]&#125;</span>&#x27;,md5(&#x27;<span class="subst">&#123;$getdata[&#x27;password&#x27;]&#125;</span>&#x27;),&#x27;<span class="subst">&#123;$getdata[&#x27;sex&#x27;]&#125;</span>&#x27;,&#x27;<span class="subst">&#123;$getdata[&#x27;phonenum&#x27;]&#125;</span>&#x27;,&#x27;<span class="subst">&#123;$getdata[&#x27;email&#x27;]&#125;</span>&#x27;,&#x27;<span class="subst">&#123;$getdata[&#x27;address&#x27;]&#125;</span>&#x27;)&quot;</span>;</span><br><span class="line">        <span class="variable">$result</span>=execute(<span class="variable">$link</span>, <span class="variable">$query</span>);</span><br><span class="line">        <span class="keyword">if</span>(mysqli_affected_rows(<span class="variable">$link</span>)==<span class="number">1</span>)&#123;<span class="comment">//判断是否插入</span></span><br><span class="line">            header(<span class="string">&quot;location:op2_admin.php&quot;</span>);</span><br><span class="line">        &#125;<span class="keyword">else</span> &#123;</span><br><span class="line">            <span class="variable">$html</span>.=<span class="string">&quot;&lt;p&gt;修改失败,请检查下数据库是不是还是活着的&lt;/p&gt;&quot;</span>;</span><br><span class="line"></span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p>先登录admin账户创建test1用户,此时抓包.并发送到repeater模块</p>
-<p>然后登陆普通用户pikachu,获取普通用户的cookie.</p>
-<p>用此cookie覆盖之前admin用户的cookie,重放数据包,发现用户swanQ成功创建.</p>
-<p><img src="/2021/04/22/Broken-Access-Contro/3.jpg"></p>
-<p><img src="/2021/04/22/Broken-Access-Contro/4.jpg"></p>
-<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>这句话很有道理：</p>
-<p>水平越权相当于用别人的卡，而垂直越权相当于用低价购买奢侈品。</p>
-
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
 
   
   <nav class="pagination">
-    <span class="page-number current">1</span><a class="page-number" href="/page/2/">2</a><a class="extend next" rel="next" href="/page/2/"><i class="fa fa-angle-right" aria-label="下一页"></i></a>
+    <span class="page-number current">1</span><a class="page-number" href="/page/2/">2</a><a class="page-number" href="/page/3/">3</a><a class="extend next" rel="next" href="/page/2/"><i class="fa fa-angle-right" aria-label="下一页"></i></a>
   </nav>
 
 
@@ -1923,7 +1905,7 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">20</span>
+          <span class="site-state-item-count">21</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
@@ -1932,7 +1914,7 @@
         <span class="site-state-item-name">分类</span>
       </div>
       <div class="site-state-item site-state-tags">
-        <span class="site-state-item-count">48</span>
+        <span class="site-state-item-count">49</span>
         <span class="site-state-item-name">标签</span>
       </div>
   </nav>
