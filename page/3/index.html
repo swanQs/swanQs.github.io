@@ -119,7 +119,7 @@
   </li>
         <li class="menu-item menu-item-tags">
 
-    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签<span class="badge">49</span></a>
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签<span class="badge">52</span></a>
 
   </li>
         <li class="menu-item menu-item-categories">
@@ -129,7 +129,7 @@
   </li>
         <li class="menu-item menu-item-archives">
 
-    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档<span class="badge">22</span></a>
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档<span class="badge">24</span></a>
 
   </li>
   </ul>
@@ -155,6 +155,220 @@
 
           <div class="content index posts-expand">
             
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://swanq.top/2021/03/28/sparrow/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/author.jpg">
+      <meta itemprop="name" content="swanQ">
+      <meta itemprop="description" content="Try & Enjoy">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="SwanQ's Blue SKY">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2021/03/28/sparrow/" class="post-title-link" itemprop="url">小知识思考</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2021-03-28 15:26:51" itemprop="dateCreated datePublished" datetime="2021-03-28T15:26:51+08:00">2021-03-28</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2021-05-06 19:07:11" itemprop="dateModified" datetime="2021-05-06T19:07:11+08:00">2021-05-06</time>
+              </span>
+
+          
+            <span class="post-meta-item" title="本文字数">
+              <span class="post-meta-item-icon">
+                <i class="far fa-file-word"></i>
+              </span>
+              <span>2.3k</span>
+            </span>
+            <span class="post-meta-item" title="阅读时长">
+              <span class="post-meta-item-icon">
+                <i class="far fa-clock"></i>
+              </span>
+              <span>2 分钟</span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h2 id="0x01-前言"><a href="#0x01-前言" class="headerlink" title="0x01 前言"></a>0x01 前言</h2><p>鉴于经常会有奇怪的思想，故而为自己专门书写这么一篇文章，想到什么记什么。</p>
+<p>包含<strong>任务、所好奇之事</strong>等</p>
+<h2 id="0x02-具现"><a href="#0x02-具现" class="headerlink" title="0x02 具现"></a>0x02 具现</h2><h3 id="1-一次百度涉及-从浏览器输入URL到浏览器显示页面发生了什么？"><a href="#1-一次百度涉及-从浏览器输入URL到浏览器显示页面发生了什么？" class="headerlink" title="1. 一次百度涉及?从浏览器输入URL到浏览器显示页面发生了什么？"></a>1. 一次百度涉及?从浏览器输入URL到浏览器显示页面发生了什么？</h3><ol>
+<li><p><strong>输入地址</strong><br>输入地址时，浏览器其实已经开始只能匹配URL，用于补全。当然如果有缓存，直接从缓存中展示网页。</p>
+</li>
+<li><p><strong>浏览器查找域名IP</strong><br>查看本地hosts文件，查看其中是否有与此域名对应的规则，如果有，则直接用此IP；<br>若无，向本地DNS服务器(自己网络接入服务器商所提供)发出请求，服务器会查询其缓存记录；<br>若无，本地服务器向DNS根服务器查询；<br>若无，根据跟服务器给出的域服务器地址，让本地DNS服务器去找域服务器；<br>.com域服务器返回本地服务器的域名解析服务器的地址；<br>本地服务器向域名解析服务器发出请求，收到域名与IP地址的对应关系。并保存于缓存中用于下次快速访问。</p>
+</li>
+<li><p><strong>浏览器向web服务器发送HTTP请求</strong><br>浏览器以随机端口[1024-65535]向服务器的web服务(nginx、httpd)80端口发起TCP连接请求。通过多种路由设备，进入网卡，然后进入到内核的TCP/IP协议栈对该包进行解封。可能还要经过Netfilter防火墙(内核模块的过滤)<br>，最终到达web程序，建立TCP连接。常称TCP三次握手。<br>建立TCP连接后，发起HTTP请求。GET、POST、PUT 和 DELETE 、HEAD、OPTION以及 TRACE。<br>http请求一般包含三部分：请求方法URL协议/版本(第一行)、请求头(Request Header)、请求正文。<br>请求头和请求正文之前存在一个空行，表示请求头已经结束，接下来的是请求正文</p>
+</li>
+<li><p><strong>服务器的永久重定向响应</strong><br>server给浏览器响应一个301永久重定向响应，301永久重定向：把带www的和不带www的访问地址归到同一个网站排名下</p>
+</li>
+<li><p><strong>浏览器跟踪重定向地址</strong><br>浏览器知道<a target="_blank" rel="noopener" href="http://www.google.com/">http://www.google.com/</a> 是访问的正确地址，所以发送另一个http请求。</p>
+</li>
+<li><p><strong>服务器处理请求</strong><br>后端从固定端口接收TCP报文，处理TCP连接，解析HTTP协议，按照报文格式封装成供上层使用的HTTP Request对象；<br>大网站使用反向代理服务器时，客户端先请求到nginx，nginx再请求应用服务器，最后将结果返回给客户端，Nginx是反向代理服务器。以免某台服务器down了，影响用户使用。<br><img src="/2021/03/28/sparrow/3.jpg"></p>
+</li>
+<li><p><strong>服务器返回一个HTTP响应</strong><br>HTTP响应与HTTP请求相似，由3个部分构成:状态行、响应头(Response Header)、响应正文</p>
+</li>
+</ol>
+<ol start="8">
+<li><strong>浏览器显示 HTML</strong><br>WebKit引擎渲染的过程：<br>解析html以构建dom树 -&gt; 构建render树 -&gt; 布局render树 -&gt; 绘制render树</li>
+<li><strong>浏览器发送请求获取嵌入在 HTML 中的资源（如图片、音频、视频、CSS、JS等等）</strong></li>
+</ol>
+<ul>
+<li><p>DNS负载均衡<br>针对请求资源膨胀的情况，为了防止机子down掉。<br>原理：在DNS服务器中为同一个主机名配置多个IP地址，在应答DNS查询时，将DNS文件中主机记录的IP地址按顺序访问返回不同的解析结果。使得不同客户端访问不同服务器，从而能达到负载均衡的目的。</p>
+</li>
+<li><p>为什么需要三次握手？</p>
+</li>
+</ul>
+<p><strong>第一次握手：</strong>client将标志位SYN置为1,随机产生一个值为seq=J（J的取值范围为=1234567）的数据包到服务器，client进入SYN_SENT状态，等待server确认；</p>
+<p><strong>第二次握手：</strong>server收到数据包后由标志位SYN=1知道client请求建立连接，server将标志位SYN和ACK都置为1，ack=J+1，随机产生一个值seq=K，并将该数据包发送给client以确认连接请求，server进入SYN_RCVD状态。</p>
+<p><strong>第三次握手：</strong>client收到确认后，检查ack是否为J+1，ACK是否为1，如果正确则将标志位ACK置为1，ack=K+1，并将该数据包发送给server，server检查ack是否为K+1，ACK是否为1，如果正确则连接建立成功，client和server进入ESTABLISHED状态，完成三次握手，随后client与server之间可以开始传输数据了。</p>
+<p>三次握手”的目的是为了<strong>防止已失效的连接请求报文段突然又传送到了服务端，产生错误。</strong><br>某滞留请求延迟发给服务端，服务器返回确认报文，若是client一直不确认，server会一直等待，造成资源浪费。<br><img src="/2021/03/28/sparrow/1.jpg"></p>
+<ul>
+<li>为什么需要四次挥手？</li>
+<li><em>第一次挥手：</em>* Client发送一个FIN，用来关闭Client到Server的数据传送，Client进入FIN_WAIT_1状态。</li>
+</ul>
+<p><strong>第二次挥手：</strong> Server收到FIN后，发送一个ACK给Client，确认序号为收到序号+1（与- SYN相同，一个FIN占用一个序号），Server进入CLOSE_WAIT状态。</p>
+<p><strong>第三次挥手：</strong> Server发送一个FIN，用来关闭Server到Client的数据传送，Server进入LAST_ACK状态。</p>
+<p><strong>第四次挥手：</strong> Client收到FIN后，Client进入TIME_WAIT状态，接着发送一个ACK给Server，确认序号为收到序号+1，Server进入CLOSED状态，完成四次挥手。<br>四次挥手，在server收到对方的FIN时，表示client不再发送数据，但是还可以接收server的数据。所以将ACK和FIN分开发送。<br><img src="/2021/03/28/sparrow/2.jpg"></p>
+<h3 id="3-命令"><a href="#3-命令" class="headerlink" title="3.命令"></a>3.命令</h3><p>tar xzvf<br>sudo ufw disable</p>
+<p>mv用来改名哦.cp更靠谱一点</p>
+<h3 id="4-tips"><a href="#4-tips" class="headerlink" title="4. tips"></a>4. tips</h3><p>对于命令注入不过滤参数的：&amp;</p>
+<p><img src="/2021/03/28/sparrow/4.jpg"></p>
+<h3 id="5-nmap"><a href="#5-nmap" class="headerlink" title="5.nmap"></a>5.nmap</h3><p><strong>nmap -sn</strong>  ping scan, - disable port scan</p>
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://swanq.top/2021/03/24/changAnCup/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/author.jpg">
+      <meta itemprop="name" content="swanQ">
+      <meta itemprop="description" content="Try & Enjoy">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="SwanQ's Blue SKY">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2021/03/24/changAnCup/" class="post-title-link" itemprop="url">2019 ChangAn Cup复盘</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+              
+
+              <time title="创建时间：2021-03-24 19:57:41 / 修改时间：20:49:53" itemprop="dateCreated datePublished" datetime="2021-03-24T19:57:41+08:00">2021-03-24</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E7%94%B5%E5%AD%90%E6%95%B0%E6%8D%AE%E5%8F%96%E8%AF%81/" itemprop="url" rel="index"><span itemprop="name">电子数据取证</span></a>
+                </span>
+            </span>
+
+          
+            <span class="post-meta-item" title="本文字数">
+              <span class="post-meta-item-icon">
+                <i class="far fa-file-word"></i>
+              </span>
+              <span>4.9k</span>
+            </span>
+            <span class="post-meta-item" title="阅读时长">
+              <span class="post-meta-item-icon">
+                <i class="far fa-clock"></i>
+              </span>
+              <span>4 分钟</span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h2 id="0x01-前言"><a href="#0x01-前言" class="headerlink" title="0x01 前言"></a>0x01 前言</h2><p>话不多说 直接复盘 查漏补缺</p>
+<h2 id="0x02-分析思路"><a href="#0x02-分析思路" class="headerlink" title="0x02 分析思路"></a>0x02 分析思路</h2><h3 id="检材1："><a href="#检材1：" class="headerlink" title="检材1："></a>检材1：</h3><p>使用仿真对检材1进行分析，开机后发现该Linux无法使用密码远程连接，修改配置文件/etc/ssh/sshd_config文件进行配置：<br>把PasswordAuthentication后的参数改为yes，重启ssh服务（systemctl restart sshd）即可使用远程工具连接；<br><img src="/2021/03/24/changAnCup/clipboard.png"></p>
+<p>查看历史执行命令history，可看到少数命令，怀疑本地的历史命令被加密，/var/log日志目录被删除：<br><img src="/2021/03/24/changAnCup/1.png"><br>netstat -anptl查看服务器开启的端口发现8091和39999上有docker-proxy<br><img src="/2021/03/24/changAnCup/2.png"><br>使用docker ps命令查看docker容器情况，发现docker运行了3个容器，其中验证了第二个ssh的容器属于干扰项，没有作用；<br><img src="/2021/03/24/changAnCup/3.png"><br><img src="/2021/03/24/changAnCup/4.png"></p>
+<p>id为16fc..的容器将自身80端口映射到了本机8091端口上，主要运行的命令为nginx；<br>id为53766的容器开启了8012端口，主要运行命令docker-entrypoint.sh；<br>使用docker inspect 命令可以查看到容器详细信息，如下：<br><img src="/2021/03/24/changAnCup/5.png"><br><img src="/2021/03/24/changAnCup/6.png"><br><img src="/2021/03/24/changAnCup/7.png"><br><img src="/2021/03/24/changAnCup/8.png"><br><img src="/2021/03/24/changAnCup/9.png"><br><img src="/2021/03/24/changAnCup/10.png"><br><img src="/2021/03/24/changAnCup/11.png"><br><img src="/2021/03/24/changAnCup/12.png"><br>使用命令 docker exec -it id号 /bin/bash可以进入到容器内部，16fc160060c1容器内主要运行nginx服务，因此查看nginx配置文件：<br><img src="/2021/03/24/changAnCup/13.png"><br><img src="/2021/03/24/changAnCup/14.png"><br>通过查看nginx配置文件可以知道，nginx访问日志放在相对路径logs下的jrweb.log中，nginx将所有来自自身80端口的请求转发到IP为172.17.0.3的8012端口上，由ID为53766d68636f的容器开启的8012端口可知，应该是转发到该容器，该容器（53766d68636f）在案件中的ip应为172.172.0.3（由于出题时候未设固定ip因此每个人仿真起来之后ip可能会发生变化，前面查看docker inspect时候可看到该容器ip变化为172.17.0.2）；<br><img src="/2021/03/24/changAnCup/15.png"><br>通过查看访问网站的访问日志jrweb.log可知，该网站案发当时的IP地址为192.168.184.128，使用端口8091，分别有ip192.168.184.1和192.168.184.133对该网站进行过访问，133的ip可以看到有尝试登陆的请求；<br><img src="/2021/03/24/changAnCup/16.png"><br>查看Id为53766d68636f的容器，查看history命令可知网站路径为/home/vue2-element-touzi-admin（物理机路径可以查看前面docker inspect），<br><img src="/2021/03/24/changAnCup/17.png"><br><img src="/2021/03/24/changAnCup/18.png"><br>网站根目录下有README.md文件，通过查看可了解网站大致的配置情况，查看server目录下的index.js可知网站的主要配置情况<br><img src="/2021/03/24/changAnCup/19.png"><br>查看server目录下的api.js文件课知，该文件引用了当前目录下的db文件<br><img src="/2021/03/24/changAnCup/20.png"><br>查看网站/server目录下的db.js文件可知，该网站使用mongo的数据库，数据库用户名和密码为root、root，网站使用站库分离结构，数据地址位于192.168.184.129（该ip为检材2的解压密码），使用端口27017，使用的databases为tougu；<br><img src="/2021/03/24/changAnCup/21.png"></p>
+<h3 id="检材2："><a href="#检材2：" class="headerlink" title="检材2："></a>检材2：</h3><p>使用192.168.184.129对检材2进行解压，对检材计算哈希并及进行静态分析和仿真：<br>使用history命令发现如下信息：下载过某程序、执行了encrypt（5）程序，删掉了之前的bash历史记录：<br><img src="/2021/03/24/changAnCup/22.png"><br>前面分析已知该服务器为mongodb服务器，通过端口确认mongo监听在27017端口<br><img src="/2021/03/24/changAnCup/23.png"><br>通过/root/.dbshell发现数据库操作的shell记录，里面发现几条重要信息（由于shell没有时间戳，只能用来推测不能单过证据）<br><img src="/2021/03/24/changAnCup/24.png"><br>通过查看mongo进程信息发现mongo的配置信息，查看mongod.conf文件发现mongod的日志配置情况和安装物理路径。<br><img src="/2021/03/24/changAnCup/25.png"><br><img src="/2021/03/24/changAnCup/26.png"><br>结合系统登陆日志和mongo的日志查看，发现在时间7-11 18：05至18：32分中间，133IP一直在登录状态，同时间没有其他用户登陆，日志中，同时间端发现大量的操作日志，drop为删除数据库指令<br><img src="/2021/03/24/changAnCup/27.png"><br><img src="/2021/03/24/changAnCup/28.png"><br><img src="/2021/03/24/changAnCup/29.png"><br><img src="/2021/03/24/changAnCup/30.png"></p>
+<h3 id="检材3"><a href="#检材3" class="headerlink" title="检材3"></a>检材3</h3><p>使用192.168.184.133对检材3进行解压，对检材计算哈希并及进行静态分析和仿真：<br>通过history命令查看历史命令记录，可以看到大量安装配置pptpd（pptpd是指运行在服务器上提供pptp协议服务的软件）的命令：<br><img src="/2021/03/24/changAnCup/31.png"><br>其中还有大量修改时区信息的命令<br><img src="/2021/03/24/changAnCup/32.png"><br>数据包抓取的命令：<br><img src="/2021/03/24/changAnCup/33.png"><br>通过查看pptpd的配置文件可知如下信息：配置了options.pptpd、开启写入wtmp、定义了本地远程IP地址（可以参看教程<a target="_blank" rel="noopener" href="https://blog.csdn.net/ljm_503909378/article/details/41478121%EF%BC%89%EF%BC%9A">https://blog.csdn.net/ljm_503909378/article/details/41478121）：</a><br><img src="/2021/03/24/changAnCup/34.png"><br><img src="/2021/03/24/changAnCup/35.png"><br><img src="/2021/03/24/changAnCup/36.png"><br>查看/etc/ppp/options.pptp文件可以知道，pptpd开启了日志信息，记录在/var/log/pptpd.log中（当然在历史命令中也可以得知该日志）：<br><img src="/2021/03/24/changAnCup/37.png"><br>继续查看该目录下的chap-secrets文件，该文件为用户验证文件，记录了客户端的使用名称和密码：<br><img src="/2021/03/24/changAnCup/38.png"><br>查看pptpd的日志进行分析，发现IP为172.16.80.188通过账号VPN1成功登陆VPN服务器，时间为2019-07-13 14：15：37 UTC+6(注意！该服务器时区为UTC+6,与北京时间相差2小时)，这段时间内还有多个IP通过VPN2\3\4等账号连结果vpn服务器（干扰项），结合下面的PCAP文件可以进行排查筛选：<br><img src="/2021/03/24/changAnCup/39.png"><br><img src="/2021/03/24/changAnCup/40.png"><br><img src="/2021/03/24/changAnCup/41.png"><br>查看last登陆成功日志可以对应上时间：<br><img src="/2021/03/24/changAnCup/42.png"><br>已知该服务器中存在着数据包文件，将两个文件导出并进行分析，查看到两个文件的内容，该vpn服务器为双网卡，对内IP为192.168.184.133，具备对检材1（192.168.184.128）和检材2（192.168.184.129）访问权限，出口/服务端IP为172.16.80.92，通过分析可发现IP172.16.80.188在北京时间16：15-17：58之前进行了大量的操作，以192.168.184.133的身份对目标网站进行了连接和访问：<br><img src="/2021/03/24/changAnCup/43.png"><br><img src="/2021/03/24/changAnCup/44.png"></p>
+<h3 id="检材4"><a href="#检材4" class="headerlink" title="检材4"></a>检材4</h3><p>使用密码172.16.80.188对检材4进行解压，并使用火眼介质分析和火眼仿真对该介质进行动态和静态分析：</p>
+<h4 id="1-github访问"><a href="#1-github访问" class="headerlink" title="1.github访问"></a>1.github访问</h4><p>使用火眼介质分析分析上网记录发现目标服务器（192.168.184.128）的访问记录：<br>16:17分找到权限并尝试登陆页面<br><img src="/2021/03/24/changAnCup/45.png"><br>结合前面服务器的登陆日志、网站访问日志、抓包文件等分析结果确认最早入侵时间为北京时间2019-07-13 16：17：35（注意！目标服务器的时区为0时区，与北京时间相差8小时）<br><img src="/2021/03/24/changAnCup/46.png"><br><img src="/2021/03/24/changAnCup/47.png"></p>
+<p>在入侵开始时，嫌疑人除访问目标服务器外，还访问了github，根据上网记录登陆github网址查看，搜索用户PackerLin，查看该用户页面，发现其上传过test2的文件，下载后发现为密钥文件，使用该文件尝试连接目标服务器，可以成功登陆，结合检材1默认设置为密钥登陆（禁用密码登陆），可以确认嫌疑人是从git上发现了服务器的连接密钥，从而对服务器实施的入侵。<br><img src="/2021/03/24/changAnCup/48.png"></p>
+<h4 id="2-手机备份分析"><a href="#2-手机备份分析" class="headerlink" title="2.手机备份分析"></a>2.手机备份分析</h4><p>使用火眼介质分析发现内容如下:<br>IOS备份，虚拟机记录Ubuntu，Xshell连接密钥<br> <img src="/2021/03/24/changAnCup/49.png"><br>通过仿真启动检材4镜像，在桌面看到如下内容：<br>Xshell直接运行起来发现其中有两个连接记录，通过密钥的方式进行的连接，密钥文件为packerlin’s test（Xshell的缓存）<br><img src="/2021/03/24/changAnCup/50.png"><br>同时桌面还有一个便签内容为‘niuroumian6’，一个新建文本文档，打开之后看起来像一个密码字典，<br><img src="/2021/03/24/changAnCup/51.png"><br>使用火眼添加手机备份文件为证据直接进行分析，发现该手机备份为加密备份，尝试发现的各种密码，‘niuroumian6’成功解开备份，可以直接对手机备份进行分析，手机内的短信、微信、qq中均发现案件相关聊天记录，通过聊天记录基本可以梳理出来整个案发的流程，同时通过短信了解到该嫌疑人还使用钓鱼网站对一名受害者进行诈骗：<br><img src="/2021/03/24/changAnCup/52.png"><br>通过对检材4分析，发现前面的虚拟机有嫌疑，因此导出虚拟机查看<br> <img src="/2021/03/24/changAnCup/53.png"></p>
+<h4 id="3-网站重构"><a href="#3-网站重构" class="headerlink" title="3.网站重构"></a>3.网站重构</h4><p>在前面检材分析过程中，发现mongo服务器的数据库被drop掉，数据库中无内容，结合后面聊天记录了解到，在检材2的root目录下存在一个被加密的db，应该是嫌疑人要对目标进行勒索，因此下载了加密软件进行了加密<br><img src="/2021/03/24/changAnCup/60.png"><br>方法1：可以尝试使用逆向工程的方法对encrypt（5）文件进行分析，查看大致的加密方式，从而尝试破解或者解密。使用IDA对ELF文件进行逆向分析，可以通过代码或者流图大致看出该加密方式为逐字节+66（10进制），然后和AA进行异或，由于加密方式很简单可以通过WINHEX或者编写简单脚本即可实现解密。<br><img src="/2021/03/24/changAnCup/61.png"><br><img src="/2021/03/24/changAnCup/62.png"><br>方法2：<br>在windows检材中，C盘根目录发现了一个VHD的文件，<br><img src="/2021/03/24/changAnCup/63.png"><br> 双击直接运行，win10系统会自动挂载，发现该分区为bitloker加密分区，通过时间线分析（详见下文），发现该检材又发出过邮件，但是本机未分析出来，通过前面的流量包考虑到，该设备的流程应该都被检材3监听下来，因此尝试对数据包进行分析，发现了一份邮件发出的数据包，追踪TCP流将邮件提取出，发现了备份的bitlocker密钥，但是压缩包加过密码，因此需要尝试破解，联想到之前发现的密码线索桌面字典和便签，尝试对该压缩包进行字典破解，成功破解出密码  !VCHWEDfdfd2IOA564356:”:”  ，<br><img src="/2021/03/24/changAnCup/64.png"><br><img src="/2021/03/24/changAnCup/65.png"><br><img src="/2021/03/24/changAnCup/66.png"><br>成功解压后，可以对加密分区进行解密，该分区内发现了3个与案件相关的重要文件，结合时间线，db文件为嫌疑人拖库的mongo数据，decrypt为解密程序，we.tar.gz为嫌疑人下载的网站代码，因此直接使用db，或者上传decrypt（解压密码为便签内容）到检材1、2，对其中加密的文件进行解密<br> <img src="/2021/03/24/changAnCup/67.png"></p>
+<p>通过上述两种方法，我们可以找到正常的数据库备份文件db，因此导回检材2的mongo数据库中，可以尝试重启网站：<br><img src="/2021/03/24/changAnCup/68.png"><br>由于检材在本地仿真的时候IP发生了变化，因此要调整配置文件的内容，对检材1中的nginx配置文件和数据库配置文件进行修改，此处修改要根据自己虚拟机网络配置的情况进行修改，修改好配置之后，将docker中的run.sh脚本复制到网站目录执行后可以启动网站。<br><img src="/2021/03/24/changAnCup/69.png"><br><img src="/2021/03/24/changAnCup/70.png"><br><img src="/2021/03/24/changAnCup/71.png"><br>查看检材1中网站配置文件/server/index.js，发现该文件引用了api.js，查看该文件发现其中关键的验证登录的字段，直接使用数据库种明文密码登陆，因此登陆数据库查看user表，使用表中用户登陆网站，成功登陆进去<br><img src="/2021/03/24/changAnCup/72.png"><br><img src="/2021/03/24/changAnCup/73.png"><br><img src="/2021/03/24/changAnCup/74.png"></p>
+<h3 id="案情时间线梳理"><a href="#案情时间线梳理" class="headerlink" title="案情时间线梳理"></a>案情时间线梳理</h3><p>16:17分找到权限并尝试登陆页面<br><img src="/2021/03/24/changAnCup/80.png"><br>16:19:54下载密钥文件<br><img src="/2021/03/24/changAnCup/81.png"><br>16:20:42 运行xshell<br><img src="/2021/03/24/changAnCup/82.png"><br>16:21:18 设置用户密钥<br><img src="/2021/03/24/changAnCup/83.png"><br>16:21:28 成功连接128服务器<br><img src="/2021/03/24/changAnCup/84.png"><br>16:31:06 初次启动xftp，创建文件夹及文件<br><img src="/2021/03/24/changAnCup/85.png"><br>16;33:00传输web文件，16:33:15传输完成<br><img src="/2021/03/24/changAnCup/86.png"><br><img src="/2021/03/24/changAnCup/87.png"></p>
+<p>16:34:55 登陆网页微信<br><img src="/2021/03/24/changAnCup/88.png"><br>16:40:13 打开rar，解压web文件<br><img src="/2021/03/24/changAnCup/89.png"><br>16:44:03查看关键数据库链接文件<br><img src="/2021/03/24/changAnCup/90.png"><br>16:45:45——数据库连接<br><img src="/2021/03/24/changAnCup/91.png"><br>16:53:45——17:12:30 手机QQ/微信购买ddos<br><img src="/2021/03/24/changAnCup/92.png"><br>17:15:33 下载runit（DDOS）<br><img src="/2021/03/24/changAnCup/93.png"><br>17:18:20新建xshell连接，17:18:55连接成功<br><img src="/2021/03/24/changAnCup/94.png"><br>17:22:23 下载db<br><img src="/2021/03/24/changAnCup/95.png"><br><img src="/2021/03/24/changAnCup/96.png"><br>17:27:53——17:37:56 手机QQ/微信购买加密解密<br><img src="/2021/03/24/changAnCup/97.png"><br>17:39:32 下载解密程序<br><img src="/2021/03/24/changAnCup/98.png"><br>17:42:20 再次访问129服务器<br><img src="/2021/03/24/changAnCup/99.png"><br>17:44:35 再次连接128服务器<br><img src="/2021/03/24/changAnCup/100.png"><br>17:45:16 XFTP连接128服务器<br><img src="/2021/03/24/changAnCup/101.png"><br><img src="/2021/03/24/changAnCup/102.png"><br>17:49:01 bitlocker加密<br><img src="/2021/03/24/changAnCup/103.png"><br>17:49:45 密钥生成于C:\users<br><img src="/2021/03/24/changAnCup/104.png"><br>17:51:47 桌面出现txt<br><img src="/2021/03/24/changAnCup/105.png"><br>17:52:19 目录下出现BitLocker.rar<br><img src="/2021/03/24/changAnCup/106.png"><br>17:53:24 运行foxmail<br><img src="/2021/03/24/changAnCup/107.png"></p>
+<h2 id="参考"><a href="#参考" class="headerlink" title="参考:"></a>参考:</h2><p>1.<a target="_blank" rel="noopener" href="https://xdforensics-wiki.github.io/XDforensics-wiki/linux2/#docker">https://xdforensics-wiki.github.io/XDforensics-wiki/linux2/#docker</a><br>1、<a target="_blank" rel="noopener" href="https://www.jianshu.com/p/806485990aea">https://www.jianshu.com/p/806485990aea</a> Docker文件目录 - 简书<br>2、<a target="_blank" rel="noopener" href="https://hub.docker.com/_/mysql">https://hub.docker.com/_/mysql</a> mysql - Docker Hub<br>3、李鹏超, 周凯. 基于Docker容器的电子数据取证方法[J]. 吉林大学学报(理学版), 2019, 57(06): 1485-1490.</p>
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
       
   
   
@@ -483,7 +697,7 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">22</span>
+          <span class="site-state-item-count">24</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
@@ -492,7 +706,7 @@
         <span class="site-state-item-name">分类</span>
       </div>
       <div class="site-state-item site-state-tags">
-        <span class="site-state-item-count">49</span>
+        <span class="site-state-item-count">52</span>
         <span class="site-state-item-name">标签</span>
       </div>
   </nav>
@@ -540,12 +754,12 @@
     <span class="post-meta-item-icon">
       <i class="fa fa-chart-area"></i>
     </span>
-    <span title="站点总字数">74k</span>
+    <span title="站点总字数">77k</span>
     <span class="post-meta-divider">|</span>
     <span class="post-meta-item-icon">
       <i class="fa fa-coffee"></i>
     </span>
-    <span title="站点阅读时长">1:07</span>
+    <span title="站点阅读时长">1:10</span>
 </div>
 
         

