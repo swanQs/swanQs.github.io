@@ -20,12 +20,12 @@
     var CONFIG = {"hostname":"swanq.top","root":"/","scheme":"Gemini","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":true,"show_result":true,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":true},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
   </script>
 
-  <meta name="description" content="0x01 Kerberos简介Kerberos认证中，最主要的问题是如何证明“你是你”的问题，当一个Client去访问Server上的某服务时，Server如何判断Client是否有权限来访问自己主机上的服务，同时保证在这个过程中的通讯内容即使被拦截&#x2F;篡改也不影响通讯的安全性，这正是Kerberos解决的问题。在域渗透过程中Kerberos协议的攻防也至关重要。 1.Kerberos协议框架在Ke">
+  <meta name="description" content="0x00 前言windows认证协议主要包括两种，一种是NTLM，一种是Kerberos.  NTLM  使用在 Windows NT 和 Windows 2000 Server(or later)工作组环境中  基于挑战、应答的Windows 早期的认证机制，因其安全性不高，从 Windows 2000 开始已经默认不再使用    Kerberos  使用在域中  集中式的认证方式，整个认证过程">
 <meta property="og:type" content="article">
 <meta property="og:title" content="域渗透前言之kerberos协议">
 <meta property="og:url" content="http://swanq.top/2021/05/25/%E5%9F%9F%E6%B8%97%E9%80%8F-kerberos/index.html">
 <meta property="og:site_name" content="SwanQ&#39;s Blue SKY">
-<meta property="og:description" content="0x01 Kerberos简介Kerberos认证中，最主要的问题是如何证明“你是你”的问题，当一个Client去访问Server上的某服务时，Server如何判断Client是否有权限来访问自己主机上的服务，同时保证在这个过程中的通讯内容即使被拦截&#x2F;篡改也不影响通讯的安全性，这正是Kerberos解决的问题。在域渗透过程中Kerberos协议的攻防也至关重要。 1.Kerberos协议框架在Ke">
+<meta property="og:description" content="0x00 前言windows认证协议主要包括两种，一种是NTLM，一种是Kerberos.  NTLM  使用在 Windows NT 和 Windows 2000 Server(or later)工作组环境中  基于挑战、应答的Windows 早期的认证机制，因其安全性不高，从 Windows 2000 开始已经默认不再使用    Kerberos  使用在域中  集中式的认证方式，整个认证过程">
 <meta property="og:locale" content="zh_CN">
 <meta property="og:image" content="http://swanq.top/2021/05/25/%E5%9F%9F%E6%B8%97%E9%80%8F-kerberos/1.jpg">
 <meta property="og:image" content="http://swanq.top/2021/05/25/%E5%9F%9F%E6%B8%97%E9%80%8F-kerberos/2.jpg">
@@ -37,12 +37,12 @@
 <meta property="og:image" content="http://swanq.top/2021/05/25/%E5%9F%9F%E6%B8%97%E9%80%8F-kerberos/17.jpg">
 <meta property="og:image" content="http://swanq.top/2021/05/25/%E5%9F%9F%E6%B8%97%E9%80%8F-kerberos/18.jpg">
 <meta property="article:published_time" content="2021-05-25T01:51:20.000Z">
-<meta property="article:modified_time" content="2021-07-05T03:38:57.737Z">
+<meta property="article:modified_time" content="2021-07-09T09:56:14.767Z">
 <meta property="article:author" content="swanQ">
+<meta property="article:tag" content="渗透测试">
 <meta property="article:tag" content="域渗透">
 <meta property="article:tag" content="kerberos">
 <meta property="article:tag" content="金票">
-<meta property="article:tag" content="银票">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:image" content="http://swanq.top/2021/05/25/%E5%9F%9F%E6%B8%97%E9%80%8F-kerberos/1.jpg">
 
@@ -134,7 +134,7 @@
   </li>
         <li class="menu-item menu-item-tags">
 
-    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签<span class="badge">54</span></a>
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签<span class="badge">53</span></a>
 
   </li>
         <li class="menu-item menu-item-categories">
@@ -205,7 +205,7 @@
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2021-07-05 11:38:57" itemprop="dateModified" datetime="2021-07-05T11:38:57+08:00">2021-07-05</time>
+                <time title="修改时间：2021-07-09 17:56:14" itemprop="dateModified" datetime="2021-07-09T17:56:14+08:00">2021-07-09</time>
               </span>
 
           
@@ -213,7 +213,7 @@
               <span class="post-meta-item-icon">
                 <i class="far fa-file-word"></i>
               </span>
-              <span>3.1k</span>
+              <span>3.3k</span>
             </span>
             <span class="post-meta-item" title="阅读时长">
               <span class="post-meta-item-icon">
@@ -231,7 +231,26 @@
     <div class="post-body" itemprop="articleBody">
 
       
-        <h1 id="0x01-Kerberos简介"><a href="#0x01-Kerberos简介" class="headerlink" title="0x01 Kerberos简介"></a>0x01 Kerberos简介</h1><p>Kerberos认证中，最主要的问题是如何证明“你是你”的问题，当一个Client去访问Server上的某服务时，Server如何判断Client是否有权限来访问自己主机上的服务，同时保证在这个过程中的通讯内容即使被拦截/篡改也不影响通讯的安全性，这正是Kerberos解决的问题。在域渗透过程中Kerberos协议的攻防也至关重要。</p>
+        <h1 id="0x00-前言"><a href="#0x00-前言" class="headerlink" title="0x00 前言"></a>0x00 前言</h1><p>windows认证协议主要包括两种，一种是NTLM，一种是Kerberos.</p>
+<ul>
+<li><p>NTLM</p>
+<ol>
+<li><p>使用在 Windows NT 和 Windows 2000 Server(or later)<strong>工作组环境</strong>中</p>
+</li>
+<li><p>基于挑战、应答的Windows 早期的认证机制，因其安全性不高，从 Windows 2000 开始已经默认不再使用</p>
+</li>
+</ol>
+</li>
+<li><p>Kerberos</p>
+<ol>
+<li><p>使用在<strong>域</strong>中</p>
+</li>
+<li><p>集中式的认证方式，整个认证过程中总共要涉及到三方:客户端、服务端和KDC</p>
+</li>
+</ol>
+</li>
+</ul>
+<h1 id="0x01-Kerberos简介"><a href="#0x01-Kerberos简介" class="headerlink" title="0x01 Kerberos简介"></a>0x01 Kerberos简介</h1><p>Kerberos认证中，最主要的问题是如何证明“你是你”的问题，当一个Client去访问Server上的某服务时，Server如何判断Client是否有权限来访问自己主机上的服务，同时保证在这个过程中的通讯内容即使被拦截/篡改也不影响通讯的安全性，这正是Kerberos解决的问题。在域渗透过程中Kerberos协议的攻防也至关重要。</p>
 <h2 id="1-Kerberos协议框架"><a href="#1-Kerberos协议框架" class="headerlink" title="1.Kerberos协议框架"></a>1.<strong>Kerberos协议框架</strong></h2><p>在Kerberos协议中主要是有三个角色的存在：</p>
 <ul>
 <li><p>访问服务的Client</p>
@@ -321,10 +340,10 @@
       </div>
       <footer class="post-footer">
           <div class="post-tags">
+              <a href="/tags/%E6%B8%97%E9%80%8F%E6%B5%8B%E8%AF%95/" rel="tag"><i class="fa fa-tag"></i> 渗透测试</a>
               <a href="/tags/%E5%9F%9F%E6%B8%97%E9%80%8F/" rel="tag"><i class="fa fa-tag"></i> 域渗透</a>
               <a href="/tags/kerberos/" rel="tag"><i class="fa fa-tag"></i> kerberos</a>
               <a href="/tags/%E9%87%91%E7%A5%A8/" rel="tag"><i class="fa fa-tag"></i> 金票</a>
-              <a href="/tags/%E9%93%B6%E7%A5%A8/" rel="tag"><i class="fa fa-tag"></i> 银票</a>
           </div>
 
         
@@ -398,7 +417,7 @@
 
       <!--noindex-->
       <div class="post-toc-wrap sidebar-panel">
-          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#0x01-Kerberos%E7%AE%80%E4%BB%8B"><span class="nav-number">1.</span> <span class="nav-text">0x01 Kerberos简介</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#1-Kerberos%E5%8D%8F%E8%AE%AE%E6%A1%86%E6%9E%B6"><span class="nav-number">1.1.</span> <span class="nav-text">1.Kerberos协议框架</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2-Kerberos%E8%AE%A4%E8%AF%81-ticket-system"><span class="nav-number">1.2.</span> <span class="nav-text">2. Kerberos认证-ticket system</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#0x02-Kerberoasting-%E5%AF%B9kerberos%E7%9A%84%E6%B8%97%E9%80%8F"><span class="nav-number">2.</span> <span class="nav-text">0x02 Kerberoasting-对kerberos的渗透</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#0x0-%E5%8F%82%E8%80%83"><span class="nav-number">3.</span> <span class="nav-text">0x0 参考</span></a></li></ol></div>
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#0x00-%E5%89%8D%E8%A8%80"><span class="nav-number">1.</span> <span class="nav-text">0x00 前言</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#0x01-Kerberos%E7%AE%80%E4%BB%8B"><span class="nav-number">2.</span> <span class="nav-text">0x01 Kerberos简介</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#1-Kerberos%E5%8D%8F%E8%AE%AE%E6%A1%86%E6%9E%B6"><span class="nav-number">2.1.</span> <span class="nav-text">1.Kerberos协议框架</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2-Kerberos%E8%AE%A4%E8%AF%81-ticket-system"><span class="nav-number">2.2.</span> <span class="nav-text">2. Kerberos认证-ticket system</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#0x02-Kerberoasting-%E5%AF%B9kerberos%E7%9A%84%E6%B8%97%E9%80%8F"><span class="nav-number">3.</span> <span class="nav-text">0x02 Kerberoasting-对kerberos的渗透</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#0x0-%E5%8F%82%E8%80%83"><span class="nav-number">4.</span> <span class="nav-text">0x0 参考</span></a></li></ol></div>
       </div>
       <!--/noindex-->
 
@@ -423,7 +442,7 @@
         <span class="site-state-item-name">分类</span>
       </div>
       <div class="site-state-item site-state-tags">
-        <span class="site-state-item-count">54</span>
+        <span class="site-state-item-count">53</span>
         <span class="site-state-item-name">标签</span>
       </div>
   </nav>
@@ -471,12 +490,12 @@
     <span class="post-meta-item-icon">
       <i class="fa fa-chart-area"></i>
     </span>
-    <span title="站点总字数">76k</span>
+    <span title="站点总字数">78k</span>
     <span class="post-meta-divider">|</span>
     <span class="post-meta-item-icon">
       <i class="fa fa-coffee"></i>
     </span>
-    <span title="站点阅读时长">1:09</span>
+    <span title="站点阅读时长">1:11</span>
 </div>
 
         
