@@ -119,7 +119,7 @@
   </li>
         <li class="menu-item menu-item-tags">
 
-    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签<span class="badge">53</span></a>
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签<span class="badge">54</span></a>
 
   </li>
         <li class="menu-item menu-item-categories">
@@ -129,7 +129,7 @@
   </li>
         <li class="menu-item menu-item-archives">
 
-    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档<span class="badge">25</span></a>
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档<span class="badge">26</span></a>
 
   </li>
   </ul>
@@ -159,6 +159,127 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://swanq.top/2021/07/12/%E5%9F%9F%E6%B8%97%E9%80%8F%E7%BB%B4%E6%9D%83%E4%B9%8BSSP/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/author.jpg">
+      <meta itemprop="name" content="swanQ">
+      <meta itemprop="description" content="让自己去触碰安全的blue sky">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="SwanQ's Blue SKY">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2021/07/12/%E5%9F%9F%E6%B8%97%E9%80%8F%E7%BB%B4%E6%9D%83%E4%B9%8BSSP/" class="post-title-link" itemprop="url">域渗透维权之SSP</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+              
+
+              <time title="创建时间：2021-07-12 11:10:40 / 修改时间：18:49:17" itemprop="dateCreated datePublished" datetime="2021-07-12T11:10:40+08:00">2021-07-12</time>
+            </span>
+
+          
+            <span class="post-meta-item" title="本文字数">
+              <span class="post-meta-item-icon">
+                <i class="far fa-file-word"></i>
+              </span>
+              <span>1.4k</span>
+            </span>
+            <span class="post-meta-item" title="阅读时长">
+              <span class="post-meta-item-icon">
+                <i class="far fa-clock"></i>
+              </span>
+              <span>1 分钟</span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h1 id="0x00前言"><a href="#0x00前言" class="headerlink" title="0x00前言"></a>0x00前言</h1><p>咱今儿来看看单纯的维权，如果拿到了目标机器的system权限，可以利用SSP进行提权。其基础环境如下：</p>
+<table>
+<thead>
+<tr>
+<th align="center">IP</th>
+<th align="center">描述</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="center">192.168.221.139</td>
+<td align="center">DC</td>
+</tr>
+<tr>
+<td align="center">192.168.221.140</td>
+<td align="center">域成员</td>
+</tr>
+</tbody></table>
+<h1 id="0x01-简介"><a href="#0x01-简介" class="headerlink" title="0x01 简介"></a>0x01 简介</h1><h2 id="概念："><a href="#概念：" class="headerlink" title="概念："></a>概念：</h2><p><strong>SSP</strong>：Security Support Provider，直译为安全支持提供者，<strong>注册表中为Security Package</strong>.SSP就是一个用来实现身份认证的DLL</p>
+<p><strong>SSPI</strong>：Security Support Provider Interface，直译为安全支持提供程序接口，是<strong>Windows系统在执行认证操作所使用的API</strong>。SSPI是SSP的API接口</p>
+<p><img src="/2021/07/12/%E5%9F%9F%E6%B8%97%E9%80%8F%E7%BB%B4%E6%9D%83%E4%B9%8BSSP/1.png"></p>
+<p><strong>lsass.exe</strong> ：作为Windows的系统进程，用于本地安全和登录策略;<strong>系统启动时，SSP 将被加载到lsass.exe进程中</strong>。</p>
+<p><strong>LSA</strong> ：Local Security Authority，用于身份验证; 且可进行扩展。</p>
+<h2 id="原理："><a href="#原理：" class="headerlink" title="原理："></a>原理：</h2><p>因为LSA是可扩展的，所以可以自定义恶意dll,在系统启动的时候，加载到lsass.exe进程中，就可获取lsass.exe中的明文密码。即使用户更改密码并重新登录，攻击者依然可疑获取其新密码</p>
+<p>0x02和0x03分别是两种不同的方案</p>
+<h1 id="0x02-SSP中加载mimilib-dll"><a href="#0x02-SSP中加载mimilib-dll" class="headerlink" title="0x02 SSP中加载mimilib.dll"></a>0x02 SSP中加载mimilib.dll</h1><h2 id="添加SSP"><a href="#添加SSP" class="headerlink" title="添加SSP"></a>添加SSP</h2><p>将mimikatz提供的mimilib.dll复制到c:\windows\system32，与lsass进程位置相同，以便获取访问受感染主机的任何用户的登陆凭证</p>
+<h2 id="设置SSP"><a href="#设置SSP" class="headerlink" title="设置SSP"></a>设置SSP</h2><p>修改DC注册表HKEY_LOCAL_MACHINE\System\CurrentControlSet\Control\Lsa\Security Packages\</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">#修改注册表项</span><br><span class="line">reg add &quot;hklm\system\currentcontrolset\control\lsa\&quot; &#x2F;v &quot;Security Packages&quot; &#x2F;d &quot;kerberos\0msv1_0\0schannel\0wdigest\0tspkg\0pku2u\0mimilib&quot; &#x2F;t REG_MULTI_SZ</span><br><span class="line">#查看注册表项是否注入恶意dll</span><br><span class="line">HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Control\Lsa\Security Packages</span><br></pre></td></tr></table></figure>
+
+<p><img src="/2021/07/12/%E5%9F%9F%E6%B8%97%E9%80%8F%E7%BB%B4%E6%9D%83%E4%B9%8BSSP/2.png"></p>
+<p>当域用户再次进行身份验证时-锁屏并打开，将System32目录下创建kiwissp文件，记录用户账户及明文密码</p>
+<p><img src="/2021/07/12/%E5%9F%9F%E6%B8%97%E9%80%8F%E7%BB%B4%E6%9D%83%E4%B9%8BSSP/3.png"></p>
+<h1 id="0x03-memssp加载到内存："><a href="#0x03-memssp加载到内存：" class="headerlink" title="0x03 memssp加载到内存："></a>0x03 memssp加载到内存：</h1><p><img src="/2021/07/12/%E5%9F%9F%E6%B8%97%E9%80%8F%E7%BB%B4%E6%9D%83%E4%B9%8BSSP/5.png"></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">privilege::debug</span><br><span class="line">misc::memssp</span><br></pre></td></tr></table></figure>
+
+<p>当再次进行身份验证的时候，会在System32目录下创建mimilsa.log</p>
+<p><img src="/2021/07/12/%E5%9F%9F%E6%B8%97%E9%80%8F%E7%BB%B4%E6%9D%83%E4%B9%8BSSP/4.png"></p>
+<h1 id="0x04-总结"><a href="#0x04-总结" class="headerlink" title="0x04 总结"></a>0x04 总结</h1><ul>
+<li>ssp中加载dll：必须重启，永久有效</li>
+<li>加载到内存：必须重新登录，重新启动后不会存在</li>
+</ul>
+<h1 id="0x04-检测及清理"><a href="#0x04-检测及清理" class="headerlink" title="0x04 检测及清理"></a>0x04 检测及清理</h1><h2 id="加载mimilib-dll："><a href="#加载mimilib-dll：" class="headerlink" title="加载mimilib.dll："></a>加载mimilib.dll：</h2><ul>
+<li>sysmon4622事件记录了lsass进程加载mimilib的过程</li>
+</ul>
+<h2 id="注册表"><a href="#注册表" class="headerlink" title="注册表"></a>注册表</h2><p>检测此位置是否加载恶意dll</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">HKEY_LOCAL_MACHINE\System\CurrentControlSet\Control\Lsa\Security Packages\</span><br></pre></td></tr></table></figure>
+
+<h2 id="windows目录："><a href="#windows目录：" class="headerlink" title="windows目录："></a>windows目录：</h2><p>检测Windows\System32是否有可疑dll及可疑txt或者log文件</p>
+<h2 id="工具："><a href="#工具：" class="headerlink" title="工具："></a>工具：</h2><p>Autoruns</p>
+<h1 id="参考："><a href="#参考：" class="headerlink" title="参考："></a>参考：</h1><ol>
+<li>创建的域用户本身拥有登录权限。登录用户名记得是<strong>域名\创建用户名</strong></li>
+</ol>
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
     <link itemprop="mainEntityOfPage" href="http://swanq.top/2021/07/08/%E5%9F%9F%E6%B8%97%E9%80%8F%E6%8F%90%E6%9D%83%E7%BB%B4%E6%9D%83%E4%B9%8B%E9%93%B6%E7%A5%A8/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -173,7 +294,7 @@
       <header class="post-header">
         <h2 class="post-title" itemprop="name headline">
           
-            <a href="/2021/07/08/%E5%9F%9F%E6%B8%97%E9%80%8F%E6%8F%90%E6%9D%83%E7%BB%B4%E6%9D%83%E4%B9%8B%E9%93%B6%E7%A5%A8/" class="post-title-link" itemprop="url">域渗透提权维权之银票</a>
+            <a href="/2021/07/08/%E5%9F%9F%E6%B8%97%E9%80%8F%E6%8F%90%E6%9D%83%E7%BB%B4%E6%9D%83%E4%B9%8B%E9%93%B6%E7%A5%A8/" class="post-title-link" itemprop="url">域渗透维权之银票</a>
         </h2>
 
         <div class="post-meta">
@@ -190,7 +311,7 @@
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2021-07-12 10:13:31" itemprop="dateModified" datetime="2021-07-12T10:13:31+08:00">2021-07-12</time>
+                <time title="修改时间：2021-07-12 11:14:58" itemprop="dateModified" datetime="2021-07-12T11:14:58+08:00">2021-07-12</time>
               </span>
 
           
@@ -216,7 +337,7 @@
     <div class="post-body" itemprop="articleBody">
 
       
-          <h1 id="0x00前言"><a href="#0x00前言" class="headerlink" title="0x00前言"></a>0x00前言</h1><p>利用PtT票据传递攻击，就可以替代明文密码。PtT包括金票和银票利用</p>
+          <h1 id="0x00前言"><a href="#0x00前言" class="headerlink" title="0x00前言"></a>0x00前言</h1><p>利用PTT票据传递攻击，就可以替代明文密码。PTT包括金票和银票利用</p>
 <h1 id="0x01-简介"><a href="#0x01-简介" class="headerlink" title="0x01 简介"></a>0x01 简介</h1><p>白银票据用来伪造ST。我们实验利用白银票据提升普通用户的条件、利用方式及检测攻击方式介绍如下</p>
 <table>
 <thead>
@@ -1467,157 +1588,6 @@
   
   
 
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="http://swanq.top/2021/05/25/%E5%9F%9F%E6%B8%97%E9%80%8F-kerberos/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/author.jpg">
-      <meta itemprop="name" content="swanQ">
-      <meta itemprop="description" content="让自己去触碰安全的blue sky">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="SwanQ's Blue SKY">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2021/05/25/%E5%9F%9F%E6%B8%97%E9%80%8F-kerberos/" class="post-title-link" itemprop="url">域渗透前言之kerberos协议</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">发表于</span>
-
-              <time title="创建时间：2021-05-25 09:51:20" itemprop="dateCreated datePublished" datetime="2021-05-25T09:51:20+08:00">2021-05-25</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="far fa-calendar-check"></i>
-                </span>
-                <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2021-07-09 17:56:14" itemprop="dateModified" datetime="2021-07-09T17:56:14+08:00">2021-07-09</time>
-              </span>
-
-          
-            <span class="post-meta-item" title="本文字数">
-              <span class="post-meta-item-icon">
-                <i class="far fa-file-word"></i>
-              </span>
-              <span>3.3k</span>
-            </span>
-            <span class="post-meta-item" title="阅读时长">
-              <span class="post-meta-item-icon">
-                <i class="far fa-clock"></i>
-              </span>
-              <span>3 分钟</span>
-            </span>
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <h1 id="0x00-前言"><a href="#0x00-前言" class="headerlink" title="0x00 前言"></a>0x00 前言</h1><p>windows认证协议主要包括两种，一种是NTLM，一种是Kerberos.</p>
-<ul>
-<li><p>NTLM</p>
-<ol>
-<li><p>使用在 Windows NT 和 Windows 2000 Server(or later)<strong>工作组环境</strong>中</p>
-</li>
-<li><p>基于挑战、应答的Windows 早期的认证机制，因其安全性不高，从 Windows 2000 开始已经默认不再使用</p>
-</li>
-</ol>
-</li>
-<li><p>Kerberos</p>
-<ol>
-<li><p>使用在<strong>域</strong>中</p>
-</li>
-<li><p>集中式的认证方式，整个认证过程中总共要涉及到三方:客户端、服务端和KDC</p>
-</li>
-</ol>
-</li>
-</ul>
-<h1 id="0x01-Kerberos简介"><a href="#0x01-Kerberos简介" class="headerlink" title="0x01 Kerberos简介"></a>0x01 Kerberos简介</h1><p>Kerberos认证中，最主要的问题是如何证明“你是你”的问题，当一个Client去访问Server上的某服务时，Server如何判断Client是否有权限来访问自己主机上的服务，同时保证在这个过程中的通讯内容即使被拦截/篡改也不影响通讯的安全性，这正是Kerberos解决的问题。在域渗透过程中Kerberos协议的攻防也至关重要。</p>
-<h2 id="1-Kerberos协议框架"><a href="#1-Kerberos协议框架" class="headerlink" title="1.Kerberos协议框架"></a>1.<strong>Kerberos协议框架</strong></h2><p>在Kerberos协议中主要是有三个角色的存在：</p>
-<ul>
-<li><p>访问服务的Client</p>
-</li>
-<li><p>提供服务的Server</p>
-</li>
-<li><p>KDC（Key Distribution Center）密钥分发中心</p>
-<p>其中KDC服务默认会安装在一个域的域控中，而Client和Server为域内的用户或者是服务，如HTTP服务，SQL服务。在Kerberos中Client是否有权限访问Server端的服务由KDC发放的票据来决定。</p>
-<p><img src="/2021/05/25/%E5%9F%9F%E6%B8%97%E9%80%8F-kerberos/1.jpg"></p>
-</li>
-</ul>
-<p>如果把Kerberos中的票据类比为一张火车票，那么Client端就是乘客，Server端就是火车，而KDC就是车站的认证系统。如果Client端的票据是合法的（由你本人身份证购买并由你本人持有）同时有访问Server端服务的权限（车票对应车次正确）那么你才能上车。当然和火车票不一样的是Kerberos中有存在两张票，而火车票只有一张。</p>
-<p>由上图中可以看到<strong>KDC又分为两个部分</strong>：</p>
-<p><strong>Authentication Server</strong>： AS的作用就是验证Client端的身份（确定你是身份证上的本人），验证通过就会给一张<strong>TGT</strong>（Ticket Granting Ticket）票给Client。</p>
-<p><strong>Ticket Granting Server</strong>： TGS的作用是通过AS发送给Client的票（TGT）换取访问Server端的票（上车的票ST）。ST（ServiceTicket）也有资料称为TGS Ticket，为了和TGS区分，在这里就用ST来说明。</p>
-<p><img src="/2021/05/25/%E5%9F%9F%E6%B8%97%E9%80%8F-kerberos/2.jpg"></p>
-<p>KDC服务框架中包含一个<strong>KRBTGT</strong>账户，它是在创建域时系统自动创建的一个账号，可以暂时理解为他就是一个无法登陆的账号，在发送票据的时候会使用到其hash。</p>
-<p><img src="/2021/05/25/%E5%9F%9F%E6%B8%97%E9%80%8F-kerberos/3.jpg"></p>
-<h2 id="2-Kerberos认证-ticket-system"><a href="#2-Kerberos认证-ticket-system" class="headerlink" title="2. Kerberos认证-ticket system"></a>2. Kerberos认证-ticket system</h2><p>流程当Client想要访问Server上的某个服务时，需要先向AS证明自己的身份，然后通过AS发放的TGT向Server发起认证请求，这个过程分为三块：</p>
-<p><strong>The Authentication Service Exchange</strong>：Client与AS的交互</p>
-<p><strong>The Ticket-Granting Service (TGS) Exchange</strong>：Client与TGS的交互</p>
-<p><strong>The Client/Server Authentication Exchange</strong>：Client与Server的交互</p>
-<p><img src="/2021/05/25/%E5%9F%9F%E6%B8%97%E9%80%8F-kerberos/4.jpg"></p>
-<p><strong>(1)The Authentication Service Exchange</strong></p>
-<p>KRB_AS_REQ</p>
-<p>Client-&gt;AS：发送 Authenticator1(Client 加密 TimeStamp)</p>
-<p>第一步 Client 先向 KDC 的 AS 发送 Authenticator1，内容为通过 Client  Hash 加密的时间戳、ClientID、网络地址、加密类型等内容。</p>
-<p><img src="/2021/05/25/%E5%9F%9F%E6%B8%97%E9%80%8F-kerberos/5.jpg"></p>
-<p>KRB_AS_REP</p>
-<p>AS-&gt; Client：发送 Client 加密的 sessionkey-as 和票据 TGT(KRBTGT HASH 加密的 sessionkey-as 和 TimeStamp)</p>
-<p>在 KDC 中存储了域中所有用户的密码 HASH，当 AS 接收到 Client 的请求之后会根据 KDC 中存储的密码来解密，解密成功并且验证信息。验证成功后返回给 Client 由 Client 密码 HASH 加密的 sessionkey-as 和 TGT（由 KRBTGT HASH 加密的 sessionkey-as 和 TimeStamp 等信息）。</p>
-<p><strong>(2)TheTicket-Granting Service (TGS) Exchange</strong></p>
-<p>KRB_TGS_REQ</p>
-<p>Client -&gt;TGS 发送 Authenticator2 (sessionkey-as 加密 TimeStamp) 和票据 TGT(KRBTGT HASH 加密的 sessionkey-as 和 TimeStamp)</p>
-<p>Client 接收到了加密后的 Sessionkey-as 和 TGT 之后，用自身密码解密得到 Sessionkey-as，TGT 是由 KDC 密码加密，Client 无法解密。这时 Client 再用 Sessionkey-as 加密 TimeStamp 和 TGT 一起发送给 KDC 中的 TGS（TicketGranting Server）票据授权服务器换取能够访问 Server 的票据。</p>
-<p><img src="/2021/05/25/%E5%9F%9F%E6%B8%97%E9%80%8F-kerberos/6.jpg"></p>
-<p>KRB_TGS_REP</p>
-<p>TGS-&gt; Client 发送 密文 1(sessionkey-as 加密 sessionkey-tgs) 和 票据 ST(Server 密码 HASH 加密 sessionkey-tgs)</p>
-<p>TGS 收到 Client 发送过来的 TGT 和 Sessionkey-as 加密的 TimeStamp 之后，首先会检查自身是否存在 Client 所请求的服务。如果服务存在，则用 KRBTGT 密码解密 TGT。一般情况下 TGS 会检查 TGT 中的时间戳查看 TGT 是否过期，且原始地址是否和 TGT 中保存的地址相同。验证成功之后将用 sessionkey-as 加密的 sessionkey-tgs 和 Server 密码 HASH 加密的 Sessionkey-tgs 发送给 Client。</p>
-<p><strong>(3)TheClient/Server Authentication Exchange</strong></p>
-<p>KRB_AP_REQ</p>
-<p>Client -&gt;Server 发送 Authenticator3(sessionkey-tgs 加密 TimeStamp) 和票据 ST(Server 密码 HASH 加密 sessionkey-tgs)</p>
-<p>Client 收到 sessionkey-as 加密的 sessionkey-tgs 和 Server 密码 HASH 加密的 sessionkey-tgs 之后用 sessionkey-as 解密得到 sessionkey-tgs，然后把 sessionkey-tgs 加密的 TimeStamp 和 ST 一起发送给 Server。</p>
-<p><img src="/2021/05/25/%E5%9F%9F%E6%B8%97%E9%80%8F-kerberos/7.jpg"></p>
-<h1 id="0x02-Kerberoasting-对kerberos的渗透"><a href="#0x02-Kerberoasting-对kerberos的渗透" class="headerlink" title="0x02 Kerberoasting-对kerberos的渗透"></a>0x02 Kerberoasting-对kerberos的渗透</h1><p>在整个渗透的过程当中，KDC密钥分发中心是我们渗透的重点，因为KDC存储了域中所有用户的密码哈希。    </p>
-<p>介绍 Kerberos 的认证流程时说到，在 KRB_TGS_REP 中，TGS 会返回给 Client 一张票据 ST，而 ST 是由 Client 请求的 Server 端密码进行加密的。当 Kerberos 协议设置票据为 RC4 方式加密时，我们就可以通过爆破在 Client 端获取的票据 ST，从而获得 Server 端的密码。</p>
-<p>下图为设置 Kerberos 的加密方式，在域中可以在域控的「本地安全策略」中进行设置：</p>
-<p><img src="/2021/05/25/%E5%9F%9F%E6%B8%97%E9%80%8F-kerberos/17.jpg"></p>
-<p>设置RC4 方式加密。</p>
-<p><img src="/2021/05/25/%E5%9F%9F%E6%B8%97%E9%80%8F-kerberos/18.jpg"></p>
-<p>设置完成之后运行里输入「gpupdate」刷新组策略，策略生效。</p>
-<h1 id="0x0-参考"><a href="#0x0-参考" class="headerlink" title="0x0 参考"></a>0x0 参考</h1><p><a target="_blank" rel="noopener" href="https://uknowsec.cn/posts/notes/%E5%9F%9F%E6%B8%97%E9%80%8F-Kerberos.html">https://uknowsec.cn/posts/notes/%E5%9F%9F%E6%B8%97%E9%80%8F-Kerberos.html</a></p>
-<p><a target="_blank" rel="noopener" href="https://www.freebuf.com/articles/system/196434.html">https://www.freebuf.com/articles/system/196434.html</a></p>
-<p><a target="_blank" rel="noopener" href="https://uknowsec.cn/posts/notes/%E5%9F%9F%E6%B8%97%E9%80%8F-SPN.html">https://uknowsec.cn/posts/notes/%E5%9F%9F%E6%B8%97%E9%80%8F-SPN.html</a></p>
-<p><a target="_blank" rel="noopener" href="https://www.notion.so/e977d98f5bd740db87ac4e5cae38a442#57ac8897745f4a05a570415401ee7d5f">https://www.notion.so/e977d98f5bd740db87ac4e5cae38a442#57ac8897745f4a05a570415401ee7d5f</a></p>
-
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
 
   
   <nav class="pagination">
@@ -1689,7 +1659,7 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">25</span>
+          <span class="site-state-item-count">26</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
@@ -1698,7 +1668,7 @@
         <span class="site-state-item-name">分类</span>
       </div>
       <div class="site-state-item site-state-tags">
-        <span class="site-state-item-count">53</span>
+        <span class="site-state-item-count">54</span>
         <span class="site-state-item-name">标签</span>
       </div>
   </nav>
@@ -1746,12 +1716,12 @@
     <span class="post-meta-item-icon">
       <i class="fa fa-chart-area"></i>
     </span>
-    <span title="站点总字数">78k</span>
+    <span title="站点总字数">79k</span>
     <span class="post-meta-divider">|</span>
     <span class="post-meta-item-icon">
       <i class="fa fa-coffee"></i>
     </span>
-    <span title="站点阅读时长">1:11</span>
+    <span title="站点阅读时长">1:12</span>
 </div>
 
         
