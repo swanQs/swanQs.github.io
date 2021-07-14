@@ -20,12 +20,12 @@
     var CONFIG = {"hostname":"swanq.top","root":"/","scheme":"Gemini","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":true,"show_result":true,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":true},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
   </script>
 
-  <meta name="description" content="0x00前言咱今儿来看看单纯的维权，如果拿到了目标机器的system权限，可以利用SSP进行维权。其基础环境如下：    IP 描述    192.168.221.139 DC   192.168.221.140 域成员   0x01 简介概念：SSP：Security Support Provider，直译为安全支持提供者，注册表中为Security Package.SSP就是一个用来实现身份认">
+  <meta name="description" content="0x00前言咱今儿来看看单纯的维权，如果拿到了目标机器的system权限，可以利用SSP进行维权。其基础环境如下：    IP 描述 系统    192.168.221.139 DC windows server 2019(x64)   192.168.221.140 域管&#x2F;域成员 windows 10(x64)   0x01 简介概念：SSP：Security Support Provider，">
 <meta property="og:type" content="article">
 <meta property="og:title" content="域渗透维权之SSP">
 <meta property="og:url" content="http://swanq.top/2021/07/12/%E5%9F%9F%E6%B8%97%E9%80%8F%E7%BB%B4%E6%9D%83%E4%B9%8BSSP/index.html">
 <meta property="og:site_name" content="SwanQ&#39;s Blue SKY">
-<meta property="og:description" content="0x00前言咱今儿来看看单纯的维权，如果拿到了目标机器的system权限，可以利用SSP进行维权。其基础环境如下：    IP 描述    192.168.221.139 DC   192.168.221.140 域成员   0x01 简介概念：SSP：Security Support Provider，直译为安全支持提供者，注册表中为Security Package.SSP就是一个用来实现身份认">
+<meta property="og:description" content="0x00前言咱今儿来看看单纯的维权，如果拿到了目标机器的system权限，可以利用SSP进行维权。其基础环境如下：    IP 描述 系统    192.168.221.139 DC windows server 2019(x64)   192.168.221.140 域管&#x2F;域成员 windows 10(x64)   0x01 简介概念：SSP：Security Support Provider，">
 <meta property="og:locale" content="zh_CN">
 <meta property="og:image" content="http://swanq.top/2021/07/12/%E5%9F%9F%E6%B8%97%E9%80%8F%E7%BB%B4%E6%9D%83%E4%B9%8BSSP/1.png">
 <meta property="og:image" content="http://swanq.top/2021/07/12/%E5%9F%9F%E6%B8%97%E9%80%8F%E7%BB%B4%E6%9D%83%E4%B9%8BSSP/5.png">
@@ -35,7 +35,7 @@
 <meta property="og:image" content="http://swanq.top/2021/07/12/%E5%9F%9F%E6%B8%97%E9%80%8F%E7%BB%B4%E6%9D%83%E4%B9%8BSSP/6.png">
 <meta property="og:image" content="http://swanq.top/2021/07/12/%E5%9F%9F%E6%B8%97%E9%80%8F%E7%BB%B4%E6%9D%83%E4%B9%8BSSP/0.png">
 <meta property="article:published_time" content="2021-07-12T03:10:40.000Z">
-<meta property="article:modified_time" content="2021-07-14T02:24:39.159Z">
+<meta property="article:modified_time" content="2021-07-14T03:32:37.222Z">
 <meta property="article:author" content="swanQ">
 <meta property="article:tag" content="渗透测试">
 <meta property="article:tag" content="域渗透">
@@ -137,7 +137,7 @@
   </li>
         <li class="menu-item menu-item-categories">
 
-    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类<span class="badge">3</span></a>
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类<span class="badge">9</span></a>
 
   </li>
         <li class="menu-item menu-item-archives">
@@ -203,15 +203,24 @@
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2021-07-14 10:24:39" itemprop="dateModified" datetime="2021-07-14T10:24:39+08:00">2021-07-14</time>
+                <time title="修改时间：2021-07-14 11:32:37" itemprop="dateModified" datetime="2021-07-14T11:32:37+08:00">2021-07-14</time>
               </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E5%9F%9F%E6%B8%97%E9%80%8F/" itemprop="url" rel="index"><span itemprop="name">域渗透</span></a>
+                </span>
+            </span>
 
           
             <span class="post-meta-item" title="本文字数">
               <span class="post-meta-item-icon">
                 <i class="far fa-file-word"></i>
               </span>
-              <span>2.3k</span>
+              <span>2.4k</span>
             </span>
             <span class="post-meta-item" title="阅读时长">
               <span class="post-meta-item-icon">
@@ -235,15 +244,18 @@
 <tr>
 <th align="center">IP</th>
 <th align="center">描述</th>
+<th align="center">系统</th>
 </tr>
 </thead>
 <tbody><tr>
 <td align="center">192.168.221.139</td>
 <td align="center">DC</td>
+<td align="center">windows server 2019(x64)</td>
 </tr>
 <tr>
 <td align="center">192.168.221.140</td>
-<td align="center">域成员</td>
+<td align="center">域管/域成员</td>
+<td align="center">windows 10(x64)</td>
 </tr>
 </tbody></table>
 <h1 id="0x01-简介"><a href="#0x01-简介" class="headerlink" title="0x01 简介"></a>0x01 简介</h1><h2 id="概念："><a href="#概念：" class="headerlink" title="概念："></a>概念：</h2><p><strong>SSP</strong>：Security Support Provider，直译为安全支持提供者，<strong>注册表中为Security Package</strong>.SSP就是一个用来实现身份认证的DLL</p>
@@ -251,7 +263,7 @@
 <p><img src="/2021/07/12/%E5%9F%9F%E6%B8%97%E9%80%8F%E7%BB%B4%E6%9D%83%E4%B9%8BSSP/1.png"></p>
 <p><strong>lsass.exe</strong> ：作为Windows的系统进程，用于本地安全和登录策略;<strong>系统启动时，SSP 将被加载到lsass.exe进程中</strong>。</p>
 <p><strong>LSA</strong> ：Local Security Authority，用于身份验证; 且可进行扩展。</p>
-<h2 id="原理："><a href="#原理：" class="headerlink" title="原理："></a>原理：</h2><p>因为LSA是可扩展的，所以可以自定义恶意dll,在系统启动时加载到lsass.exe进程中，就可获取lsass.exe中的明文密码。即使用户更改密码并重新登录，攻击者依然可疑获取其新密码。</p>
+<h2 id="原理："><a href="#原理：" class="headerlink" title="原理："></a>原理：</h2><p>因为LSA是可扩展的，所以可以自定义恶意dll,在系统启动时加载到lsass.exe进程中，就可获取lsass.exe中的明文密码。即使用户更改密码并重新登录，攻击者依然可以获取其新密码。</p>
 <p>主要有两种攻击方式，体现于0x02和0x03</p>
 <h1 id="0x02-memssp加载到内存："><a href="#0x02-memssp加载到内存：" class="headerlink" title="0x02 memssp加载到内存："></a>0x02 memssp加载到内存：</h1><p><strong>原理：</strong>主要通过往lsass进程注入代码来patch其加载的msv1_0.dll中的<strong>SpAcceptCredentials</strong>函数来恢复凭据信息。</p>
 <p><strong>功能：</strong>在登录的过程中获取用户的明文密码并存储在system32的mimilsa.log中。此攻击不会在二进制系统中留下二进制文件，一旦域控重启，注入代码就会失效。</p>
@@ -451,7 +463,7 @@
         </a>
       </div>
       <div class="site-state-item site-state-categories">
-        <span class="site-state-item-count">3</span>
+        <span class="site-state-item-count">9</span>
         <span class="site-state-item-name">分类</span>
       </div>
       <div class="site-state-item site-state-tags">
@@ -503,12 +515,12 @@
     <span class="post-meta-item-icon">
       <i class="fa fa-chart-area"></i>
     </span>
-    <span title="站点总字数">83k</span>
+    <span title="站点总字数">81k</span>
     <span class="post-meta-divider">|</span>
     <span class="post-meta-item-icon">
       <i class="fa fa-coffee"></i>
     </span>
-    <span title="站点阅读时长">1:15</span>
+    <span title="站点阅读时长">1:14</span>
 </div>
 
         

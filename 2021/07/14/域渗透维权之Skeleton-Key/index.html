@@ -20,27 +20,20 @@
     var CONFIG = {"hostname":"swanq.top","root":"/","scheme":"Gemini","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":true,"show_result":true,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":true},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
   </script>
 
-  <meta name="description" content="签 0x00前言咱今儿来看看单纯的维权，如果拿到了目标机器的system权限，可以利用SSP进行提权。其基础环境如下：    IP 描述    192.168.221.139 DC   192.168.221.140 域成员   0x01 简介概念：SSP：Security Support Provider，直译为安全支持提供者，注册表中为Security Package.SSP就是一个用来实现身">
+  <meta name="description" content="0x00前言如上上篇博客所介绍两种利用SSP进行域控权限维持的方法，都需要域控重启才可生效。本篇利用skeleton key则是立即生效，skeleton key可作为金票的替代品。 0x01 简介 在64位域控服务器上使用，因为skeleton key被安装在64位DC上 只是让所有域用户使用同一个万能密码进行登录其目前用户可以用原密码进行登录 但重启后失效  在DC上以高权限（域管理员）运行s">
 <meta property="og:type" content="article">
 <meta property="og:title" content="域渗透维权之Skeleton Key">
 <meta property="og:url" content="http://swanq.top/2021/07/14/%E5%9F%9F%E6%B8%97%E9%80%8F%E7%BB%B4%E6%9D%83%E4%B9%8BSkeleton-Key/index.html">
 <meta property="og:site_name" content="SwanQ&#39;s Blue SKY">
-<meta property="og:description" content="签 0x00前言咱今儿来看看单纯的维权，如果拿到了目标机器的system权限，可以利用SSP进行提权。其基础环境如下：    IP 描述    192.168.221.139 DC   192.168.221.140 域成员   0x01 简介概念：SSP：Security Support Provider，直译为安全支持提供者，注册表中为Security Package.SSP就是一个用来实现身">
+<meta property="og:description" content="0x00前言如上上篇博客所介绍两种利用SSP进行域控权限维持的方法，都需要域控重启才可生效。本篇利用skeleton key则是立即生效，skeleton key可作为金票的替代品。 0x01 简介 在64位域控服务器上使用，因为skeleton key被安装在64位DC上 只是让所有域用户使用同一个万能密码进行登录其目前用户可以用原密码进行登录 但重启后失效  在DC上以高权限（域管理员）运行s">
 <meta property="og:locale" content="zh_CN">
-<meta property="og:image" content="http://swanq.top/2021/07/14/%E5%9F%9F%E6%B8%97%E9%80%8F%E7%BB%B4%E6%9D%83%E4%B9%8BSkeleton-Key/blog/source/_posts/1.png">
-<meta property="og:image" content="http://swanq.top/2021/07/14/%E5%9F%9F%E6%B8%97%E9%80%8F%E7%BB%B4%E6%9D%83%E4%B9%8BSkeleton-Key/blog/source/_posts/5.png">
-<meta property="og:image" content="http://swanq.top/2021/07/14/%E5%9F%9F%E6%B8%97%E9%80%8F%E7%BB%B4%E6%9D%83%E4%B9%8BSkeleton-Key/blog/source/_posts/4.png">
-<meta property="og:image" content="http://swanq.top/2021/07/14/%E5%9F%9F%E6%B8%97%E9%80%8F%E7%BB%B4%E6%9D%83%E4%B9%8BSkeleton-Key/blog/source/_posts/2.png">
-<meta property="og:image" content="http://swanq.top/2021/07/14/%E5%9F%9F%E6%B8%97%E9%80%8F%E7%BB%B4%E6%9D%83%E4%B9%8BSkeleton-Key/blog/source/_posts/3.png">
-<meta property="og:image" content="http://swanq.top/2021/07/14/%E5%9F%9F%E6%B8%97%E9%80%8F%E7%BB%B4%E6%9D%83%E4%B9%8BSkeleton-Key/blog/source/_posts/6.png">
 <meta property="article:published_time" content="2021-07-14T02:19:55.000Z">
-<meta property="article:modified_time" content="2021-07-14T02:20:47.409Z">
+<meta property="article:modified_time" content="2021-07-14T03:19:42.001Z">
 <meta property="article:author" content="swanQ">
 <meta property="article:tag" content="渗透测试">
-<meta property="article:tag" content="域">
 <meta property="article:tag" content="skeleton key">
+<meta property="article:tag" content="域控权限">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:image" content="http://swanq.top/2021/07/14/%E5%9F%9F%E6%B8%97%E9%80%8F%E7%BB%B4%E6%9D%83%E4%B9%8BSkeleton-Key/blog/source/_posts/1.png">
 
 <link rel="canonical" href="http://swanq.top/2021/07/14/%E5%9F%9F%E6%B8%97%E9%80%8F%E7%BB%B4%E6%9D%83%E4%B9%8BSkeleton-Key/">
 
@@ -135,7 +128,7 @@
   </li>
         <li class="menu-item menu-item-categories">
 
-    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类<span class="badge">3</span></a>
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类<span class="badge">9</span></a>
 
   </li>
         <li class="menu-item menu-item-archives">
@@ -195,7 +188,16 @@
               <span class="post-meta-item-text">发表于</span>
               
 
-              <time title="创建时间：2021-07-14 10:19:55 / 修改时间：10:20:47" itemprop="dateCreated datePublished" datetime="2021-07-14T10:19:55+08:00">2021-07-14</time>
+              <time title="创建时间：2021-07-14 10:19:55 / 修改时间：11:19:42" itemprop="dateCreated datePublished" datetime="2021-07-14T10:19:55+08:00">2021-07-14</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E5%9F%9F%E6%B8%97%E9%80%8F/" itemprop="url" rel="index"><span itemprop="name">域渗透</span></a>
+                </span>
             </span>
 
           
@@ -203,13 +205,13 @@
               <span class="post-meta-item-icon">
                 <i class="far fa-file-word"></i>
               </span>
-              <span>2k</span>
+              <span>545</span>
             </span>
             <span class="post-meta-item" title="阅读时长">
               <span class="post-meta-item-icon">
                 <i class="far fa-clock"></i>
               </span>
-              <span>2 分钟</span>
+              <span>1 分钟</span>
             </span>
 
         </div>
@@ -221,81 +223,43 @@
     <div class="post-body" itemprop="articleBody">
 
       
-        <p>签</p>
-<h1 id="0x00前言"><a href="#0x00前言" class="headerlink" title="0x00前言"></a>0x00前言</h1><p>咱今儿来看看单纯的维权，如果拿到了目标机器的system权限，可以利用SSP进行提权。其基础环境如下：</p>
+        <h1 id="0x00前言"><a href="#0x00前言" class="headerlink" title="0x00前言"></a>0x00前言</h1><p>如上上篇博客所介绍两种利用SSP进行域控权限维持的方法，都需要域控重启才可生效。本篇利用skeleton key则是立即生效，skeleton key可作为金票的替代品。</p>
+<h1 id="0x01-简介"><a href="#0x01-简介" class="headerlink" title="0x01 简介"></a>0x01 简介</h1><ul>
+<li><strong>在64位域控服务器上使用</strong>，因为skeleton key被安装在64位DC上</li>
+<li><strong>只是让所有域用户使用同一个万能密码进行登录</strong>其目前用户可以用原密码进行登录</li>
+<li>但重启后失效</li>
+</ul>
+<p>在DC上以高权限（域管理员）运行skeleton，能够将Kerberos加密降为RC4_HMAC_MD5，并给LSASS进程patch一个主密码：Mimikatz。这个密码可以用来作为任何用户访问域中的任何主机。域内用户的登录活动将不会受到影响，因为他们的密码将继续正常工作。</p>
+<h2 id="mimikatz万能密码实现原理："><a href="#mimikatz万能密码实现原理：" class="headerlink" title="mimikatz万能密码实现原理："></a>mimikatz万能密码实现原理：</h2><p>在DC上以域控权限运行skeleton,能够将Kerberos认证加密降到RC4_HMAC_MD5，并以内存更新的方式给lsass.exe进程patch一个主密码mimikatz。</p>
+<h1 id="0x02-测试："><a href="#0x02-测试：" class="headerlink" title="0x02 测试："></a>0x02 测试：</h1><p>测试环境：</p>
 <table>
 <thead>
 <tr>
 <th align="center">IP</th>
 <th align="center">描述</th>
+<th>系统</th>
 </tr>
 </thead>
 <tbody><tr>
 <td align="center">192.168.221.139</td>
 <td align="center">DC</td>
+<td>windows server 2019(x64)</td>
 </tr>
 <tr>
 <td align="center">192.168.221.140</td>
-<td align="center">域成员</td>
+<td align="center">域管/域成员</td>
+<td>windows 10(x64)</td>
 </tr>
 </tbody></table>
-<h1 id="0x01-简介"><a href="#0x01-简介" class="headerlink" title="0x01 简介"></a>0x01 简介</h1><h2 id="概念："><a href="#概念：" class="headerlink" title="概念："></a>概念：</h2><p><strong>SSP</strong>：Security Support Provider，直译为安全支持提供者，<strong>注册表中为Security Package</strong>.SSP就是一个用来实现身份认证的DLL</p>
-<p><strong>SSPI</strong>：Security Support Provider Interface，直译为安全支持提供程序接口，是<strong>Windows系统在执行认证操作所使用的API</strong>。SSPI是SSP的API接口</p>
-<p><img src="/2021/07/14/%E5%9F%9F%E6%B8%97%E9%80%8F%E7%BB%B4%E6%9D%83%E4%B9%8BSkeleton-Key/blog/source/_posts/1.png"></p>
-<p><strong>lsass.exe</strong> ：作为Windows的系统进程，用于本地安全和登录策略;<strong>系统启动时，SSP 将被加载到lsass.exe进程中</strong>。</p>
-<p><strong>LSA</strong> ：Local Security Authority，用于身份验证; 且可进行扩展。</p>
-<h2 id="原理："><a href="#原理：" class="headerlink" title="原理："></a>原理：</h2><p>因为LSA是可扩展的，所以可以自定义恶意dll,在系统启动时加载到lsass.exe进程中，就可获取lsass.exe中的明文密码。即使用户更改密码并重新登录，攻击者依然可疑获取其新密码。</p>
-<p>主要有两种攻击方式，体现于0x02和0x03</p>
-<h1 id="0x02-memssp加载到内存："><a href="#0x02-memssp加载到内存：" class="headerlink" title="0x02 memssp加载到内存："></a>0x02 memssp加载到内存：</h1><p><strong>原理：</strong>主要通过往lsass进程注入代码来patch其加载的msv1_0.dll中的<strong>SpAcceptCredentials</strong>函数来恢复凭据信息。</p>
-<p><strong>功能：</strong>在登录的过程中获取用户的明文密码并存储在system32的mimilsa.log中。此攻击不会在二进制系统中留下二进制文件，一旦域控重启，注入代码就会失效。</p>
-<p><img src="/2021/07/14/%E5%9F%9F%E6%B8%97%E9%80%8F%E7%BB%B4%E6%9D%83%E4%B9%8BSkeleton-Key/blog/source/_posts/5.png"></p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">privilege::debug</span><br><span class="line">misc::memssp</span><br></pre></td></tr></table></figure>
-
-<p>当<strong>系统重启</strong>再次进行身份验证的时候，会在System32目录下创建mimilsa.log</p>
-<p><img src="/2021/07/14/%E5%9F%9F%E6%B8%97%E9%80%8F%E7%BB%B4%E6%9D%83%E4%B9%8BSkeleton-Key/blog/source/_posts/4.png"></p>
-<h1 id="0x03-SSP中加载mimilib-dll"><a href="#0x03-SSP中加载mimilib-dll" class="headerlink" title="0x03 SSP中加载mimilib.dll"></a>0x03 SSP中加载mimilib.dll</h1><p><strong>原理：</strong>mimikatz自带mimilib.dll也实现了SSP功能，mimikatz利用AddSecurityPackage此API来加载SSP，可在不重启的情况下添加mimilib.dll。</p>
-<p>该dll包含SpLsaModelntialize导出函数，lsass.exe会使用该函数来初始化包含多个回调函数的一个结构体，其中回调函数SpAcceptCredentials用来接收LSA传递的明文凭据</p>
-<h2 id="操作："><a href="#操作：" class="headerlink" title="操作："></a>操作：</h2><h3 id="添加SSP"><a href="#添加SSP" class="headerlink" title="添加SSP"></a>添加SSP</h3><p>将mimikatz提供的mimilib.dll复制到c:\windows\system32，与lsass进程位置相同，以便获取访问受感染主机的任何用户的登陆凭证</p>
-<h3 id="设置SSP"><a href="#设置SSP" class="headerlink" title="设置SSP"></a>设置SSP</h3><p>修改DC注册表HKEY_LOCAL_MACHINE\System\CurrentControlSet\Control\Lsa\Security Packages\</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">#修改注册表项</span><br><span class="line">reg add &quot;hklm\system\currentcontrolset\control\lsa\&quot; &#x2F;v &quot;Security Packages&quot; &#x2F;d &quot;kerberos\0msv1_0\0schannel\0wdigest\0tspkg\0pku2u\0mimilib&quot; &#x2F;t REG_MULTI_SZ</span><br><span class="line">#查看注册表项是否注入恶意dll</span><br><span class="line">HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Control\Lsa\Security Packages</span><br></pre></td></tr></table></figure>
-
-<p><img src="/2021/07/14/%E5%9F%9F%E6%B8%97%E9%80%8F%E7%BB%B4%E6%9D%83%E4%B9%8BSkeleton-Key/blog/source/_posts/2.png"></p>
-<p>重启系统，当域用户再次进行身份验证时-锁屏并打开，将System32目录下创建kiwissp文件，记录用户账户及明文密码</p>
-<p><img src="/2021/07/14/%E5%9F%9F%E6%B8%97%E9%80%8F%E7%BB%B4%E6%9D%83%E4%B9%8BSkeleton-Key/blog/source/_posts/3.png"></p>
+<p><strong>原理：</strong></p>
+<p><strong>功能：</strong></p>
 <h1 id="0x04-总结"><a href="#0x04-总结" class="headerlink" title="0x04 总结"></a>0x04 总结</h1><ul>
-<li>加载到内存：必须重新登录，重新启动后不会存在</li>
-<li>ssp中加载dll：必须重启，永久有效</li>
+<li></li>
 </ul>
-<h1 id="0x05-检测及清理"><a href="#0x05-检测及清理" class="headerlink" title="0x05 检测及清理"></a>0x05 检测及清理</h1><h2 id="1-检测"><a href="#1-检测" class="headerlink" title="1.检测"></a>1.检测</h2><h3 id="memssp"><a href="#memssp" class="headerlink" title="memssp:"></a>memssp:</h3><ul>
-<li><p>只能通过sysmon监控到mimilsa.log创建的日志</p>
-<p>sysmon检测创建文件事件-事件11</p>
-<p><img src="/2021/07/14/%E5%9F%9F%E6%B8%97%E9%80%8F%E7%BB%B4%E6%9D%83%E4%B9%8BSkeleton-Key/blog/source/_posts/6.png"></p>
-</li>
+<h1 id="0x05-检测及清理"><a href="#0x05-检测及清理" class="headerlink" title="0x05 检测及清理"></a>0x05 检测及清理</h1><h2 id="1-检测"><a href="#1-检测" class="headerlink" title="1.检测"></a>1.检测</h2><ul>
+<li></li>
 </ul>
-<h3 id="SSP中加载mimilib-dll："><a href="#SSP中加载mimilib-dll：" class="headerlink" title="SSP中加载mimilib.dll："></a>SSP中加载mimilib.dll：</h3><ul>
-<li><p>sysmon4622事件：记录了lsass进程加载mimilib的过程</p>
-</li>
-<li><p>sysmon11事件：mimilib落盘</p>
-</li>
-<li><p>sysmon13事件：注册表修改</p>
-</li>
-<li><p>sysmon7事件：dll加载</p>
-</li>
-</ul>
-<h2 id="2-防御清除："><a href="#2-防御清除：" class="headerlink" title="2.防御清除："></a>2.防御清除：</h2><h3 id="memssp-1"><a href="#memssp-1" class="headerlink" title="memssp:"></a>memssp:</h3><ul>
-<li>查看Windows\System32下是否有mimilsa.log文件</li>
-<li>使用ARK工具查看msv1_0.dll是否已经被inlinehook(修改函数体实现)</li>
-</ul>
-<h3 id="mimilib-dll加载"><a href="#mimilib-dll加载" class="headerlink" title="mimilib.dll加载:"></a>mimilib.dll加载:</h3><ul>
-<li>检测此位置是否加载恶意dll</li>
-</ul>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">HKEY_LOCAL_MACHINE\System\CurrentControlSet\Control\Lsa\Security Packages\ </span><br></pre></td></tr></table></figure>
-
-<ul>
-<li>检测Windows\System32是否有kiwissp.log</li>
-</ul>
-<p>Autoruns可用来检测LSA，报告出dll的位置</p>
-<h1 id="参考："><a href="#参考：" class="headerlink" title="参考："></a>参考：</h1><ol>
+<h2 id="2-防御清除："><a href="#2-防御清除：" class="headerlink" title="2.防御清除："></a>2.防御清除：</h2><h1 id="参考："><a href="#参考：" class="headerlink" title="参考："></a>参考：</h1><ol>
 <li></li>
 </ol>
 
@@ -333,8 +297,8 @@
       <footer class="post-footer">
           <div class="post-tags">
               <a href="/tags/%E6%B8%97%E9%80%8F%E6%B5%8B%E8%AF%95/" rel="tag"><i class="fa fa-tag"></i> 渗透测试</a>
-              <a href="/tags/%E5%9F%9F/" rel="tag"><i class="fa fa-tag"></i> 域</a>
               <a href="/tags/skeleton-key/" rel="tag"><i class="fa fa-tag"></i> skeleton key</a>
+              <a href="/tags/%E5%9F%9F%E6%8E%A7%E6%9D%83%E9%99%90/" rel="tag"><i class="fa fa-tag"></i> 域控权限</a>
           </div>
 
         
@@ -405,7 +369,7 @@
 
       <!--noindex-->
       <div class="post-toc-wrap sidebar-panel">
-          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#0x00%E5%89%8D%E8%A8%80"><span class="nav-number">1.</span> <span class="nav-text">0x00前言</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#0x01-%E7%AE%80%E4%BB%8B"><span class="nav-number">2.</span> <span class="nav-text">0x01 简介</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%A6%82%E5%BF%B5%EF%BC%9A"><span class="nav-number">2.1.</span> <span class="nav-text">概念：</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%8E%9F%E7%90%86%EF%BC%9A"><span class="nav-number">2.2.</span> <span class="nav-text">原理：</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#0x02-memssp%E5%8A%A0%E8%BD%BD%E5%88%B0%E5%86%85%E5%AD%98%EF%BC%9A"><span class="nav-number">3.</span> <span class="nav-text">0x02 memssp加载到内存：</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#0x03-SSP%E4%B8%AD%E5%8A%A0%E8%BD%BDmimilib-dll"><span class="nav-number">4.</span> <span class="nav-text">0x03 SSP中加载mimilib.dll</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%93%8D%E4%BD%9C%EF%BC%9A"><span class="nav-number">4.1.</span> <span class="nav-text">操作：</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%B7%BB%E5%8A%A0SSP"><span class="nav-number">4.1.1.</span> <span class="nav-text">添加SSP</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%AE%BE%E7%BD%AESSP"><span class="nav-number">4.1.2.</span> <span class="nav-text">设置SSP</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#0x04-%E6%80%BB%E7%BB%93"><span class="nav-number">5.</span> <span class="nav-text">0x04 总结</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#0x05-%E6%A3%80%E6%B5%8B%E5%8F%8A%E6%B8%85%E7%90%86"><span class="nav-number">6.</span> <span class="nav-text">0x05 检测及清理</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#1-%E6%A3%80%E6%B5%8B"><span class="nav-number">6.1.</span> <span class="nav-text">1.检测</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#memssp"><span class="nav-number">6.1.1.</span> <span class="nav-text">memssp:</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#SSP%E4%B8%AD%E5%8A%A0%E8%BD%BDmimilib-dll%EF%BC%9A"><span class="nav-number">6.1.2.</span> <span class="nav-text">SSP中加载mimilib.dll：</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2-%E9%98%B2%E5%BE%A1%E6%B8%85%E9%99%A4%EF%BC%9A"><span class="nav-number">6.2.</span> <span class="nav-text">2.防御清除：</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#memssp-1"><span class="nav-number">6.2.1.</span> <span class="nav-text">memssp:</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#mimilib-dll%E5%8A%A0%E8%BD%BD"><span class="nav-number">6.2.2.</span> <span class="nav-text">mimilib.dll加载:</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%8F%82%E8%80%83%EF%BC%9A"><span class="nav-number">7.</span> <span class="nav-text">参考：</span></a></li></ol></div>
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#0x00%E5%89%8D%E8%A8%80"><span class="nav-number">1.</span> <span class="nav-text">0x00前言</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#0x01-%E7%AE%80%E4%BB%8B"><span class="nav-number">2.</span> <span class="nav-text">0x01 简介</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#mimikatz%E4%B8%87%E8%83%BD%E5%AF%86%E7%A0%81%E5%AE%9E%E7%8E%B0%E5%8E%9F%E7%90%86%EF%BC%9A"><span class="nav-number">2.1.</span> <span class="nav-text">mimikatz万能密码实现原理：</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#0x02-%E6%B5%8B%E8%AF%95%EF%BC%9A"><span class="nav-number">3.</span> <span class="nav-text">0x02 测试：</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#0x04-%E6%80%BB%E7%BB%93"><span class="nav-number">4.</span> <span class="nav-text">0x04 总结</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#0x05-%E6%A3%80%E6%B5%8B%E5%8F%8A%E6%B8%85%E7%90%86"><span class="nav-number">5.</span> <span class="nav-text">0x05 检测及清理</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#1-%E6%A3%80%E6%B5%8B"><span class="nav-number">5.1.</span> <span class="nav-text">1.检测</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2-%E9%98%B2%E5%BE%A1%E6%B8%85%E9%99%A4%EF%BC%9A"><span class="nav-number">5.2.</span> <span class="nav-text">2.防御清除：</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%8F%82%E8%80%83%EF%BC%9A"><span class="nav-number">6.</span> <span class="nav-text">参考：</span></a></li></ol></div>
       </div>
       <!--/noindex-->
 
@@ -426,7 +390,7 @@
         </a>
       </div>
       <div class="site-state-item site-state-categories">
-        <span class="site-state-item-count">3</span>
+        <span class="site-state-item-count">9</span>
         <span class="site-state-item-name">分类</span>
       </div>
       <div class="site-state-item site-state-tags">
@@ -478,12 +442,12 @@
     <span class="post-meta-item-icon">
       <i class="fa fa-chart-area"></i>
     </span>
-    <span title="站点总字数">83k</span>
+    <span title="站点总字数">81k</span>
     <span class="post-meta-divider">|</span>
     <span class="post-meta-item-icon">
       <i class="fa fa-coffee"></i>
     </span>
-    <span title="站点阅读时长">1:15</span>
+    <span title="站点阅读时长">1:14</span>
 </div>
 
         
