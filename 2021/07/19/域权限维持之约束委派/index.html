@@ -1,0 +1,608 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.4.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+<link rel="stylesheet" href="https://fonts.cat.net/css?family=Lato:300,300italic,400,400italic,700,700italic|Fira Code:300,300italic,400,400italic,700,700italic&display=swap&subset=latin,latin-ext">
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"swanq.top","root":"/","scheme":"Gemini","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":true,"show_result":true,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":true},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+  </script>
+
+  <meta name="description" content="0x00 前言参考资料给出自己关于域内委派的一些认识。域内委派历史发展为：非约束委派 -&gt; 约束委派 -&gt; 基于资源的约束委派，在着稳固防守的方向去发展。 0x01 简介：1.域委派：将域内用户A的权限委派给服务账户B，使得服务账户B能以域用户A权限开展域内活动，获得相关域内服务资源权限。主要涉及windows的权限控制。假设用户A利用自己的身份可以访问到一个网站B，请求网站的资源C，">
+<meta property="og:type" content="article">
+<meta property="og:title" content="域权限维持之域委派">
+<meta property="og:url" content="http://swanq.top/2021/07/19/%E5%9F%9F%E6%9D%83%E9%99%90%E7%BB%B4%E6%8C%81%E4%B9%8B%E7%BA%A6%E6%9D%9F%E5%A7%94%E6%B4%BE/index.html">
+<meta property="og:site_name" content="SwanQ&#39;s Blue SKY">
+<meta property="og:description" content="0x00 前言参考资料给出自己关于域内委派的一些认识。域内委派历史发展为：非约束委派 -&gt; 约束委派 -&gt; 基于资源的约束委派，在着稳固防守的方向去发展。 0x01 简介：1.域委派：将域内用户A的权限委派给服务账户B，使得服务账户B能以域用户A权限开展域内活动，获得相关域内服务资源权限。主要涉及windows的权限控制。假设用户A利用自己的身份可以访问到一个网站B，请求网站的资源C，">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://swanq.top/2021/07/19/%E5%9F%9F%E6%9D%83%E9%99%90%E7%BB%B4%E6%8C%81%E4%B9%8B%E7%BA%A6%E6%9D%9F%E5%A7%94%E6%B4%BE/13.png">
+<meta property="og:image" content="http://swanq.top/2021/07/19/%E5%9F%9F%E6%9D%83%E9%99%90%E7%BB%B4%E6%8C%81%E4%B9%8B%E7%BA%A6%E6%9D%9F%E5%A7%94%E6%B4%BE/10.png">
+<meta property="og:image" content="http://swanq.top/2021/07/19/%E5%9F%9F%E6%9D%83%E9%99%90%E7%BB%B4%E6%8C%81%E4%B9%8B%E7%BA%A6%E6%9D%9F%E5%A7%94%E6%B4%BE/11.png">
+<meta property="og:image" content="http://swanq.top/2021/07/19/%E5%9F%9F%E6%9D%83%E9%99%90%E7%BB%B4%E6%8C%81%E4%B9%8B%E7%BA%A6%E6%9D%9F%E5%A7%94%E6%B4%BE/12.png">
+<meta property="og:image" content="http://swanq.top/2021/07/19/%E5%9F%9F%E6%9D%83%E9%99%90%E7%BB%B4%E6%8C%81%E4%B9%8B%E7%BA%A6%E6%9D%9F%E5%A7%94%E6%B4%BE/15.png">
+<meta property="og:image" content="http://swanq.top/2021/07/19/%E5%9F%9F%E6%9D%83%E9%99%90%E7%BB%B4%E6%8C%81%E4%B9%8B%E7%BA%A6%E6%9D%9F%E5%A7%94%E6%B4%BE/14.png">
+<meta property="og:image" content="http://swanq.top/2021/07/19/%E5%9F%9F%E6%9D%83%E9%99%90%E7%BB%B4%E6%8C%81%E4%B9%8B%E7%BA%A6%E6%9D%9F%E5%A7%94%E6%B4%BE/7.png">
+<meta property="og:image" content="http://swanq.top/2021/07/19/%E5%9F%9F%E6%9D%83%E9%99%90%E7%BB%B4%E6%8C%81%E4%B9%8B%E7%BA%A6%E6%9D%9F%E5%A7%94%E6%B4%BE/16.png">
+<meta property="og:image" content="http://swanq.top/2021/07/19/%E5%9F%9F%E6%9D%83%E9%99%90%E7%BB%B4%E6%8C%81%E4%B9%8B%E7%BA%A6%E6%9D%9F%E5%A7%94%E6%B4%BE/17.png">
+<meta property="og:image" content="http://swanq.top/2021/07/19/%E5%9F%9F%E6%9D%83%E9%99%90%E7%BB%B4%E6%8C%81%E4%B9%8B%E7%BA%A6%E6%9D%9F%E5%A7%94%E6%B4%BE/18.png">
+<meta property="og:image" content="http://swanq.top/2021/07/19/%E5%9F%9F%E6%9D%83%E9%99%90%E7%BB%B4%E6%8C%81%E4%B9%8B%E7%BA%A6%E6%9D%9F%E5%A7%94%E6%B4%BE/19.png">
+<meta property="og:image" content="http://swanq.top/2021/07/19/%E5%9F%9F%E6%9D%83%E9%99%90%E7%BB%B4%E6%8C%81%E4%B9%8B%E7%BA%A6%E6%9D%9F%E5%A7%94%E6%B4%BE/8.png">
+<meta property="og:image" content="http://swanq.top/2021/07/19/%E5%9F%9F%E6%9D%83%E9%99%90%E7%BB%B4%E6%8C%81%E4%B9%8B%E7%BA%A6%E6%9D%9F%E5%A7%94%E6%B4%BE/9.png">
+<meta property="og:image" content="http://swanq.top/2021/07/19/%E5%9F%9F%E6%9D%83%E9%99%90%E7%BB%B4%E6%8C%81%E4%B9%8B%E7%BA%A6%E6%9D%9F%E5%A7%94%E6%B4%BE/1.png">
+<meta property="article:published_time" content="2021-07-19T06:40:32.000Z">
+<meta property="article:modified_time" content="2021-07-23T01:43:24.661Z">
+<meta property="article:author" content="swanQ">
+<meta property="article:tag" content="权限维持">
+<meta property="article:tag" content="域环境">
+<meta property="article:tag" content="委派">
+<meta property="article:tag" content="约束委派">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://swanq.top/2021/07/19/%E5%9F%9F%E6%9D%83%E9%99%90%E7%BB%B4%E6%8C%81%E4%B9%8B%E7%BA%A6%E6%9D%9F%E5%A7%94%E6%B4%BE/13.png">
+
+<link rel="canonical" href="http://swanq.top/2021/07/19/%E5%9F%9F%E6%9D%83%E9%99%90%E7%BB%B4%E6%8C%81%E4%B9%8B%E7%BA%A6%E6%9D%9F%E5%A7%94%E6%B4%BE/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>域权限维持之域委派 | SwanQ's Blue SKY</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">SwanQ's Blue SKY</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+      <p class="site-subtitle" itemprop="description">TO LIVE IS TO RISK IT ALL</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签<span class="badge">63</span></a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类<span class="badge">9</span></a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档<span class="badge">30</span></a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://swanq.top/2021/07/19/%E5%9F%9F%E6%9D%83%E9%99%90%E7%BB%B4%E6%8C%81%E4%B9%8B%E7%BA%A6%E6%9D%9F%E5%A7%94%E6%B4%BE/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/author.jpg">
+      <meta itemprop="name" content="swanQ">
+      <meta itemprop="description" content="让自己去触碰安全的blue sky">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="SwanQ's Blue SKY">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          域权限维持之域委派
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2021-07-19 14:40:32" itemprop="dateCreated datePublished" datetime="2021-07-19T14:40:32+08:00">2021-07-19</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2021-07-23 09:43:24" itemprop="dateModified" datetime="2021-07-23T09:43:24+08:00">2021-07-23</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E5%9F%9F%E6%B8%97%E9%80%8F/" itemprop="url" rel="index"><span itemprop="name">域渗透</span></a>
+                </span>
+            </span>
+
+          
+            <span class="post-meta-item" title="本文字数">
+              <span class="post-meta-item-icon">
+                <i class="far fa-file-word"></i>
+              </span>
+              <span>3.9k</span>
+            </span>
+            <span class="post-meta-item" title="阅读时长">
+              <span class="post-meta-item-icon">
+                <i class="far fa-clock"></i>
+              </span>
+              <span>4 分钟</span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h1 id="0x00-前言"><a href="#0x00-前言" class="headerlink" title="0x00 前言"></a>0x00 前言</h1><p>参考资料给出自己关于域内委派的一些认识。域内委派历史发展为：非约束委派 -&gt; 约束委派 -&gt; 基于资源的约束委派，在着稳固防守的方向去发展。</p>
+<h1 id="0x01-简介："><a href="#0x01-简介：" class="headerlink" title="0x01 简介："></a>0x01 简介：</h1><p>1.<strong>域委派</strong>：<strong>将域内用户A的权限委派给服务账户B，使得服务账户B能以域用户A权限开展域内活动，获得相关域内服务资源权限。主要涉及windows的权限控制。</strong>假设用户A利用自己的身份可以访问到一个网站B，请求网站的资源C，但是网站B上边本身没有资源C，那么网站B就需要用用户A的身份去访问另外一台机器去获取资源C再给到用户</p>
+<p>2.**SPN(ServicePrincipal Names)**：服务主体名称，是服务实例(如HTTP、SMB、MySQL等服务)的唯一标识符，相当于每个服务(人)的身份证。每个使用Kerberos的服务都需要一个SPN。</p>
+<ul>
+<li>一个用户账户可以有多个SPN，<strong>一个SPN对应某用户的一个服务</strong>。</li>
+<li>SPN扫描可识别内网中正在运行重要服务的主机。</li>
+<li>SPN分为两种：<ul>
+<li>一种是注册在AD的<strong>机器帐户</strong>(<strong>Computers</strong>)下：当服务权限为 Local System 或 Network Service，则SPN注册在机器帐户(Computers)下。</li>
+<li>一种是注册在**域用户帐户(Users)**下：当服务权限为域用户</li>
+</ul>
+</li>
+<li>默认普通机器账号有权注册SPN，<strong>普通域用户账号无权注册SPN</strong></li>
+</ul>
+<p>3.<strong>服务账号：</strong>服务：http mysql。服务器运行服务时所用的账号，将服务运行起来并加入域。例如 MS SQL Server 在安装时，会在域内自动注册服务账号 SqlServiceAccount，这类账号不能用于交互式登录。</p>
+<h1 id="0x02-非约束委派"><a href="#0x02-非约束委派" class="headerlink" title="0x02 非约束委派"></a>0x02 非约束委派</h1><p>将域内用户A的权限委派给服务账户B，使得服务账户B能以域用户A权限随时访问任何服务</p>
+<p><img src="/2021/07/19/%E5%9F%9F%E6%9D%83%E9%99%90%E7%BB%B4%E6%8C%81%E4%B9%8B%E7%BA%A6%E6%9D%9F%E5%A7%94%E6%B4%BE/13.png"></p>
+<p>流程如下：</p>
+<ol>
+<li>用户向KDC请求可转发TGT，记为TGT1</li>
+<li>KDC返回TGT1</li>
+<li>用户<strong>通过TGT1向KDC请求转发TGT2</strong></li>
+<li>KDC返回TGT2</li>
+<li>用户<strong>通过TGT1向KDC申请访问服务1的ST</strong></li>
+<li>KDC返回ST</li>
+<li>用户发送ST、TGT1、TGT2和TGT2的SessionKey给服务1</li>
+<li>服务1通过用户的TGT2请求KDC，以用户名义请求服务2的ST</li>
+<li>KDC给服务1返回服务2的ST</li>
+<li>服务1以用户名义向服务2发出请求</li>
+<li>服务2响应服务1的请求</li>
+<li>服务1响应用户第7步骤的请求</li>
+</ol>
+<p>此流程有个问题：TGT2是不被限制的，服务1完全可以用它来请求访问任何想访问的服务。攻击其实就是利用的这点，使用从高权限账户处得到的TGT去获取权限。</p>
+<h2 id="测试："><a href="#测试：" class="headerlink" title="测试："></a>测试：</h2><p>设置服务账号。再将其设置为非约束委派模式</p>
+<p><img src="/2021/07/19/%E5%9F%9F%E6%9D%83%E9%99%90%E7%BB%B4%E6%8C%81%E4%B9%8B%E7%BA%A6%E6%9D%9F%E5%A7%94%E6%B4%BE/10.png"></p>
+<p><strong>远程powershell管理必须启用winrm服务</strong></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">winrm e winrm&#x2F;config&#x2F;listener</span><br><span class="line">winrm quickconfig</span><br><span class="line">Enable-PSRemoting -Force</span><br></pre></td></tr></table></figure>
+
+<p>DC以administrator身份登录WIN-10</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Enter-PSSession -ComputerName WIN-10</span><br></pre></td></tr></table></figure>
+
+<p><img src="/2021/07/19/%E5%9F%9F%E6%9D%83%E9%99%90%E7%BB%B4%E6%8C%81%E4%B9%8B%E7%BA%A6%E6%9D%9F%E5%A7%94%E6%B4%BE/11.png"></p>
+<p>确保DC的administrator访问win7的winrm。然后在win7上登陆本地管理员账户后抓取TGT</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">mimikatz &quot;privilege::debug&quot; &quot;Kerberos::list &#x2F;export&quot; exit &#x2F;&#x2F;导出票据</span><br><span class="line">mimikatz &quot;privilege::debug&quot; &quot;kerberos::ptt &lt;票据名称&gt;&quot; &quot;kerberos::list&quot; exit &#x2F;&#x2F;导入票据</span><br></pre></td></tr></table></figure>
+
+<p><img src="/2021/07/19/%E5%9F%9F%E6%9D%83%E9%99%90%E7%BB%B4%E6%8C%81%E4%B9%8B%E7%BA%A6%E6%9D%9F%E5%A7%94%E6%B4%BE/12.png"></p>
+<p><img src="/2021/07/19/%E5%9F%9F%E6%9D%83%E9%99%90%E7%BB%B4%E6%8C%81%E4%B9%8B%E7%BA%A6%E6%9D%9F%E5%A7%94%E6%B4%BE/15.png"></p>
+<p><img src="/2021/07/19/%E5%9F%9F%E6%9D%83%E9%99%90%E7%BB%B4%E6%8C%81%E4%B9%8B%E7%BA%A6%E6%9D%9F%E5%A7%94%E6%B4%BE/14.png"></p>
+<p>此阶段省略PowerView探测用户和探测主机步骤：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">Import-Module .\powerview.ps1</span><br><span class="line">Get-NetUser -Unconstrained -Domain wlaq.com |select name</span><br><span class="line">Get-NetComputer -Unconstrained -Domain wlaq.com</span><br></pre></td></tr></table></figure>
+
+<h1 id="0x03-约束委派"><a href="#0x03-约束委派" class="headerlink" title="0x03 约束委派"></a>0x03 约束委派</h1><p>微软在 windows server 2003 中引入了约束委派，引入了 S4U协议对 Kerberos 协议进行拓展， S4U 支持两个子协议：</p>
+<ul>
+<li>Service for User to Self (S4U2Self)</li>
+<li>Service for User to Proxy (S4U2proxy)</li>
+</ul>
+<p>这两个扩展都允许服务代表用户向 KDC 请求票证。S4U2self：代表以用户的名义请求用户需要服务的 ST；S4U2proxy以用户的名义请求其它服务的 ST，约束委派就是限制了 S4U2proxy 扩展的范围。</p>
+<p><img src="/2021/07/19/%E5%9F%9F%E6%9D%83%E9%99%90%E7%BB%B4%E6%8C%81%E4%B9%8B%E7%BA%A6%E6%9D%9F%E5%A7%94%E6%B4%BE/7.png"></p>
+<p>流程如下：</p>
+<p>前提：用户已向KDC申请到了专属于访问服务１的TGT</p>
+<ol>
+<li>用户向服务1发出请求</li>
+<li>服务１通过S4U2self扩展模拟用户向KDC请求ST</li>
+<li>KDC返回给服务1用于验证服务1的ST</li>
+<li>服务１响应用户请求</li>
+<li>用户此时想通过服务１访问服务２，即委派服务１访问服务２.前提是服务１有TGT和从用户到服务1的可转发ST1</li>
+<li>服务1通过S4U2Proxy扩展请求KDC返回一个用于验证服务2的ST，即ST2</li>
+<li>KDC在验证PAC的数字签名后,如果没有失败（成功或没有PAC），将返回ST2给服务1</li>
+<li>服务1代表用户使用ST2请求服务2，服务2判断此用户是否经过KDC验证</li>
+<li>服务2响应服务1的请求</li>
+<li>服务1响应用户请求</li>
+</ol>
+<p>在约束委派的情况下，<strong>服务用户只能获取某个用户或者主机的ST，只能用模拟用户访问特定的服务，无法获取用户的 TGT</strong></p>
+<h2 id="测试：-1"><a href="#测试：-1" class="headerlink" title="测试："></a>测试：</h2><h3 id="查询约束委派主机："><a href="#查询约束委派主机：" class="headerlink" title="查询约束委派主机："></a>查询约束委派主机：</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">Import-Module .\powerview.ps1</span><br><span class="line">Get-DomainComputer -TrustedToAuth -Domain wlaq.com</span><br></pre></td></tr></table></figure>
+
+<p>发现约束委派用户，添加服务时，并没有cifs服务，windows server 2019并未安装cifs选项。<br><img src="/2021/07/19/%E5%9F%9F%E6%9D%83%E9%99%90%E7%BB%B4%E6%8C%81%E4%B9%8B%E7%BA%A6%E6%9D%9F%E5%A7%94%E6%B4%BE/16.png"></p>
+<p>查找具备SPN且密码永不过期的用户账户test，发现test账户并未安装cifs服务</p>
+<p><img src="/2021/07/19/%E5%9F%9F%E6%9D%83%E9%99%90%E7%BB%B4%E6%8C%81%E4%B9%8B%E7%BA%A6%E6%9D%9F%E5%A7%94%E6%B4%BE/17.png"></p>
+<p>安装cifs服务</p>
+<p><img src="/2021/07/19/%E5%9F%9F%E6%9D%83%E9%99%90%E7%BB%B4%E6%8C%81%E4%B9%8B%E7%BA%A6%E6%9D%9F%E5%A7%94%E6%B4%BE/18.png"></p>
+<p><img src="/2021/07/19/%E5%9F%9F%E6%9D%83%E9%99%90%E7%BB%B4%E6%8C%81%E4%B9%8B%E7%BA%A6%E6%9D%9F%E5%A7%94%E6%B4%BE/19.png"></p>
+<h3 id="提取该账户的哈希"><a href="#提取该账户的哈希" class="headerlink" title="提取该账户的哈希"></a>提取该账户的哈希</h3><p>配置该用户到域控的cifs协议的约束性委派</p>
+<h1 id="0x03-基于资源的约束委派"><a href="#0x03-基于资源的约束委派" class="headerlink" title="0x03 基于资源的约束委派"></a>0x03 基于资源的约束委派</h1><p>为了使用户/资源更加独立，Windows Server 2012 中引入了基于资源的约束委派(RBCD)。和传统的约束委派非常相似，但是作用方向相反的。传统的约束委派是通过<strong>msDS-AllowedToDelegateTo</strong> 设置我当前可以委派的对象；不同于传统的约束委派，基于资源的约束委派是通过<strong>msDS-AllowedToActOnBehalfOfOtherIdentity</strong>来设置谁可以委派我。</p>
+<ul>
+<li>配置在后端目标服务或资源上(例如后端的 CIFS 服务)</li>
+<li>允许资源配置受信任的帐户，然后委派给他们。</li>
+</ul>
+<p><img src="/2021/07/19/%E5%9F%9F%E6%9D%83%E9%99%90%E7%BB%B4%E6%8C%81%E4%B9%8B%E7%BA%A6%E6%9D%9F%E5%A7%94%E6%B4%BE/8.png"></p>
+<p><strong>资源约束委派</strong>：服务B的msDS-AllowedToActOnBehalfOfOtherIdentity** 属性配置了对服务A 的传入信任关系。让服务B自己决定可以信任谁，该信任谁。</p>
+<h2 id="1-利用基于资源的约束委派实现后门"><a href="#1-利用基于资源的约束委派实现后门" class="headerlink" title="1.利用基于资源的约束委派实现后门"></a>1.利用基于资源的约束委派实现后门</h2><p>利用msDS-AllowedToActOnBehalfOfOtherIdentity属性，可在AD基础设施中隐藏特权访问权限。假设攻击者已经获得域管权限，要利用此属性来实现目标的持久化访问。</p>
+<ol>
+<li>寻找具备SPN并且密码永不过期的用户账户,找到test,并</li>
+</ol>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Get-ADUser -Filter * -Properties ServicePrincipalName,PasswordNeverExpires | ?&#123;($_ServicePrincipalName -ne &quot;&quot;) -and ($_.PasswordNeverExpires -eq $true)&#125;</span><br></pre></td></tr></table></figure>
+
+<p><img src="/2021/07/19/%E5%9F%9F%E6%9D%83%E9%99%90%E7%BB%B4%E6%8C%81%E4%B9%8B%E7%BA%A6%E6%9D%9F%E5%A7%94%E6%B4%BE/9.png"></p>
+<ol start="2">
+<li><p>用Mimikatz中的“DCSync”功能提取该账户对应的哈希</p>
+</li>
+<li><p>在krbtgt账户上设置msDS-AllowedToActOnBehalfOfOtherIdentity属性</p>
+</li>
+</ol>
+<p>使用的具备SPN并且密码永不过期的用户账户win10，并且对其设置msDS-AllowedToActOnBehalfOfOtherIdentity属性</p>
+<p><img src="/2021/07/19/%E5%9F%9F%E6%9D%83%E9%99%90%E7%BB%B4%E6%8C%81%E4%B9%8B%E7%BA%A6%E6%9D%9F%E5%A7%94%E6%B4%BE/1.png"></p>
+<h1 id="总结："><a href="#总结：" class="headerlink" title="总结："></a>总结：</h1><p>1.约束委派攻击：抓取服务1上用户过的NTLM-hash</p>
+<h1 id="参考："><a href="#参考：" class="headerlink" title="参考："></a>参考：</h1><ol>
+<li><a target="_blank" rel="noopener" href="https://www.cnblogs.com/Yang34/p/14264356.html">https://www.cnblogs.com/Yang34/p/14264356.html</a></li>
+<li>非约束委派：<a target="_blank" rel="noopener" href="https://eviladan0s.github.io/2020/04/14/kerberos-delegation/#%E5%88%A9%E7%94%A8">https://eviladan0s.github.io/2020/04/14/kerberos-delegation/#%E5%88%A9%E7%94%A8</a></li>
+<li><a target="_blank" rel="noopener" href="https://www.cnblogs.com/Yang34/p/14264356.html">https://www.cnblogs.com/Yang34/p/14264356.html</a></li>
+<li><a target="_blank" rel="noopener" href="http://blog.nsfocus.net/analysis-attacks-entitlement-resource-constrained-delegation/">http://blog.nsfocus.net/analysis-attacks-entitlement-resource-constrained-delegation/</a></li>
+<li>SPN：<a target="_blank" rel="noopener" href="https://www.163.com/dy/article/FC4RFSLI05372NE2.html">https://www.163.com/dy/article/FC4RFSLI05372NE2.html</a></li>
+<li><a target="_blank" rel="noopener" href="https://3gstudent.github.io/%E5%9F%9F%E6%B8%97%E9%80%8F-Kerberoasting">https://3gstudent.github.io/%E5%9F%9F%E6%B8%97%E9%80%8F-Kerberoasting</a></li>
+<li>powershell或cmd执行命令，先去系统变量的路径当中按序查找，找到即执行。若提示找不到，自然需要将相关路径加入系统变量。</li>
+<li>远程powershell管理除了有mstsc之外，还可以用winrm：<a target="_blank" rel="noopener" href="https://www.cnblogs.com/endv/p/6540584.html">https://www.cnblogs.com/endv/p/6540584.html</a></li>
+<li>winodws大小写不敏感，Linux不同</li>
+<li>UAC：即将申请更高权限的操作(windows表现为界面弹窗)，所以才会有bypass uac</li>
+<li>ACL：访问控制列表，类似于防火墙的应用上开访问通道</li>
+</ol>
+
+    </div>
+
+    
+    
+    
+        
+
+<div>
+<ul class="post-copyright">
+  <li class="post-copyright-author">
+    <strong>本文作者： </strong>swanQ
+  </li>
+  <li class="post-copyright-link">
+    <strong>本文链接：</strong>
+    <a href="http://swanq.top/2021/07/19/%E5%9F%9F%E6%9D%83%E9%99%90%E7%BB%B4%E6%8C%81%E4%B9%8B%E7%BA%A6%E6%9D%9F%E5%A7%94%E6%B4%BE/" title="域权限维持之域委派">http://swanq.top/2021/07/19/域权限维持之约束委派/</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>版权声明： </strong>本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" rel="noopener" target="_blank"><i class="fab fa-fw fa-creative-commons"></i>BY-NC-SA</a> 许可协议。转载请注明出处！
+  </li>
+</ul>
+</div>
+
+	  <div>
+      
+       <div>
+    
+        <div style="text-align:center;color: #ccc;font-size:14px;">你想在文章末尾对读者说的话</div>
+    
+</div>
+      
+      </div>
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/%E6%9D%83%E9%99%90%E7%BB%B4%E6%8C%81/" rel="tag"><i class="fa fa-tag"></i> 权限维持</a>
+              <a href="/tags/%E5%9F%9F%E7%8E%AF%E5%A2%83/" rel="tag"><i class="fa fa-tag"></i> 域环境</a>
+              <a href="/tags/%E5%A7%94%E6%B4%BE/" rel="tag"><i class="fa fa-tag"></i> 委派</a>
+              <a href="/tags/%E7%BA%A6%E6%9D%9F%E5%A7%94%E6%B4%BE/" rel="tag"><i class="fa fa-tag"></i> 约束委派</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2021/07/15/%E5%9F%9F%E6%B8%97%E9%80%8F%E6%8F%90%E6%9D%83%E4%B9%8BDSRM-ABUSE/" rel="prev" title="域渗透维权之DSRM">
+      <i class="fa fa-chevron-left"></i> 域渗透维权之DSRM
+    </a></div>
+      <div class="post-nav-item"></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#0x00-%E5%89%8D%E8%A8%80"><span class="nav-number">1.</span> <span class="nav-text">0x00 前言</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#0x01-%E7%AE%80%E4%BB%8B%EF%BC%9A"><span class="nav-number">2.</span> <span class="nav-text">0x01 简介：</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#0x02-%E9%9D%9E%E7%BA%A6%E6%9D%9F%E5%A7%94%E6%B4%BE"><span class="nav-number">3.</span> <span class="nav-text">0x02 非约束委派</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%B5%8B%E8%AF%95%EF%BC%9A"><span class="nav-number">3.1.</span> <span class="nav-text">测试：</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#0x03-%E7%BA%A6%E6%9D%9F%E5%A7%94%E6%B4%BE"><span class="nav-number">4.</span> <span class="nav-text">0x03 约束委派</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%B5%8B%E8%AF%95%EF%BC%9A-1"><span class="nav-number">4.1.</span> <span class="nav-text">测试：</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%9F%A5%E8%AF%A2%E7%BA%A6%E6%9D%9F%E5%A7%94%E6%B4%BE%E4%B8%BB%E6%9C%BA%EF%BC%9A"><span class="nav-number">4.1.1.</span> <span class="nav-text">查询约束委派主机：</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%8F%90%E5%8F%96%E8%AF%A5%E8%B4%A6%E6%88%B7%E7%9A%84%E5%93%88%E5%B8%8C"><span class="nav-number">4.1.2.</span> <span class="nav-text">提取该账户的哈希</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#0x03-%E5%9F%BA%E4%BA%8E%E8%B5%84%E6%BA%90%E7%9A%84%E7%BA%A6%E6%9D%9F%E5%A7%94%E6%B4%BE"><span class="nav-number">5.</span> <span class="nav-text">0x03 基于资源的约束委派</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#1-%E5%88%A9%E7%94%A8%E5%9F%BA%E4%BA%8E%E8%B5%84%E6%BA%90%E7%9A%84%E7%BA%A6%E6%9D%9F%E5%A7%94%E6%B4%BE%E5%AE%9E%E7%8E%B0%E5%90%8E%E9%97%A8"><span class="nav-number">5.1.</span> <span class="nav-text">1.利用基于资源的约束委派实现后门</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E6%80%BB%E7%BB%93%EF%BC%9A"><span class="nav-number">6.</span> <span class="nav-text">总结：</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%8F%82%E8%80%83%EF%BC%9A"><span class="nav-number">7.</span> <span class="nav-text">参考：</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="swanQ"
+      src="/images/author.jpg">
+  <p class="site-author-name" itemprop="name">swanQ</p>
+  <div class="site-description" itemprop="description">让自己去触碰安全的blue sky</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">30</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+        <span class="site-state-item-count">9</span>
+        <span class="site-state-item-name">分类</span>
+      </div>
+      <div class="site-state-item site-state-tags">
+        <span class="site-state-item-count">63</span>
+        <span class="site-state-item-name">标签</span>
+      </div>
+  </nav>
+</div>
+  <div class="sidebar-button motion-element"><i class="fa fa-comment"></i>
+    聊天
+  </a>
+  </div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="mailto:zhuoma.swanq@foxmail.com" title="E-Mail → mailto:zhuoma.swanq@foxmail.com" rel="noopener" target="_blank"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+  </div>
+  <div class="cc-license motion-element" itemprop="license">
+    <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" class="cc-opacity" rel="noopener" target="_blank"><img src="/images/cc-by-nc-sa.svg" alt="Creative Commons"></a>
+  </div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">swanQ</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-chart-area"></i>
+    </span>
+    <span title="站点总字数">88k</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-coffee"></i>
+    </span>
+    <span title="站点阅读时长">1:20</span>
+</div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script size="300" alpha="0.6" zIndex="-1" src="/lib/canvas-ribbon/canvas-ribbon.js"></script>
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+<script src="/live2dw/lib/L2Dwidget.min.js?094cbace49a39548bed64abff5988b05"></script><script>L2Dwidget.init({"log":false,"pluginJsPath":"lib/","pluginModelPath":"assets/","pluginRootPath":"live2dw/","tagMode":false});</script></body>
+<script type="text/javascript" src="/js/src/clicklove.js"></script>
+</html>
