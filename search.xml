@@ -20,6 +20,7 @@
 </ul>
 <p>3.<strong>服务账号：</strong>服务包括http mysql。服务器运行服务时所用的账号，将服务运行起来并加入域。例如 MSSQL Server 在安装时，会在域内自动注册服务账号 SqlServiceAccount，这类账号不能用于交互式登录。</p>
 <h1 id="0x02-非约束委派"><a href="#0x02-非约束委派" class="headerlink" title="0x02 非约束委派"></a>0x02 非约束委派</h1><p>将域内用户A的权限委派给服务账户B，使得服务账户B能以域用户A权限随时访问任何服务</p>
+<h2 id="原理："><a href="#原理：" class="headerlink" title="原理："></a>原理：</h2><p>当某主机访问配置有非约束性委派主机时，会将自己的可转发TGT发送到配置了非约束性委派的主机上。一旦域管账号访问了配置了非约束性委派的主机，就会把自己的TGT与此TGT中存储的session key留下，可被攻击者利用生成黄金票据</p>
 <p><img src="/2021/07/19/%E5%9F%9F%E6%9D%83%E9%99%90%E7%BB%B4%E6%8C%81%E4%B9%8B%E7%BA%A6%E6%9D%9F%E5%A7%94%E6%B4%BE/13.png"></p>
 <p>流程如下：</p>
 <p>前四步为用户与KDC之间的身份认证和票据授权服务，接下来是牵扯委派的</p>
@@ -29,7 +30,7 @@
 <li>用户通过TGT1向KDC申请访问服务1的ST</li>
 <li>KDC返回ST</li>
 <li>用户通过TGT1向KDC请求转发TGT2</li>
-<li>KDC返回TGT2</li>
+<li>KDC返回TGT2，此时用户有ST、TGT1和TGT2</li>
 <li><strong>用户发送ST、TGT1、TGT2给服务1</strong></li>
 <li><strong>服务1通过用户的TGT2请求KDC</strong>，<strong>以用户名义请求服务2的ST</strong></li>
 <li>KDC返回给服务1服务2的ST</li>
@@ -38,12 +39,13 @@
 <li>服务1响应用户第7步的请求</li>
 </ol>
 <p>此流程有个问题：TGT2是不被限制的，服务1完全可以用它来请求访问任何想访问的服务。攻击其实就是利用的这点，使用从高权限账户处得到的TGT去获取权限。</p>
-<h2 id="环境设置："><a href="#环境设置：" class="headerlink" title="环境设置："></a>环境设置：</h2><p>设置域账号为服务账号，因为只有服务账号才可以开启 S4U 的功能。再将test账户的委派属性设置为非约束委派模式。</p>
+<h2 id="环境搭建："><a href="#环境搭建：" class="headerlink" title="环境搭建："></a>环境搭建：</h2><p>设置域账号为服务账号，因为只有服务账号才可以开启 S4U 的功能。再将test账户的委派属性设置为非约束委派模式。</p>
 <p><img src="/2021/07/19/%E5%9F%9F%E6%9D%83%E9%99%90%E7%BB%B4%E6%8C%81%E4%B9%8B%E7%BA%A6%E6%9D%9F%E5%A7%94%E6%B4%BE/10.png"></p>
 <h2 id="发现可利用账户："><a href="#发现可利用账户：" class="headerlink" title="发现可利用账户："></a>发现可利用账户：</h2><p>在域控主机上用powersploit查询非约束委派的主机和账户:</p>
 <figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">Import-Module .\powerview.ps1</span><br><span class="line">Get-NetComputer -Unconstrained -Domain wlaq.com</span><br><span class="line">Get-NetUser -Unconstrained -Domain wlaq.com</span><br></pre></td></tr></table></figure>
 
-<h2 id="确保DC的administrator访问win10的winrm"><a href="#确保DC的administrator访问win10的winrm" class="headerlink" title="确保DC的administrator访问win10的winrm:"></a>确保DC的administrator访问win10的winrm:</h2><p>在win10上登录用户test，启动winem服务。<strong>远程powershell管理必须启用winrm服务</strong></p>
+<h2 id="确保DC的administrator访问win10的winrm"><a href="#确保DC的administrator访问win10的winrm" class="headerlink" title="确保DC的administrator访问win10的winrm:"></a>确保DC的administrator访问win10的winrm:</h2><p>注：server2008之后，所有的server主机默认开启winrm</p>
+<p>在win10上登录用户test，启动winrm服务。<strong>远程powershell管理必须启用winrm服务</strong></p>
 <figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">winrm e winrm&#x2F;config&#x2F;listener</span><br><span class="line">winrm quickconfig</span><br><span class="line">Enable-PSRemoting -Force</span><br></pre></td></tr></table></figure>
 
 <p>DC以administrator身份登录WIN-10。</p>
@@ -57,44 +59,52 @@
 <p><img src="/2021/07/19/%E5%9F%9F%E6%9D%83%E9%99%90%E7%BB%B4%E6%8C%81%E4%B9%8B%E7%BA%A6%E6%9D%9F%E5%A7%94%E6%B4%BE/15.png"></p>
 <p>访问DC的共享目录成功</p>
 <p><img src="/2021/07/19/%E5%9F%9F%E6%9D%83%E9%99%90%E7%BB%B4%E6%8C%81%E4%B9%8B%E7%BA%A6%E6%9D%9F%E5%A7%94%E6%B4%BE/14.png"></p>
-<h1 id="0x03-约束委派"><a href="#0x03-约束委派" class="headerlink" title="0x03 约束委派"></a>0x03 约束委派</h1><p>微软在 windows server 2003 中引入了约束委派，引入了 S4U协议对 Kerberos 协议进行拓展， S4U 支持两个子协议：</p>
+<p>由于域控以winrm登录过WIN-10,winrm服务拥有域控用户的TGT，即可以</p>
+<h1 id="0x03-传统的约束委派"><a href="#0x03-传统的约束委派" class="headerlink" title="0x03 传统的约束委派"></a>0x03 传统的约束委派</h1><p>传统的约束委派是“正向的”，<strong>通过修改服务A属性<code>msDS-AllowedToDelegateTo</code>，添加服务B的SPN（Service Principle Name），设置约束委派对象（服务B）</strong>，服务A便可以模拟用户向DC请求访问服务B以获得服务票据（ST）来使用服务B的资源。微软在 windows server 2003 中引入了约束委派，引入了 S4U协议对 Kerberos 协议进行拓展， S4U 支持两个子协议：</p>
 <ul>
 <li>Service for User to Self (S4U2Self)</li>
 <li>Service for User to Proxy (S4U2proxy)</li>
 </ul>
 <p>这两个扩展都允许服务代表用户向 KDC 请求票证。S4U2self：代表以用户的名义请求用户需要服务的 ST；S4U2proxy以用户的名义请求其它服务的 ST，约束委派就是限制了 S4U2proxy 扩展的范围。</p>
 <p><img src="/2021/07/19/%E5%9F%9F%E6%9D%83%E9%99%90%E7%BB%B4%E6%8C%81%E4%B9%8B%E7%BA%A6%E6%9D%9F%E5%A7%94%E6%B4%BE/7.png"></p>
+<h2 id="原理：-1"><a href="#原理：-1" class="headerlink" title="原理："></a>原理：</h2><p>利用约束委派就是想办法去获取可转发的票据，此时方法就是拿下配置了约束性委派的主机和它的hash，就可以劫持此主机的kerberos请求过程，获得任意用户权限的票据</p>
 <p>流程如下：</p>
 <p>前提：用户已向KDC申请到了专属于访问服务１的TGT</p>
 <ol>
 <li>用户向服务1发出请求</li>
-<li>服务１通过S4U2self扩展模拟用户向KDC请求ST</li>
+<li>服务１<strong>通过S4U2self扩展模拟用户向KDC请求ST</strong></li>
 <li>KDC返回给服务1用于验证服务1的ST</li>
 <li>服务１响应用户请求</li>
 <li>用户此时想通过服务１访问服务２，即委派服务１访问服务２.前提是服务１有TGT和从用户到服务1的可转发ST1</li>
-<li>服务1通过S4U2Proxy扩展请求KDC返回一个用于验证服务2的ST，即ST2</li>
+<li><strong>服务1通过S4U2Proxy扩展请求KDC返回一个用于验证服务2的ST，即ST2</strong></li>
 <li>KDC在验证PAC的数字签名后,如果没有失败（成功或没有PAC），将返回ST2给服务1</li>
-<li>服务1代表用户使用ST2请求服务2，服务2判断此用户是否经过KDC验证</li>
+<li><strong>服务1代表用户使用ST2请求服务2</strong>，服务2判断此用户是否经过KDC验证</li>
 <li>服务2响应服务1的请求</li>
 <li>服务1响应用户请求</li>
 </ol>
 <p>在约束委派的情况下，<strong>服务用户只能获取某个用户或者主机的ST，只能用模拟用户访问特定的服务，无法获取用户的 TGT</strong></p>
-<h2 id="测试："><a href="#测试：" class="headerlink" title="测试："></a>测试：</h2><h3 id="查询约束委派主机："><a href="#查询约束委派主机：" class="headerlink" title="查询约束委派主机："></a>查询约束委派主机：</h3><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">Import-Module .\powerview.ps1</span><br><span class="line">Get-DomainComputer -TrustedToAuth -Domain wlaq.com</span><br></pre></td></tr></table></figure>
+<h2 id="环境搭建：-1"><a href="#环境搭建：-1" class="headerlink" title="环境搭建："></a>环境搭建：</h2><h3 id="查询约束委派主机和用户："><a href="#查询约束委派主机和用户：" class="headerlink" title="查询约束委派主机和用户："></a>查询约束委派主机和用户：</h3><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">Import-Module .\powerview.ps1</span><br><span class="line">Get-DomainComputer -TrustedToAuth -Domain wlaq.com</span><br><span class="line">Get-DomainUser -TrustedToAuth -Domain wlaq.com</span><br></pre></td></tr></table></figure>
 
 <p>发现约束委派用户，添加服务时，并没有cifs服务，windows server 2019并未安装cifs选项。<br><img src="/2021/07/19/%E5%9F%9F%E6%9D%83%E9%99%90%E7%BB%B4%E6%8C%81%E4%B9%8B%E7%BA%A6%E6%9D%9F%E5%A7%94%E6%B4%BE/16.png"></p>
-<p>查找具备SPN且密码永不过期的用户账户test，发现test账户并未安装cifs服务</p>
-<p><img src="/2021/07/19/%E5%9F%9F%E6%9D%83%E9%99%90%E7%BB%B4%E6%8C%81%E4%B9%8B%E7%BA%A6%E6%9D%9F%E5%A7%94%E6%B4%BE/17.png"></p>
-<p>安装cifs服务</p>
+<p>安装cifs服务，并配置好该用户到域控的cifs协议的约束性委派</p>
 <p><img src="/2021/07/19/%E5%9F%9F%E6%9D%83%E9%99%90%E7%BB%B4%E6%8C%81%E4%B9%8B%E7%BA%A6%E6%9D%9F%E5%A7%94%E6%B4%BE/18.png"></p>
 <p><img src="/2021/07/19/%E5%9F%9F%E6%9D%83%E9%99%90%E7%BB%B4%E6%8C%81%E4%B9%8B%E7%BA%A6%E6%9D%9F%E5%A7%94%E6%B4%BE/19.png"></p>
-<h3 id="提取该账户的哈希"><a href="#提取该账户的哈希" class="headerlink" title="提取该账户的哈希"></a>提取该账户的哈希</h3><p>配置该用户到域控的cifs协议的约束性委派</p>
-<h1 id="0x03-基于资源的约束委派"><a href="#0x03-基于资源的约束委派" class="headerlink" title="0x03 基于资源的约束委派"></a>0x03 基于资源的约束委派</h1><p>为了使用户/资源更加独立，Windows Server 2012 中引入了基于资源的约束委派(RBCD)。和传统的约束委派非常相似，但是作用方向相反的。传统的约束委派是通过<strong>msDS-AllowedToDelegateTo</strong> 设置我当前可以委派的对象；不同于传统的约束委派，基于资源的约束委派是通过<strong>msDS-AllowedToActOnBehalfOfOtherIdentity</strong>来设置谁可以委派我。</p>
+<h3 id="提取非约束委派账户test的哈希"><a href="#提取非约束委派账户test的哈希" class="headerlink" title="提取非约束委派账户test的哈希"></a>提取非约束委派账户test的哈希</h3><p>要申请可转发的票据，就先需要一张test的TGT，用rubeus请求TGT:</p>
+<p><img src="/2021/07/19/%E5%9F%9F%E6%9D%83%E9%99%90%E7%BB%B4%E6%8C%81%E4%B9%8B%E7%BA%A6%E6%9D%9F%E5%A7%94%E6%B4%BE/21.png"></p>
+<p>模拟ST：</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">Rubeus.exe s4u &#x2F;ticket:code &#x2F;impersonateuser:administrator &#x2F;domain:wlaq.com &#x2F;msdsspn:cifs&#x2F;WIN-2019-DC.wlaq.com &#x2F;dc:WIN-2019-DC.wlaq.com &#x2F;ptt</span><br></pre></td></tr></table></figure>
+
+
+
+
+
+<h1 id="0x03-基于资源的约束委派"><a href="#0x03-基于资源的约束委派" class="headerlink" title="0x03 基于资源的约束委派"></a>0x03 基于资源的约束委派</h1><p>为了使用户/资源更加独立，Windows Server 2012 中引入了基于资源的约束委派(RBCD)。受限委派的机制变成了基于资源的约束委派。基于资源的约束委派则是相反的，通过<strong>修改服务B属性<code>msDS-AllowedToActOnBehalfOfOtherIdentity</code>，添加服务A的SPN</strong>，达到让服务A模拟用户访问B资源的目的。</p>
 <ul>
 <li>配置在后端目标服务或资源上(例如后端的 CIFS 服务)</li>
 <li>允许资源配置受信任的帐户，然后委派给他们。</li>
 </ul>
+<p>两者区别如下：</p>
 <p><img src="/2021/07/19/%E5%9F%9F%E6%9D%83%E9%99%90%E7%BB%B4%E6%8C%81%E4%B9%8B%E7%BA%A6%E6%9D%9F%E5%A7%94%E6%B4%BE/8.png"></p>
-<p><strong>资源约束委派</strong>：服务B的msDS-AllowedToActOnBehalfOfOtherIdentity** 属性配置了对服务A 的传入信任关系。让服务B自己决定可以信任谁，该信任谁。</p>
 <h2 id="1-利用基于资源的约束委派实现后门"><a href="#1-利用基于资源的约束委派实现后门" class="headerlink" title="1.利用基于资源的约束委派实现后门"></a>1.利用基于资源的约束委派实现后门</h2><p>利用msDS-AllowedToActOnBehalfOfOtherIdentity属性，可在AD基础设施中隐藏特权访问权限。假设攻击者已经获得域管权限，要利用此属性来实现目标的持久化访问。</p>
 <ol>
 <li>寻找具备SPN并且密码永不过期的用户账户,找到test,并</li>
