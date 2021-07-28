@@ -784,7 +784,7 @@
       </tags>
   </entry>
   <entry>
-    <title>vulnHub靶机系列：shentouLampiao渗透Writeup</title>
+    <title>vulnHub靶机系列：Lampiao渗透Writeup</title>
     <url>/2021/07/02/vulnHub-Lampiao/</url>
     <content><![CDATA[<blockquote>
 <p>Would you like to keep hacking in your own lab?</p>
@@ -1228,10 +1228,11 @@
         <category>靶机Vulhub</category>
       </categories>
       <tags>
-        <tag>漏洞复现</tag>
         <tag>渗透测试</tag>
         <tag>CTF</tag>
-        <tag>VulnHub-GoldenEye</tag>
+        <tag>网络空间安全</tag>
+        <tag>靶机渗透</tag>
+        <tag>vulnhub</tag>
       </tags>
   </entry>
   <entry>
