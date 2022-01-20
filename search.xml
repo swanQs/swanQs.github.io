@@ -1,6 +1,36 @@
 <?xml version="1.0" encoding="utf-8"?>
 <search>
   <entry>
+    <title>Apache shiro漏洞汇总</title>
+    <url>/2021/08/09/Apache-shiro%E6%BC%8F%E6%B4%9E%E6%B1%87%E6%80%BB/</url>
+    <content><![CDATA[<h1 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h1><p>想在本篇文章之中总结shiro的经典漏洞，形成自己对shiro洞的看法。</p>
+<h1 id="0x01-权限绕过漏洞"><a href="#0x01-权限绕过漏洞" class="headerlink" title="0x01 权限绕过漏洞"></a>0x01 权限绕过漏洞</h1><h2 id="漏洞原理："><a href="#漏洞原理：" class="headerlink" title="漏洞原理："></a>漏洞原理：</h2><p>Spring Boot使用Shiro进行身份验证、权限控制。在Shiro &lt;= <strong>1.5.1</strong>的版本中，攻击者可以通过精心构造的URL，<strong>利用Shiro和SpringBoot对URL的处理的差异化，绕过Shiro对Spring Boot中的Servlet的权限控制实现未授权访问</strong>。如通过构造**..;**这样的跳转，可以绕过Shiro中对目录的权限限制。</p>
+<h2 id="漏洞利用："><a href="#漏洞利用：" class="headerlink" title="漏洞利用："></a>漏洞利用：</h2><p>正常访问admin登录界面，会跳转至login.html</p>
+<img src="/2021/08/09/Apache-shiro%E6%BC%8F%E6%B4%9E%E6%B1%87%E6%80%BB/blog\source\_posts\Apache-shiro漏洞汇总\image-20210809162257792.png" alt="image-20210809162257792" style="zoom:67%;">
+
+<p><img src="/2021/08/09/Apache-shiro%E6%BC%8F%E6%B4%9E%E6%B1%87%E6%80%BB/blog\source_posts\Apache-shiro漏洞汇总\image-20210809170918695.png" alt="image-20210809170918695"></p>
+<p>在URL前添加/xxx/..;/，即访问 <strong>localhost:8080/xxx/..;/admin/</strong> 则会显示登录成功直接进入admin管理界面</p>
+<img src="/2021/08/09/Apache-shiro%E6%BC%8F%E6%B4%9E%E6%B1%87%E6%80%BB/blog\source\_posts\Apache-shiro漏洞汇总\image-20210809162041175.png" alt="image-20210809162041175" style="zoom:67%;">
+
+<ol>
+<li>客户端请求URL: /xxx/..;/admin/index</li>
+<li>shrio内部处理得到校验URL为 /xxx/..,因为不等于/admin/**所以绕过用户名密码校验。校验通过</li>
+<li>springboot处理 /xxx/..;/admin/index , 最终请求 /admin/index, 成功访问了后台请求.</li>
+</ol>
+<h2 id="漏洞分析："><a href="#漏洞分析：" class="headerlink" title="漏洞分析："></a>漏洞分析：</h2><h2 id="漏洞检测："><a href="#漏洞检测：" class="headerlink" title="漏洞检测："></a>漏洞检测：</h2><h2 id="参考："><a href="#参考：" class="headerlink" title="参考："></a>参考：</h2><ol>
+<li><a href="https://github.com/apache/shiro">https://github.com/apache/shiro</a></li>
+</ol>
+<h1 id="0x02-反序列化漏洞"><a href="#0x02-反序列化漏洞" class="headerlink" title="0x02 反序列化漏洞"></a>0x02 反序列化漏洞</h1><h2 id="漏洞原理：-1"><a href="#漏洞原理：-1" class="headerlink" title="漏洞原理："></a>漏洞原理：</h2><h2 id="漏洞利用：-1"><a href="#漏洞利用：-1" class="headerlink" title="漏洞利用："></a>漏洞利用：</h2><h2 id="总结及思考："><a href="#总结及思考：" class="headerlink" title="总结及思考："></a>总结及思考：</h2><h2 id="漏洞检测：-1"><a href="#漏洞检测：-1" class="headerlink" title="漏洞检测："></a>漏洞检测：</h2>]]></content>
+      <tags>
+        <tag>漏洞复现</tag>
+        <tag>渗透测试</tag>
+        <tag>网络空间安全</tag>
+        <tag>Java中间件</tag>
+        <tag>shrio</tag>
+        <tag>漏洞利用</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>域权限维持之域委派</title>
     <url>/2021/07/19/%E5%9F%9F%E6%9D%83%E9%99%90%E7%BB%B4%E6%8C%81%E4%B9%8B%E7%BA%A6%E6%9D%9F%E5%A7%94%E6%B4%BE/</url>
     <content><![CDATA[<h1 id="0x00-前言"><a href="#0x00-前言" class="headerlink" title="0x00 前言"></a>0x00 前言</h1><p>参考资料给出自己关于域内委派的一些认识。</p>
@@ -185,21 +215,22 @@
     <title>域渗透维权之DSRM</title>
     <url>/2021/07/15/%E5%9F%9F%E6%B8%97%E9%80%8F%E6%8F%90%E6%9D%83%E4%B9%8BDSRM-ABUSE/</url>
     <content><![CDATA[<h1 id="0x00前言"><a href="#0x00前言" class="headerlink" title="0x00前言"></a>0x00前言</h1><p>除了krbtgt账户外，DC上还有一个可以利用的账户：目录服务还原模式账户DSRM。本篇文章主要介绍攻击者在获取域管权限之后，利用DSRM来持久化权限的手法</p>
-<h1 id="0x01-简介"><a href="#0x01-简介" class="headerlink" title="0x01 简介"></a>0x01 简介</h1><p>DSRM（directory service restore mode目录服务还原模式账户）,是Windows域环境中域控制器的安全模式启动选项，每个域控中都有一个本地管理账户，就是DSRM账户，DSRM的作用是允许管理员在域环境中出现故障或崩溃时还原、修复、重建活动目录数据库，使域环境的运行恢复正常。</p>
+<h1 id="0x01-简介"><a href="#0x01-简介" class="headerlink" title="0x01 简介"></a>0x01 简介</h1><p>每个域控中都有一个本地管理账户，就是DSRM账户。DSRM（directory service restore mode目录服务还原模式账户）,是Windows域环境中域控的安全模式启动选项，DSRM的作用是允许管理员在域环境出现故障或崩溃时还原、修复、重建<strong>活动目录数据库</strong>，使域环境的运行恢复正常。</p>
 <ul>
-<li>每个域控上的本地管理员账户即目录服务还原模式账户(DSRM)</li>
-<li><strong>DSRM的密码在DC安装时设置，之后很少被修改，存储在SAM文件中</strong></li>
-<li><strong>其他域中密码包括administrator保存在NTDS.dit中</strong>，即使被修改对于SAM存储的密码也没影响</li>
-<li>修改DSRM的方法为在DC上运行ntdsutil</li>
-<li>DSRM被修改，即域控的本地管理员的密码hash被修改</li>
-<li>但如果修改DC的本地管理员的密码hash，SAM数据库的hash并不会被改变，只会改变ntds.dit文件中的hash</li>
+<li>域控上的本地管理员账户即目录服务还原模式账户(DSRM)</li>
+<li><strong>DSRM的密码在DC安装时设置，很少被修改，存储在SAM文件中</strong></li>
+<li><strong>其他域中密码包括administrator保存在NTDS.dit中</strong></li>
+<li>修改DSRM：在DC上运行ntdsutil</li>
+<li>DSRM被修改 == 域控的administrator密码hash被修改 -&gt; 必要条件</li>
+<li>但如果修改DC的administrator的密码hash，SAM数据库的hash并不会被改变</li>
 </ul>
-<p>​      只要攻击者改变了DSRM账户的hash，就算此时应急改变DC管理员的密码，也可以继续利用pth哈希传递攻击。此攻击需要使用DC的<strong>ntdsutil来修改DSRM账户的密码</strong>。且需要修改<strong>DSRM的登录方式</strong>。因在windows server 2000及之后对DSRM使用控制台做出了限制。</p>
-<p><strong>命令集合：</strong></p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">NTDSUTIL  &#x2F;&#x2F;打开ntdsutil </span><br><span class="line">set dsrm password  &#x2F;&#x2F;设置DSRM密码 </span><br><span class="line">reset password on server null  &#x2F;&#x2F;在当前域控上恢复DSRM密码 &lt;password&gt;  &#x2F;&#x2F;修改密码，注意这里输入的是DSRM密码,而不是Administrator的密码 </span><br><span class="line">&lt;password&gt;  &#x2F;&#x2F;再次输入 </span><br><span class="line">q  &#x2F;&#x2F;退出DSRM密码设置模式 </span><br><span class="line">q  &#x2F;&#x2F;退出ntdsutil</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">mimikatz:</span><br><span class="line">&#x2F;&#x2F;获取krbtgt的账户密码</span><br><span class="line">lsadump::dcsync &#x2F;domain:wlaq.com &#x2F;user:krbtgt </span><br><span class="line">&#x2F;&#x2F;获取SAM数据库的密码</span><br><span class="line">token::elevate </span><br><span class="line">lsadump::sam</span><br></pre></td></tr></table></figure>
-
-
-
+<p>​      利用方式：<strong>攻击者将DSRM账户的hash与krbtgt同步，就算此时应急改变DC的administrator的密码，也可以继续利用pth哈希传递攻击。</strong></p>
+<p>两个条件：</p>
+<ol>
+<li>此攻击需要使用DC的<strong>ntdsutil来修改DSRM账户的密码</strong>。</li>
+<li>需要修改<strong>DSRM的登录方式</strong>。</li>
+</ol>
+<p>因此在windows server 2000及之后对DSRM使用控制台做出了限制。</p>
 <h1 id="0x02-测试"><a href="#0x02-测试" class="headerlink" title="0x02 测试"></a>0x02 测试</h1><h3 id="测试环境"><a href="#测试环境" class="headerlink" title="测试环境"></a><strong>测试环境</strong></h3><table>
 <thead>
 <tr>
@@ -220,37 +251,39 @@
 </tr>
 </tbody></table>
 <h3 id="攻击测试"><a href="#攻击测试" class="headerlink" title="攻击测试"></a>攻击测试</h3><p>修改DSRM密码之后，抓取的Administrator的SAM数据库中的NTLM-hash就变成了DSRM账户密码。</p>
-<p>修改DSRM有两种方法</p>
+<p>修改DSRM有两种方法:</p>
 <ol>
-<li><p>ntdsutil通过明文密码指定</p>
+<li><p>密码通过明文指定：ntdsutil恢复DSRM密码，并修改密码</p>
 <p><img src="/2021/07/15/%E5%9F%9F%E6%B8%97%E9%80%8F%E6%8F%90%E6%9D%83%E4%B9%8BDSRM-ABUSE/1.png"></p>
 </li>
-<li></li>
+<li><p>域账户同步swanq与DSRM密码hash</p>
+<p><img src="/2021/07/15/%E5%9F%9F%E6%B8%97%E9%80%8F%E6%8F%90%E6%9D%83%E4%B9%8BDSRM-ABUSE/2.png"></p>
+</li>
 </ol>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">privilege::debug  sekurlsa::pth &#x2F;user:Administrator &#x2F;domain:wlaq.com &#x2F;ntlm:F21AE66FBD82F5A624658BD1CBD0250E</span><br></pre></td></tr></table></figure>
+<p>我们采用同步域用户的方式，也就是第二种方式进行攻击利用，直接更改DSRM账户密码并不能实现CIFS服务查看共享目录的功能即攻击过程。</p>
+<p>查看本机krbtgt账户的NTLM hash：44702a4f5416df5310e81e3e697feac8</p>
+<p><img src="/2021/07/15/%E5%9F%9F%E6%B8%97%E9%80%8F%E6%8F%90%E6%9D%83%E4%B9%8BDSRM-ABUSE/9.png"></p>
+<p>查看SAM文件中本地管理员的NTLM hash-DSRM：45a524862326cb9e7d85af4017a000f0</p>
+<p><img src="/2021/07/15/%E5%9F%9F%E6%B8%97%E9%80%8F%E6%8F%90%E6%9D%83%E4%B9%8BDSRM-ABUSE/11.png"></p>
+<p><strong>命令集合：</strong></p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">NTDSUTIL  &#x2F;&#x2F;打开ntdsutil </span><br><span class="line">set dsrm password  &#x2F;&#x2F;设置DSRM密码 </span><br><span class="line">reset password on server null  &#x2F;&#x2F;在当前域控上恢复DSRM密码 &lt;password&gt;  &#x2F;&#x2F;修改密码，注意这里输入的是DSRM密码,而不是Administrator的密码 </span><br><span class="line">&lt;password&gt;  &#x2F;&#x2F;再次输入 </span><br><span class="line">q  &#x2F;&#x2F;退出DSRM密码设置模式 </span><br><span class="line">q  &#x2F;&#x2F;退出ntdsutil</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">mimikatz:</span><br><span class="line">&#x2F;&#x2F;获取krbtgt的账户密码</span><br><span class="line">lsadump::dcsync &#x2F;domain:wlaq.com &#x2F;user:krbtgt </span><br><span class="line">&#x2F;&#x2F;获取SAM数据库的密码</span><br><span class="line">token::elevate </span><br><span class="line">lsadump::sam</span><br></pre></td></tr></table></figure>
 
-
-
-
-
-
-
-
-
-<p>在Windows server2019上注册表并未有以下项限制DSRM登录，故可更改DC上DSRM账户的明文密码</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">HKLM:\System\CurrentControlSet\Control\Lsa\DsrmAdminLogonBehavior</span><br></pre></td></tr></table></figure>
-
-<p><img src="/2021/07/15/%E5%9F%9F%E6%B8%97%E9%80%8F%E6%8F%90%E6%9D%83%E4%B9%8BDSRM-ABUSE/1.png"></p>
 <h1 id="0x04-检测"><a href="#0x04-检测" class="headerlink" title="0x04 检测"></a>0x04 检测</h1><ul>
+<li><p>sysmon事件1:</p>
+<p><img src="/2021/07/15/%E5%9F%9F%E6%B8%97%E9%80%8F%E6%8F%90%E6%9D%83%E4%B9%8BDSRM-ABUSE/10.png"></p>
+</li>
 <li></li>
 </ul>
-<h1 id="0x05-防御"><a href="#0x05-防御" class="headerlink" title="0x05 防御"></a>0x05 防御</h1><ul>
-<li></li>
-</ul>
-<h1 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h1><h1 id="参考："><a href="#参考：" class="headerlink" title="参考："></a>参考：</h1><ol>
+<p>在Windows server2019上注册表并未有以下项限制DSRM登录，故可在注册表中新建项：HKLM:\System\CurrentControlSet\Control\Lsa\DsrmAdminLogonBehavior<br> 　DSRM的三种登录方式：<br> 　0：默认值，只有当域控重启并进入DSRM模式时，才可以使用DSRM管理员账号。<br> 　1：只有当本地AD、DS服务停止时，才可以使用DSRM管理员账号登录域控。<br> 　2：在任何情况下，都可以使用DSRM管理员账号登录域控。<br> 如果该值为2，说明已遭受过攻击，<strong>此时应该将注册表键值改为0并按照第一种方式重置DSRM密码</strong>。</p>
+<h1 id="0x05防御"><a href="#0x05防御" class="headerlink" title="0x05防御"></a>0x05防御</h1><ol>
+<li>定期检查注册表中用于控制DSRM登录方式的键值hklm:\system\currentcontrolset\control\lsa\确认该键值为1，或者删除该键值。</li>
+<li>定期修改域中所有域控的DSRM账号。</li>
+<li>经常检查ID为4794的日志。尝试设置活动目录服务还原模式的管理员密码会被记录在4794日志中。</li>
+</ol>
+<h1 id="参考："><a href="#参考：" class="headerlink" title="参考："></a>参考：</h1><ol>
 <li><a href="https://docs.microsoft.com/zh-tw/sql/analytics-platform-system/set-admin-password-for-logging-on-to-ad-nodes-in-directory-services-restore-mode?view=aps-pdw-2016-au7">https://docs.microsoft.com/zh-tw/sql/analytics-platform-system/set-admin-password-for-logging-on-to-ad-nodes-in-directory-services-restore-mode?view=aps-pdw-2016-au7</a></li>
 <li><a href="https://www.at449.com/2020/04/27/2017/">https://www.at449.com/2020/04/27/2017/</a></li>
-<li>笔误稍多，如NTLM写为NTML,但思路清晰：<a href="https://www.freebuf.com/articles/network/278999.html">https://www.freebuf.com/articles/network/278999.html</a></li>
+<li><a href="https://www.freebuf.com/articles/network/278999.html">https://www.freebuf.com/articles/network/278999.html</a></li>
 </ol>
 ]]></content>
       <categories>
